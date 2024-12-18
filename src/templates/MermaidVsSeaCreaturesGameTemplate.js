@@ -71,13 +71,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   };
 
   useEffect(() => {
-    if (!isConnected) {
+    if (!publicClient) {
       return;
     }
 
     fetchRound();
     fetchPlayer();
-  }, [isConnected]);
+  }, [publicClient, isConnected]);
 
   const handleBet = async (type) => {
     try {
