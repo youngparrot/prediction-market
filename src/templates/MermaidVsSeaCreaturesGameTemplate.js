@@ -29,7 +29,6 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   const [seaCreaturesTotalPower, setSeaCreaturesTotalPower] = useState(0);
 
   const fetchData = async () => {
-    console.log("fetchData()");
     try {
       const gameContract = getContract({
         address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
@@ -38,7 +37,6 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       });
 
       const roundId = await gameContract.read.getCurrentRoundIndex();
-      console.log({ roundId });
       const roundStats = await gameContract.read.getRoundStats([
         parseInt(roundId.toString()),
       ]);
@@ -46,7 +44,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
         parseInt(roundId.toString()),
         address,
       ]);
-      console.log({ roundStats, playerStats });
+
       setMermaidTotalPower(roundStats.totalBetMermaid.toString());
       setSeaCreaturesTotalPower(roundStats.totalBetSeaCreatures.toString());
       setTotalRewards(formatEther(roundStats.totalRewards.toString()));
@@ -140,7 +138,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-0 md:px-8">
       <p className="text-4xl font-bold text-highlight py-4">
-        Mermaid Vs Sea Creatures
+        Mermaid Vs Sea Creatures Game
       </p>
       <div className="flex flex-col items-center gap-2 max-w-lg py-4">
         <p className="text-xl font-bold text-highlight">Total Rewards</p>
@@ -185,7 +183,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           Power Up Sea Creatures
         </button>
       </div>
-      <button onClick={() => handleClaimReward()}>Claim Reward</button>
+      {/* <button onClick={() => handleClaimReward()}>Claim Reward</button> */}
     </div>
   );
 };
