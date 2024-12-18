@@ -140,7 +140,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-0 md:px-8">
       <p className="text-4xl font-bold text-highlight py-4">
-        Mermaid Vs Sea Creatures Bet Game
+        Mermaid Vs Sea Creatures
       </p>
       <div className="flex flex-col items-center gap-2 max-w-lg py-4">
         <p className="text-xl font-bold text-highlight">Total Rewards</p>
