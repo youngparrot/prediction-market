@@ -25,11 +25,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
 
   const { address, isConnected } = useAccount();
   const [betAmount, setBetAmount] = useState(1);
-  const [totalRewards, setTotalRewards] = useState(0);
-  const [mermaidTotalPower, setMermaidTotalPower] = useState(0);
-  const [seaCreaturesTotalPower, setSeaCreaturesTotalPower] = useState(0);
-  const [roundStats, setRoundStats] = useState({});
-  const [playerStats, setPlayerStats] = useState({});
+  const [roundStats, setRoundStats] = useState();
+  const [playerStats, setPlayerStats] = useState();
 
   const fetchRound = async () => {
     try {
@@ -44,15 +41,16 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
         parseInt(roundId.toString()),
       ]);
       setRoundStats(roundStats);
-      setMermaidTotalPower(roundStats.totalBetMermaid.toString());
-      setSeaCreaturesTotalPower(roundStats.totalBetSeaCreatures.toString());
-      setTotalRewards(formatEther(roundStats.totalRewards.toString()));
     } catch (error) {
       console.log("Failed fetch data", error);
     }
   };
 
   const fetchPlayer = async () => {
+    if (!address) {
+      return;
+    }
+
     try {
       const gameContract = getContract({
         address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
@@ -155,23 +153,33 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       <p className="text-4xl font-bold text-highlight py-4">
         Mermaid Vs Sea Creatures Game
       </p>
-      {roundStats.endTime && (
-        <Countdown date={roundStats.endTime.toString() * 1000} />
-      )}
-      <div className="flex flex-col items-center gap-2 max-w-lg py-4">
-        <p className="text-2xl font-bold text-highlight">Total Rewards</p>
-        <div className="flex">
-          <p className="text-2xl text-metallic">{totalRewards} KAIA</p>
-        </div>
-      </div>
-      <div className="flex justify-between gap-4 max-w-lg">
-        <p className="text-2xl text-highlight">{mermaidTotalPower}</p>
-        <p className="text-metallic">vs</p>
-        <p className="text-2xl text-highlight">{seaCreaturesTotalPower}</p>
-      </div>
+      {roundStats ? (
+        <>
+          {roundStats.endTime && (
+            <Countdown date={roundStats.endTime.toString() * 1000} />
+          )}
+          <div className="flex flex-col items-center gap-2 max-w-lg py-4">
+            <p className="text-2xl font-bold text-highlight">Total Rewards</p>
+            <div className="flex">
+              <p className="text-2xl text-metallic">
+                {formatEther(roundStats.totalRewards.toString())} KAIA
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-between gap-4 max-w-lg">
+            <p className="text-2xl text-highlight">
+              {roundStats.totalMermaidPower}
+            </p>
+            <p className="text-metallic">vs</p>
+            <p className="text-2xl text-highlight">
+              {roundStats.totalSeaCreaturesPower}
+            </p>
+          </div>
+        </>
+      ) : null}
       <Image
         src="/images/mermaid-vs-sea-creatures.png"
-        width={500}
+        width={888}
         height={500}
         alt="Mermaid Vs Sea Creatures Bet Game Image"
       />
@@ -189,7 +197,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       </div>
       {isConnected ? (
         <>
-          <div className="flex justify-between gap-4 max-w-lg py-4">
+          <div className="flex justify-between gap-4 md:gap-6 max-w-lg py-4">
             <button
               onClick={() => handleBet(BET_TYPE.mermaid)}
               className="bg-primary text-white font-bold py-2 px-4 rounded"
@@ -203,22 +211,39 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               Power Up Sea Creatures
             </button>
           </div>
-          {playerStats[0] && (
-            <div>
-              <p className="text-highlight">
-                Your total power:{" "}
-                <span className="text-metallic">
-                  {playerStats[1].toString()}
-                </span>
-              </p>
-              <p className="text-highlight">
-                Your total spent:{" "}
-                <span className="text-metallic">
-                  {formatEther(playerStats[0].toString())} KAIA
-                </span>
-              </p>
+          {playerStats ? (
+            <div className="flex justify-between gap-4 md:gap-6">
+              <div>
+                <p className="text-highlight">
+                  Your Mermaid Power:{" "}
+                  <span className="text-metallic">
+                    {playerStats.totalMermaidPower.toString()}
+                  </span>
+                </p>
+                <p className="text-highlight">
+                  Your Mermaid Spent:{" "}
+                  <span className="text-metallic">
+                    {formatEther(playerStats.totalMermaidSpent.toString())} KAIA
+                  </span>
+                </p>
+              </div>
+              <div>
+                <p className="text-highlight">
+                  Your Sea Creatures Power:{" "}
+                  <span className="text-metallic">
+                    {playerStats.totalSeaCreaturesPower.toString()}
+                  </span>
+                </p>
+                <p className="text-highlight">
+                  Your Sea Creatures Spent:{" "}
+                  <span className="text-metallic">
+                    {formatEther(playerStats.totalSeaCreaturesSpent.toString())}{" "}
+                    KAIA
+                  </span>
+                </p>
+              </div>
             </div>
-          )}
+          ) : null}
           {/* <button onClick={() => handleClaimReward()}>Claim Reward</button> */}
         </>
       ) : (

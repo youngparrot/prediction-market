@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 
 const Countdown = ({ date }) => {
   const targetDate = dayjs(date);
-  console.log({ date, targetDate });
   const now = dayjs();
   const difference = targetDate.diff(now);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
