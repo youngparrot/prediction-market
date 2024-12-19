@@ -278,7 +278,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
             <p className="text-center text-xl font-bold text-highlight py-1">
               [how it works]
             </p>
-            <ul className="flex flex-col overflow-y-scroll h-80">
+            <ul style={{ overflowY: "scroll", height: "24rem" }}>
               <li className="p-2 text-metallic">
                 1. Mint Mermaidswap NFT from{" "}
                 <a
