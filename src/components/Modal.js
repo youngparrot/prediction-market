@@ -26,14 +26,9 @@ const Modal = ({ isOpen, onClose, children }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
       <div ref={modalRef} className="bg-secondary rounded-lg max-w-md w-full">
         <div className="p-4">
-          <motion.button
-            whileHover={{ scale: 1.2 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            onClick={onClose}
-            className="text-white float-right"
-          >
+          <button onClick={onClose} className="text-white float-right">
             ✕
-          </motion.button>
+          </button>
         </div>
         {children}
       </div>
