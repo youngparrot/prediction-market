@@ -283,18 +283,18 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 1. Mint Mermaidswap NFT from{" "}
                 <a
                   href="https://nft-launchpad.onero.app/mints/mermaid"
-                  className="text-highlight"
+                  className="text-white"
                   target="_blank"
                 >
-                  Onero
+                  [Onero]
                 </a>{" "}
                 or buy from{" "}
                 <a
                   href="https://opensea.io/collection/mermaid-vs-sea-creatures"
-                  className="text-highlight"
+                  className="text-white"
                   target="_blank"
                 >
-                  Opensea
+                  [Opensea]
                 </a>
               </li>
               <li className="p-2 text-highlight">
@@ -337,9 +337,9 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 <a
                   href="https://t.me/mermaidswapofficial"
                   target="_blank"
-                  className="text-highlight"
+                  className="text-white"
                 >
-                  Telegram
+                  [Telegram]
                 </a>{" "}
                 is very crucial on winning the game.
               </li>
