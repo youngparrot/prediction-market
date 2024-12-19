@@ -44,7 +44,7 @@ export default function Nav() {
   }, [isOpen]);
 
   return (
-    <div className="mb-8 pb-1 flex justify-between gap-4 sticky top-0 bg-secondary z-20">
+    <div className="mb-8 pb-1 flex justify-between gap-4 sticky top-0 z-20">
       <Link href="/">
         <Image
           width={60}

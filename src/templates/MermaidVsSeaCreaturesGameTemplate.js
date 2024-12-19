@@ -28,7 +28,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   const [betAmount, setBetAmount] = useState(1);
   const [roundStats, setRoundStats] = useState();
   const [playerStats, setPlayerStats] = useState();
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const fetchRound = async () => {
     try {
@@ -150,8 +150,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     setBetAmount(e.target.value);
   };
 
-  const handleHowItWorks = () => {
-    setShowHowItWorks(!showHowItWorks);
+  const handleHowToPlay = () => {
+    setShowHowToPlay(!showHowToPlay);
   };
 
   const isDone = () => {
@@ -168,8 +168,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
         Mermaid Vs Sea Creatures Game
       </p>
       <div>
-        <button onClick={handleHowItWorks} className="text-hightlight">
-          [how it works]
+        <button onClick={handleHowToPlay} className="text-hightlight">
+          [how to play]
         </button>
       </div>
       {roundStats ? (
@@ -180,7 +180,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           <div className="flex flex-col items-center gap-2 max-w-lg py-4">
             <p className="text-2xl font-bold text-highlight">Total Rewards</p>
             <div className="flex">
-              <p className="text-2xl text-metallic">
+              <p className="text-2xl text-highlight">
                 {formatEther(roundStats.totalRewards.toString())} KAIA
               </p>
             </div>
@@ -190,7 +190,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               <p className="text-2xl text-highlight">
                 {roundStats.totalMermaidPower}
               </p>
-              <p className="text-metallic">vs</p>
+              <p className="text-highlight">vs</p>
               <p className="text-2xl text-highlight">
                 {roundStats.totalSeaCreaturesPower}
               </p>
@@ -214,7 +214,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           placeholder="Enter amount"
           className="block w-full px-4 py-2 mt-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-700"
         />
-        <p className="mt-4 text-metallic">KAIA</p>
+        <p className="mt-4 text-highlight">KAIA</p>
       </div>
       {isConnected ? (
         <>
@@ -237,13 +237,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               <div>
                 <p className="text-highlight">
                   Your Mermaid Power:{" "}
-                  <span className="text-metallic">
+                  <span className="text-highlight">
                     {playerStats.totalMermaidPower.toString()}
                   </span>
                 </p>
                 <p className="text-highlight">
                   Your Mermaid Spent:{" "}
-                  <span className="text-metallic">
+                  <span className="text-highlight">
                     {formatEther(playerStats.totalMermaidSpent.toString())} KAIA
                   </span>
                 </p>
@@ -251,13 +251,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               <div>
                 <p className="text-highlight">
                   Your Sea Creatures Power:{" "}
-                  <span className="text-metallic">
+                  <span className="text-highlight">
                     {playerStats.totalSeaCreaturesPower.toString()}
                   </span>
                 </p>
                 <p className="text-highlight">
                   Your Sea Creatures Spent:{" "}
-                  <span className="text-metallic">
+                  <span className="text-highlight">
                     {formatEther(playerStats.totalSeaCreaturesSpent.toString())}{" "}
                     KAIA
                   </span>
@@ -272,14 +272,14 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           <ConnectButton />
         </div>
       )}
-      {showHowItWorks ? (
-        <Modal isOpen={showHowItWorks} onClose={() => setShowHowItWorks(false)}>
+      {showHowToPlay ? (
+        <Modal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)}>
           <div className="py-4">
-            <p className="text-center text-xl font-bold text-highlight py-1">
-              [how it works]
+            <p className="text-center text-xl font-bold text-highlight py-2">
+              How to Play
             </p>
             <ul style={{ overflowY: "scroll", height: "24rem" }}>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 1. Mint Mermaidswap NFT from{" "}
                 <a
                   href="https://nft-launchpad.onero.app/mints/mermaid"
@@ -297,23 +297,23 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                   Opensea
                 </a>
               </li>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 2. Your NFT Represent the sides you will be powering up example
                 : If you hold #Mermaid NFT you can only power up #Mermaid, vice
                 versa if you hold #SeaCreature NFT you can only power up
                 #SeaCreature. However if you hold both, you can power up both up
                 to your choice.
               </li>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 3. Each power up will cost 1 $KAIA and 1 $KAIA will then send to
                 the reward pool. The highest power NFT side will be the winner
                 and the reward ratio is depending on how many times you power up
                 the NFT.
               </li>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 4. Player can &quot;Power Up&quot; up to 100 $KAIA per tx
               </li>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 5. Each power up will have a success rate as below
                 <br />
                 60% Common Power Up : + 1 Power
@@ -328,7 +328,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 <br />
                 0.05% Mythical Power Up : +500 Power
               </li>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 6. Total power of both #Mermaid & #SeaCreature will be hidden
                 until the end of turn for the thrill and excitement of the
                 games, only a total of $KAIA pool will be shown. Users are only
@@ -343,7 +343,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 </a>{" "}
                 is very crucial on winning the game.
               </li>
-              <li className="p-2 text-metallic">
+              <li className="p-2 text-highlight">
                 7. Reward Pool Distribution
                 <br />
                 80% will goes to winning NFT Team

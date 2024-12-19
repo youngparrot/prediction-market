@@ -21,7 +21,18 @@ const inter = Inter({ subsets: ["latin"] });
 function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-secondary`}>
+      <body
+        className={`${inter.className} bg-secondary`}
+        style={{
+          backgroundImage:
+            "url('/images/mermaid-vs-sea-creatures-game-background.jpeg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "repeat",
+          height: "100vh", // Set the height to cover the viewport or any desired size
+          width: "100%", // Set the width to cover the full container>
+        }}
+      >
         <I18nextProvider i18n={i18n}>
           <main className="flex flex-col px-2 py-2 md:px-16 md:py-4">
             <Providers>

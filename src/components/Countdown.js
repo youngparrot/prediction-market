@@ -47,29 +47,29 @@ const Countdown = ({ date }) => {
               <div className="bg-gray-200 p-4 w-full rounded-md text-2xl md:text-4xl font-bold text-black">
                 {timeLeft.days}
               </div>
-              <div className="text-metallic mt-2">DAYS</div>
+              <div className="text-highlight mt-2">DAYS</div>
             </div>
             <div className="flex flex-col items-center min-w-16 md:min-w-20">
               <div className="bg-gray-200 p-4 w-full rounded-md text-2xl md:text-4xl font-bold text-black">
                 {timeLeft.hours}
               </div>
-              <div className="text-metallic mt-2">HOURS</div>
+              <div className="text-highlight mt-2">HOURS</div>
             </div>
             <div className="flex flex-col items-center min-w-16 md:min-w-20">
               <div className="bg-gray-200 p-4 w-full rounded-md text-2xl md:text-4xl font-bold text-black">
                 {timeLeft.minutes}
               </div>
-              <div className="text-metallic mt-2">MINUTES</div>
+              <div className="text-highlight mt-2">MINUTES</div>
             </div>
             <div className="flex flex-col items-center min-w-16 md:min-w-20">
               <div className="bg-gray-200 p-4 w-full rounded-md text-2xl md:text-4xl font-bold text-black">
                 {timeLeft.seconds}
               </div>
-              <div className="text-metallic mt-2">SECONDS</div>
+              <div className="text-highlight mt-2">SECONDS</div>
             </div>
           </>
         ) : (
-          <div className="text-2xl text-metallic">Ended</div>
+          <div className="text-2xl text-highlight">Ended</div>
         )}
       </div>
     </div>

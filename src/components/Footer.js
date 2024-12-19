@@ -29,7 +29,7 @@ export default function Footer() {
               className="rounded-full"
             />
           </div>
-          <p className="mt-4 text-metallic">Mermaid games</p>
+          <p className="mt-4 text-highlight">Mermaid games</p>
           {/* Social icons */}
           <div className="flex justify-center space-x-2 mt-4">
             <a
@@ -37,27 +37,27 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaTwitter className="w-6 h-6 text-metallic hover:text-white" />
+              <FaTwitter className="w-6 h-6 text-highlight hover:text-white" />
             </a>
             <a
               href="https://t.co/Z2TMlnsFFh"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaTelegram className="w-6 h-6 text-metallic hover:text-white" />
+              <FaTelegram className="w-6 h-6 text-highlight hover:text-white" />
             </a>
             <a
               href="https://t.co/eSHnusQkG9"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaTelegram className="w-6 h-6 text-metallic hover:text-white" />
+              <FaTelegram className="w-6 h-6 text-highlight hover:text-white" />
             </a>
           </div>
         </div>
       </div>
       {/* Footer Bottom */}
-      <div className="mt-8 border-t border-gray-800 pt-4 text-center text-metallic text-sm">
+      <div className="mt-8 border-t border-gray-800 pt-4 text-center text-highlight text-sm">
         © {currentYear} Mermaid. All rights reserved.
       </div>
     </footer>
