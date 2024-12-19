@@ -154,9 +154,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     setShowHowItWorks(!showHowItWorks);
   };
 
-  const targetDate = dayjs(roundStats.endTime.toString() * 1000);
-  const now = dayjs();
-  const difference = targetDate.diff(now);
+  const isDone = () => {
+    const targetDate = dayjs(roundStats.endTime.toString() * 1000);
+    const now = dayjs();
+    const difference = targetDate.diff(now);
+
+    return difference <= 0;
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-0 md:px-8">
@@ -181,7 +185,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               </p>
             </div>
           </div>
-          {difference < 0 ? (
+          {roundStats && isDone() ? (
             <div className="flex justify-between gap-4 max-w-lg">
               <p className="text-2xl text-highlight">
                 {roundStats.totalMermaidPower}
@@ -329,7 +333,15 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 until the end of turn for the thrill and excitement of the
                 games, only a total of $KAIA pool will be shown. Users are only
                 able to view your own total power up, therefore team discussion
-                on @mermaidswapofficial is very crucial on winning the game.
+                on{" "}
+                <a
+                  href="https://t.me/mermaidswapofficial"
+                  target="_blank"
+                  className="text-highlight"
+                >
+                  Telegram
+                </a>{" "}
+                is very crucial on winning the game.
               </li>
               <li className="p-2 text-metallic">
                 7. Reward Pool Distribution
