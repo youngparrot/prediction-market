@@ -13,6 +13,7 @@ import {
   MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
 } from "@/utils/environment";
 import Countdown from "@/components/Countdown";
+import Modal from "@/components/Modal";
 
 const BET_TYPE = {
   mermaid: "mermaid",
@@ -27,6 +28,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   const [betAmount, setBetAmount] = useState(1);
   const [roundStats, setRoundStats] = useState();
   const [playerStats, setPlayerStats] = useState();
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const fetchRound = async () => {
     try {
@@ -148,11 +150,24 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     setBetAmount(e.target.value);
   };
 
+  const handleHowItWorks = () => {
+    setShowHowItWorks(!showHowItWorks);
+  };
+
+  const targetDate = dayjs(roundStats.endTime.toString() * 1000);
+  const now = dayjs();
+  const difference = targetDate.diff(now);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-0 md:px-8">
       <p className="text-4xl font-bold text-highlight py-4">
         Mermaid Vs Sea Creatures Game
       </p>
+      <div>
+        <button onClick={handleHowItWorks} className="text-hightlight">
+          [how it works]
+        </button>
+      </div>
       {roundStats ? (
         <>
           {roundStats.endTime && (
@@ -166,15 +181,17 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               </p>
             </div>
           </div>
-          <div className="flex justify-between gap-4 max-w-lg">
-            <p className="text-2xl text-highlight">
-              {roundStats.totalMermaidPower}
-            </p>
-            <p className="text-metallic">vs</p>
-            <p className="text-2xl text-highlight">
-              {roundStats.totalSeaCreaturesPower}
-            </p>
-          </div>
+          {difference < 0 ? (
+            <div className="flex justify-between gap-4 max-w-lg">
+              <p className="text-2xl text-highlight">
+                {roundStats.totalMermaidPower}
+              </p>
+              <p className="text-metallic">vs</p>
+              <p className="text-2xl text-highlight">
+                {roundStats.totalSeaCreaturesPower}
+              </p>
+            </div>
+          ) : null}
         </>
       ) : null}
       <Image
@@ -251,6 +268,82 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           <ConnectButton />
         </div>
       )}
+      {showHowItWorks ? (
+        <Modal isOpen={showHowItWorks} onClose={() => setShowHowItWorks(false)}>
+          <div className="py-4">
+            <p className="text-center text-xl font-bold text-highlight py-1">
+              [how it works]
+            </p>
+            <ul className="max-h-48 overflow-y-auto">
+              <li className="p-2 text-metallic">
+                1. Mint Mermaidswap NFT from{" "}
+                <a
+                  href="https://nft-launchpad.onero.app/mints/mermaid"
+                  className="text-highlight"
+                  target="_blank"
+                >
+                  Onero
+                </a>{" "}
+                or buy from{" "}
+                <a
+                  href="https://opensea.io/collection/mermaid-vs-sea-creatures"
+                  className="text-highlight"
+                  target="_blank"
+                >
+                  Opensea
+                </a>
+              </li>
+              <li className="p-2 text-metallic">
+                2. Your NFT Represent the sides you will be powering up example
+                : If you hold #Mermaid NFT you can only power up #Mermaid, vice
+                versa if you hold #SeaCreature NFT you can only power up
+                #SeaCreature. However if you hold both, you can power up both up
+                to your choice.
+              </li>
+              <li className="p-2 text-metallic">
+                3. Each power up will cost 1 $KAIA and 1 $KAIA will then send to
+                the reward pool. The highest power NFT side will be the winner
+                and the reward ratio is depending on how many times you power up
+                the NFT.
+              </li>
+              <li className="p-2 text-metallic">
+                4. Player can "Power Up" up to 100 $KAIA per tx
+              </li>
+              <li className="p-2 text-metallic">
+                5. Each power up will have a success rate as below
+                <br />
+                60% Common Power Up : + 1 Power
+                <br />
+                30% Excellent Power Up : + 2 Power
+                <br />
+                8.5% Rare Power Up : + 3 Power
+                <br />
+                1% Epic Power Up : + 10 Power
+                <br />
+                0.45% Master Power Up : + 100 Power
+                <br />
+                0.05% Mythical Power Up : +500 Power
+              </li>
+              <li className="p-2 text-metallic">
+                6. Total power of both #Mermaid & #SeaCreature will be hidden
+                until the end of turn for the thrill and excitement of the
+                games, only a total of $KAIA pool will be shown. Users are only
+                able to view your own total power up, therefore team discussion
+                on @mermaidswapofficial is very crucial on winning the game.
+              </li>
+              <li className="p-2 text-metallic">
+                7. Reward Pool Distribution
+                <br />
+                80% will goes to winning NFT Team
+                <br />
+                15% will carry forward to the next round
+                <br />
+                5% Fees for maintenance and development
+              </li>
+            </ul>
+          </div>
+        </Modal>
+      ) : null}
     </div>
   );
 };
