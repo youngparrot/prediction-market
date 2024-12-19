@@ -278,7 +278,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
             <p className="text-center text-xl font-bold text-highlight py-1">
               [how it works]
             </p>
-            <ul className="max-h-48 overflow-y-auto">
+            <ul className="flex flex-col overflow-y-scroll h-80">
               <li className="p-2 text-metallic">
                 1. Mint Mermaidswap NFT from{" "}
                 <a
@@ -311,7 +311,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 the NFT.
               </li>
               <li className="p-2 text-metallic">
-                4. Player can "Power Up" up to 100 $KAIA per tx
+                4. Player can &quot;Power Up&quot; up to 100 $KAIA per tx
               </li>
               <li className="p-2 text-metallic">
                 5. Each power up will have a success rate as below
