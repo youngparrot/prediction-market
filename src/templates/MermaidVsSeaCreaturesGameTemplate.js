@@ -174,7 +174,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       </div>
       {roundStats ? (
         <>
-          {roundStats.endTime && (
+          {!isDone() && (
             <Countdown date={roundStats.endTime.toString() * 1000} />
           )}
           <div className="flex flex-col items-center gap-2 max-w-lg py-4">
@@ -185,7 +185,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               </p>
             </div>
           </div>
-          {roundStats && isDone() ? (
+          {isDone() ? (
             <div className="flex justify-between gap-4 max-w-lg">
               <p className="text-2xl text-highlight">
                 {roundStats.totalMermaidPower}
@@ -265,7 +265,14 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
               </div>
             </div>
           ) : null}
-          {/* <button onClick={() => handleClaimReward()}>Claim Reward</button> */}
+          {isDone() ? (
+            <button
+              onClick={() => handleClaimReward()}
+              className="p-2 bg-secondary rounded mt-4"
+            >
+              Claim Reward
+            </button>
+          ) : null}
         </>
       ) : (
         <div className="mt-4">
