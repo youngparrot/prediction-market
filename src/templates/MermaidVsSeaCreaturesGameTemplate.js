@@ -155,6 +155,10 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   };
 
   const isDone = () => {
+    if (!roundStats || !roundStats.endTime) {
+      return false;
+    }
+
     const targetDate = dayjs(roundStats.endTime.toString() * 1000);
     const now = dayjs();
     const difference = targetDate.diff(now);
