@@ -14,6 +14,7 @@ import {
 } from "@/utils/environment";
 import Countdown from "@/components/Countdown";
 import Modal from "@/components/Modal";
+import { FaSpinner } from "react-icons/fa";
 
 const BET_TYPE = {
   mermaid: "mermaid",
@@ -29,6 +30,11 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   const [roundStats, setRoundStats] = useState();
   const [playerStats, setPlayerStats] = useState();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
+  const [claimAmount, setClaimAmount] = useState(0);
+  const [isClaiming, setIsClaiming] = useState(false);
+  const [isMermaidBetting, setIsMermaidBetting] = useState(false);
+  const [isSeaCreaturesBetting, setIsSeaCreaturesBetting] = useState(false);
 
   const fetchRound = async () => {
     try {
@@ -70,6 +76,34 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     }
   };
 
+  const fetchHasClaimed = async () => {
+    if (!isDone()) {
+      return;
+    }
+
+    try {
+      const gameContract = getContract({
+        address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
+        abi: MermaidVsSeaCreaturesGame,
+        client: publicClient,
+      });
+      const roundId = await gameContract.read.getCurrentRoundIndex();
+      const hasClaimed = await gameContract.read.hasClaimed([
+        parseInt(roundId.toString()),
+        address,
+      ]);
+      setHasClaimed(hasClaimed);
+
+      const claimAmount = await gameContract.read.getClaimRewardAmount([
+        parseInt(roundId.toString()),
+        address,
+      ]);
+      setClaimAmount(claimAmount.toString());
+    } catch (error) {
+      console.log("Fetch has claimed failed", error);
+    }
+  };
+
   useEffect(() => {
     if (!publicClient) {
       return;
@@ -79,8 +113,22 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     fetchPlayer();
   }, [publicClient, isConnected]);
 
+  useEffect(() => {
+    if (!roundStats) {
+      return;
+    }
+
+    fetchHasClaimed();
+  }, [roundStats]);
+
   const handleBet = async (type) => {
     try {
+      if (type === BET_TYPE.mermaid) {
+        setIsMermaidBetting(true);
+      } else {
+        setIsSeaCreaturesBetting(true);
+      }
+
       const gameContract = getContract({
         address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
         abi: MermaidVsSeaCreaturesGame,
@@ -101,14 +149,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
         hash: tx,
       });
 
-      if (transactionReceipt.transactionHash) {
+      if (transactionReceipt.status === "success") {
         toast.success("Bet successful");
 
         fetchRound();
         fetchPlayer();
       } else {
-        console.log("Bet failed", transactionReceipt);
-        toast.error("Bet failed");
+        toast.error("Bet failed, try it again");
       }
     } catch (error) {
       console.log("Bet failed", error);
@@ -117,11 +164,29 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       } else {
         toast.error("Bet failed");
       }
+    } finally {
+      if (type === BET_TYPE.mermaid) {
+        setIsMermaidBetting(false);
+      } else {
+        setIsSeaCreaturesBetting(false);
+      }
     }
   };
 
   const handleClaimReward = async () => {
     try {
+      setIsClaiming(true);
+
+      if (claimAmount == 0) {
+        toast.info("You do not have any reward to claim");
+        return;
+      }
+
+      if (hasClaimed) {
+        toast.info("You already claimed");
+        return;
+      }
+
       const gameContract = getContract({
         address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
         abi: MermaidVsSeaCreaturesGame,
@@ -131,11 +196,16 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       const tx = await gameContract.write.claimReward([], {
         value: 0,
       });
-      await publicClient.waitForTransactionReceipt({
+      const transactionReceipt = await publicClient.waitForTransactionReceipt({
         hash: tx,
       });
 
-      toast.success("Claim reward successful");
+      if (transactionReceipt.status === "success") {
+        toast.success("Claim reward successful");
+        fetchHasClaimed();
+      } else {
+        toast.error("Claim reward failed, try it again");
+      }
     } catch (error) {
       console.log("Claim reward failed", error);
       if (error.message.startsWith("User rejected the request")) {
@@ -143,6 +213,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       } else {
         toast.error("Claim reward failed");
       }
+    } finally {
+      setIsClaiming(false);
     }
   };
 
@@ -166,13 +238,28 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     return difference <= 0;
   };
 
+  const isMermaidSideWinner = () => {
+    return (
+      roundStats.totalMermaidPower > roundStats.totalSeaCreaturesPower ||
+      (roundStats.totalMermaidPower == roundStats.totalSeaCreaturesPower &&
+        roundStats.totalMermaidSpent > roundStats.totalSeaCreaturesSpent)
+    );
+  };
+
+  const isTie = () => {
+    return (
+      roundStats.totalMermaidPower == roundStats.totalSeaCreaturesPower &&
+      roundStats.totalMermaidSpent == roundStats.totalSeaCreaturesSpent
+    );
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-0 md:px-8">
       <p className="text-4xl font-bold text-highlight py-4">
         Mermaid Vs Sea Creatures Game
       </p>
       <div>
-        <button onClick={handleHowToPlay} className="text-hightlight">
+        <button onClick={handleHowToPlay} className="text-xl text-hightlight">
           [how to play]
         </button>
       </div>
@@ -192,11 +279,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           {isDone() ? (
             <div className="flex justify-between gap-4 max-w-lg">
               <p className="text-2xl text-highlight">
+                {isTie() ? "Tie" : isMermaidSideWinner() ? "Winner" : "Loser"}{" "}
                 {roundStats.totalMermaidPower}
               </p>
               <p className="text-highlight">vs</p>
               <p className="text-2xl text-highlight">
-                {roundStats.totalSeaCreaturesPower}
+                {roundStats.totalSeaCreaturesPower}{" "}
+                {isTie() ? "Tie" : isMermaidSideWinner() ? "Loser" : "Winner"}
               </p>
             </div>
           ) : null}
@@ -225,15 +314,23 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           <div className="flex justify-between gap-4 md:gap-6 max-w-lg py-4">
             <button
               onClick={() => handleBet(BET_TYPE.mermaid)}
-              className="bg-primary text-white font-bold py-2 px-4 rounded"
+              className="bg-primary text-white font-bold py-2 px-4 rounded flex items-center"
+              disabled={isDone()}
             >
               Power Up Mermaid
+              {isMermaidBetting && (
+                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+              )}
             </button>
             <button
               onClick={() => handleBet(BET_TYPE.seaCreatures)}
-              className="bg-primary text-gray-700 font-bold py-2 px-4 rounded"
+              className="bg-primary text-gray-700 font-bold py-2 px-4 rounded flex items-center"
+              disabled={isDone()}
             >
               Power Up Sea Creatures
+              {isSeaCreaturesBetting && (
+                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+              )}
             </button>
           </div>
           {playerStats ? (
@@ -272,9 +369,13 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
           {isDone() ? (
             <button
               onClick={() => handleClaimReward()}
-              className="p-2 bg-secondary rounded mt-4"
+              className="p-2 bg-secondary rounded mt-4 flex items-center"
+              disabled={isClaiming}
             >
               Claim Reward
+              {isClaiming && (
+                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+              )}
             </button>
           ) : null}
         </>
@@ -322,7 +423,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 the NFT.
               </li>
               <li className="p-2 text-highlight">
-                4. Player can &quot;Power Up&quot; up to 100 $KAIA per tx
+                4. Player can &quot;Power Up&quot; up to 100 $KAIA per
+                transaction.
               </li>
               <li className="p-2 text-highlight">
                 5. Each power up will have a success rate as below

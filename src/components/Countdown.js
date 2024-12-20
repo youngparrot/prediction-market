@@ -69,7 +69,9 @@ const Countdown = ({ date }) => {
             </div>
           </>
         ) : (
-          <div className="text-2xl text-highlight">Ended</div>
+          <div className="text-2xl text-highlight">
+            Reload the page to see the result
+          </div>
         )}
       </div>
     </div>

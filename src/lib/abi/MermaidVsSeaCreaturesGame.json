@@ -10,6 +10,11 @@
         "internalType": "address",
         "name": "_platformRecipient",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_devReceipient",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -38,6 +43,19 @@
       }
     ],
     "name": "BetPlaced",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "newRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "DevRecipientUpdated",
     "type": "event"
   },
   {
@@ -98,6 +116,12 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "newPlatformFee",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newDevFee",
         "type": "uint256"
       },
       {
@@ -200,6 +224,50 @@
   },
   {
     "inputs": [],
+    "name": "devFeePercent",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "devRecipient",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "roundIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "playerAddress",
+        "type": "address"
+      }
+    ],
+    "name": "emergencyClaimReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "emergencyWithdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -210,6 +278,30 @@
     "name": "endRound",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "roundIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "playerAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getClaimRewardAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -332,6 +424,30 @@
         "internalType": "struct MermaidVsSeaCreatures.RoundStats",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "roundIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "playerAddress",
+        "type": "address"
+      }
+    ],
+    "name": "hasClaimed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -535,6 +651,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_newRecipient",
+        "type": "address"
+      }
+    ],
+    "name": "setDevRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_newNFTContract",
         "type": "address"
       }
@@ -549,6 +678,11 @@
       {
         "internalType": "uint256",
         "name": "_platformFeePercent",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_devFeePercent",
         "type": "uint256"
       },
       {
@@ -620,6 +754,24 @@
       }
     ],
     "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_startTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_endTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateRoundDate",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
