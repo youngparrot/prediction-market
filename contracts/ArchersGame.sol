@@ -13,11 +13,12 @@ contract ArchersGame is Ownable, ReentrancyGuard {
     address public devRecipient;
     IERC20 public paymentToken;
 
-    uint256 public platformFeePercent = 50; // Default 2.5%
-    uint256 public devFeePercent = 50; // Default 2.5%
+    uint256 public platformFeePercent = 50; // Default 5%
+    uint256 public devFeePercent = 50; // Default 5%
     uint256 public winnerSharePercent = 800; // Default 80%
 
     uint256 public femalePowerMultiplier = 9; // Initial multiplier for Female power
+    uint256 public maxIterations = 20;
 
     struct RoundStats {
         uint256 id;
@@ -111,6 +112,11 @@ contract ArchersGame is Ownable, ReentrancyGuard {
         femalePowerMultiplier = _newMultiplier;
     }
 
+    function updateMaxIterations(uint256 _maxIterations) external onlyOwner {
+        require(_maxIterations > 0, "Max iterations must be greater than zero");
+        maxIterations = _maxIterations;
+    }
+
     // Function to update platform fee, dev fee and winner share
     function setPercentages(uint256 _platformFeePercent, uint256 _devFeePercent, uint256 _winnerSharePercent) external onlyOwner {
         require(_platformFeePercent <= 100, "Platform fee too high"); // Cap platform fee at 10%
@@ -163,7 +169,7 @@ contract ArchersGame is Ownable, ReentrancyGuard {
     }
 
     function powerUpOnMale(uint256 amount) external payable roundActive nonReentrant {
-        require(_isEligibleSeaCreature(msg.sender), "You must own a valid Archer male NFT");
+        require(_isEligibleMale(msg.sender), "You must own a valid Archer male NFT");
         _placePowerUp("Male", amount);
     }
 
@@ -185,7 +191,7 @@ contract ArchersGame is Ownable, ReentrancyGuard {
         return false;
     }
 
-    function _isEligibleSeaCreature(address player) internal view returns (bool) {
+    function _isEligibleMale(address player) internal view returns (bool) {
         uint256 balance = nftContract.balanceOf(player);
         for (uint256 i = 0; i < balance; i++) {
             try nftContract.tokenOfOwnerByIndex(player, i) returns (uint256 tokenId) {
@@ -234,7 +240,7 @@ contract ArchersGame is Ownable, ReentrancyGuard {
         uint256 iterations = amount / minimumAmount;
 
         // Limit iterations to prevent excessive gas usage
-        require(iterations <= 100, "Too many iterations, reduce the amount");
+        require(iterations <= maxIterations, "Too many iterations, reduce the amount");
 
         for (uint256 i = 0; i < iterations; i++) {
             uint256 random = uint256(
