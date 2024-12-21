@@ -51,7 +51,7 @@ export default function Footer() {
         </div>
       </div>
       {/* Footer Bottom */}
-      <div className="mt-8 border-t border-gray-800 pt-4 text-center text-highlight text-sm">
+      <div className="mt-8 pt-4 text-center text-highlight text-sm">
         © {currentYear} Archer. All rights reserved.
       </div>
     </footer>
