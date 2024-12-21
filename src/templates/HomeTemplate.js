@@ -13,12 +13,12 @@ export default function HomeTemplate() {
       id: 1,
       element: (
         <Hero
-          image={"/images/mermaid-vs-sea-creatures.png"}
-          name={"Mermaid vs Sea Creatures"}
+          image={"/images/archers-game.png"}
+          name={"Archers"}
           description={
-            "Which side will you choose? #Mermaid or #SeaCreatures? Join your forces #Mermaid / #SeaCreatures and power them up to fight and win big prizes!"
+            "Which side will you choose? #Female or #Male? Join your forces #Female / #Male and power them up to fight and win big prizes!"
           }
-          link={"/games/mermaid-vs-sea-creatures"}
+          link={"/games/archers"}
         />
       ),
     },

@@ -8,11 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#00BFFF", // Deep Sky Blue
-        secondary: "#2A2E35", // Dark Grayish-Blue
-        highlight: "#C6DAF7", // Light Blue
-        background: "#121417", // Near Black
-        metallic: "#8896A6", // Gray/Metallic
+        primary: "#F9A825",
+        secondary: "#000000",
+        accent: "#FFECB3",
+        neutral: "#4F4F4F",
+        background: "#FFFFFF",
       },
       backgroundImage: {
         "hero-gradient": "linear-gradient(to bottom, #2A2E35, #121417)",

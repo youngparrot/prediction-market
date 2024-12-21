@@ -20,20 +20,20 @@ import { WALLET_CONNECT_PROJECT_ID } from "@/utils/environment";
 
 // Define Core chain
 const coreChain = {
-  id: 8217,
-  name: "Kaia",
-  network: "kaia",
+  id: 1116,
+  name: "Core",
+  network: "core",
   nativeCurrency: {
     decimals: 18,
-    name: "Kaia",
-    symbol: "KAIA",
+    name: "Core",
+    symbol: "CORE",
   },
   rpcUrls: {
-    default: { http: ["https://public-en.node.kaia.io"] },
-    public: { http: ["https://public-en.node.kaia.io"] },
+    default: { http: ["https://rpc.coredao.org"] },
+    public: { http: ["https://rpc.coredao.org"] },
   },
   blockExplorers: {
-    default: { name: "Kaia Scan", url: "https://kaiascan.io/" },
+    default: { name: "CoreScan", url: "https://scan.coredao.org" },
   },
   testnet: false,
 };

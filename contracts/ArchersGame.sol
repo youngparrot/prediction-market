@@ -3,17 +3,21 @@ pragma solidity ^0.8.19;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/IERC721.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/security/ReentrancyGuard.sol";
 
-contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
+contract ArchersGame is Ownable, ReentrancyGuard {
     IERC721Enumerable public nftContract;
     address public platformRecipient;
     address public devRecipient;
+    IERC20 public paymentToken;
 
-    uint256 public platformFeePercent = 25; // Default 2.5%
-    uint256 public devFeePercent = 25; // Default 2.5%
+    uint256 public platformFeePercent = 50; // Default 2.5%
+    uint256 public devFeePercent = 50; // Default 2.5%
     uint256 public winnerSharePercent = 800; // Default 80%
+
+    uint256 public femalePowerMultiplier = 9; // Initial multiplier for Female power
 
     struct RoundStats {
         uint256 id;
@@ -21,24 +25,24 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
         uint256 endTime;
         uint256 totalRewards;
         uint256 carryOverFunds;
-        uint256 totalMermaidSpent;
-        uint256 totalSeaCreaturesSpent;
-        uint256 totalMermaidPower;
-        uint256 totalSeaCreaturesPower;
+        uint256 totalFemaleSpent;
+        uint256 totalMaleSpent;
+        uint256 totalFemalePower;
+        uint256 totalMalePower;
     }
 
     struct PlayerStats {
-        uint256 totalMermaidSpent;
-        uint256 totalSeaCreaturesSpent;
-        uint256 totalMermaidPower;
-        uint256 totalSeaCreaturesPower;
+        uint256 totalFemaleSpent;
+        uint256 totalMaleSpent;
+        uint256 totalFemalePower;
+        uint256 totalMalePower;
     }
 
     RoundStats[] public rounds;
     mapping(uint256 => mapping(address => PlayerStats)) public roundPlayerStats;
     mapping(uint256 => mapping(address => bool)) public hasClaimedReward;
-    mapping(uint256 => bool) public validMermaidTokenIds;
-    uint256 public minimumAmount = 1 * 10**18;
+    mapping(uint256 => bool) public validFemaleTokenIds;
+    uint256 public minimumAmount = 2 * 10**18;
 
     event BetPlaced(address indexed player, uint256 amount, string side);
     event RewardsClaimed(address indexed player, uint256 reward);
@@ -49,10 +53,11 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
     event NFTContractUpdated(address newNFTContract);
     event PercentagesUpdated(uint256 newPlatformFee, uint256 newDevFee, uint256 newWinnerShare);
 
-    constructor(address _nftContract, address _platformRecipient, address _devReceipient) {
+    constructor(address _nftContract, address _platformRecipient, address _devReceipient, address _paymentToken) {
         nftContract = IERC721Enumerable(_nftContract);
         platformRecipient = _platformRecipient;
         devRecipient = _devReceipient;
+        paymentToken = IERC20(_paymentToken);
     }
 
     modifier roundActive() {
@@ -95,6 +100,17 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
         emit NFTContractUpdated(_newNFTContract);
     }
 
+    // Function to update the minimum bet amount
+    function updateMinimumAmount(uint256 _newMinimumAmount) external onlyOwner {
+        require(_newMinimumAmount > 0, "Minimum amount must be greater than zero");
+        minimumAmount = _newMinimumAmount;
+    }
+
+    function updateFemalePowerMultiplier(uint256 _newMultiplier) external onlyOwner {
+        require(_newMultiplier > 0, "Multiplier must be greater than zero");
+        femalePowerMultiplier = _newMultiplier;
+    }
+
     // Function to update platform fee, dev fee and winner share
     function setPercentages(uint256 _platformFeePercent, uint256 _devFeePercent, uint256 _winnerSharePercent) external onlyOwner {
         require(_platformFeePercent <= 100, "Platform fee too high"); // Cap platform fee at 10%
@@ -117,10 +133,10 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
                 endTime: _endTime,
                 totalRewards: _carryOverFunds,
                 carryOverFunds: _carryOverFunds,
-                totalMermaidSpent: 0,
-                totalSeaCreaturesSpent: 0,
-                totalMermaidPower: 0,
-                totalSeaCreaturesPower: 0
+                totalFemaleSpent: 0,
+                totalMaleSpent: 0,
+                totalFemalePower: 0,
+                totalMalePower: 0
             })
         );
         emit RoundStarted(rounds.length, _startTime, _endTime, _carryOverFunds);
@@ -132,34 +148,36 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
         RoundStats storage round = rounds[roundIndex];
 
         uint256 platformFee = (round.totalRewards * platformFeePercent) / 1000;
-        payable(platformRecipient).transfer(platformFee);
-
         uint256 devFee = (round.totalRewards * devFeePercent) / 1000;
-        payable(devRecipient).transfer(devFee);
+
+        // Transfer platform fee to platformRecipient
+        require(paymentToken.transfer(platformRecipient, platformFee), "Platform fee transfer failed");
+
+        // Transfer dev fee to devRecipient
+        require(paymentToken.transfer(devRecipient, devFee), "Dev fee transfer failed");
     }
 
-    // Place bets
-    function betOnMermaid() external payable roundActive nonReentrant {
-        require(_isEligibleMermaid(msg.sender), "You must own a valid Mermaid NFT");
-        _placeBet("Mermaid");
+    function powerUpOnFemale(uint256 amount) external payable roundActive nonReentrant {
+        require(_isEligibleFemale(msg.sender), "You must own a valid Archer female NFT");
+        _placePowerUp("Female", amount);
     }
 
-    function betOnSeaCreatures() external payable roundActive nonReentrant {
-        require(_isEligibleSeaCreature(msg.sender), "You must own a valid Sea Creature NFT");
-        _placeBet("SeaCreatures");
+    function powerUpOnMale(uint256 amount) external payable roundActive nonReentrant {
+        require(_isEligibleSeaCreature(msg.sender), "You must own a valid Archer male NFT");
+        _placePowerUp("Male", amount);
     }
 
-    function setValidMermaidTokenIds(uint256[] memory tokenIds) external onlyOwner {
+    function setValidFemaleTokenIds(uint256[] memory tokenIds) external onlyOwner {
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            validMermaidTokenIds[tokenIds[i]] = true;
+            validFemaleTokenIds[tokenIds[i]] = true;
         }
     }
 
-    function _isEligibleMermaid(address player) internal view returns (bool) {
+    function _isEligibleFemale(address player) internal view returns (bool) {
         uint256 balance = nftContract.balanceOf(player);
         for (uint256 i = 0; i < balance; i++) {
             try nftContract.tokenOfOwnerByIndex(player, i) returns (uint256 tokenId) {
-                if (validMermaidTokenIds[tokenId]) {
+                if (validFemaleTokenIds[tokenId]) {
                     return true;
                 }
             } catch {}
@@ -171,7 +189,7 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
         uint256 balance = nftContract.balanceOf(player);
         for (uint256 i = 0; i < balance; i++) {
             try nftContract.tokenOfOwnerByIndex(player, i) returns (uint256 tokenId) {
-                if (!validMermaidTokenIds[tokenId]) {
+                if (!validFemaleTokenIds[tokenId]) {
                     return true;
                 }
             } catch {}
@@ -179,24 +197,28 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
         return false;
     }
 
-    function _placeBet(string memory side) internal {
-        require(msg.value >= minimumAmount, "Bet amount must be greater than or equal minimum amount");
+    function _placePowerUp(string memory side, uint256 amount) internal {
+        require(amount >= minimumAmount, "Bet amount must be greater than or equal minimum amount");
+
+        // Transfer payment tokens from the user to the contract
+        require(paymentToken.transferFrom(msg.sender, address(this), amount), "Token transfer failed");
+
         uint256 power = _calculatePower(msg.value); // Use msg.value as the base power
         uint256 roundIndex = getCurrentRoundIndex();
 
         PlayerStats storage stats = roundPlayerStats[roundIndex][msg.sender];
         RoundStats storage round = rounds[roundIndex];
 
-        if (keccak256(abi.encodePacked(side)) == keccak256("Mermaid")) {
-            stats.totalMermaidPower += power;
-            round.totalMermaidPower += power;
-            stats.totalMermaidSpent += msg.value;
-            round.totalMermaidSpent += msg.value;
+        if (keccak256(abi.encodePacked(side)) == keccak256("Female")) {
+            stats.totalFemalePower += power * femalePowerMultiplier;
+            round.totalFemalePower += power * femalePowerMultiplier;
+            stats.totalFemaleSpent += msg.value;
+            round.totalFemaleSpent += msg.value;
         } else {
-            stats.totalSeaCreaturesPower += power;
-            round.totalSeaCreaturesPower += power;
-            stats.totalSeaCreaturesSpent += msg.value;
-            round.totalSeaCreaturesSpent += msg.value;
+            stats.totalMalePower += power;
+            round.totalMalePower += power;
+            stats.totalMaleSpent += msg.value;
+            round.totalMaleSpent += msg.value;
         }
 
         round.totalRewards += msg.value;
@@ -241,7 +263,10 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
 
         require(reward > 0, "No reward to claim");
         hasClaimedReward[roundIndex][playerAddress] = true;
-        payable(playerAddress).transfer(reward);
+        
+        // Transfer reward in payment tokens
+        require(paymentToken.transfer(playerAddress, reward), "Token transfer failed");
+        
         emit RewardsClaimed(playerAddress, reward);
     }
 
@@ -251,36 +276,36 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
         uint256 reward;
         PlayerStats storage stats = roundPlayerStats[roundIndex][playerAddress];
 
-        if (round.totalMermaidPower == round.totalSeaCreaturesPower) {
+        if (round.totalFemalePower == round.totalMalePower) {
             // Handle tie scenario
-            if (round.totalMermaidSpent > round.totalSeaCreaturesSpent) {
-                // Mermaids win based on total spent
-                if (stats.totalMermaidSpent > 0) {
-                    reward = (stats.totalMermaidSpent * round.totalRewards * winnerSharePercent) / 
-                            (1000 * round.totalMermaidSpent);
+            if (round.totalFemaleSpent > round.totalMaleSpent) {
+                // Female win based on total spent
+                if (stats.totalFemaleSpent > 0) {
+                    reward = (stats.totalFemaleSpent * round.totalRewards * winnerSharePercent) / 
+                            (1000 * round.totalFemaleSpent);
                 }
-            } else if (round.totalSeaCreaturesSpent > round.totalMermaidSpent) {
-                // Sea Creatures win based on total spent
-                if (stats.totalSeaCreaturesSpent > 0) {
-                    reward = (stats.totalSeaCreaturesSpent * round.totalRewards * winnerSharePercent) / 
-                            (1000 * round.totalSeaCreaturesSpent);
+            } else if (round.totalMaleSpent > round.totalFemaleSpent) {
+                // Male win based on total spent
+                if (stats.totalMaleSpent > 0) {
+                    reward = (stats.totalMaleSpent * round.totalRewards * winnerSharePercent) / 
+                            (1000 * round.totalMaleSpent);
                 }
             } else {
                 // Exact tie on power and spent, split rewards evenly
-                uint256 userContribution = stats.totalMermaidSpent + stats.totalSeaCreaturesSpent;
-                uint256 totalSpent = round.totalMermaidSpent + round.totalSeaCreaturesSpent;
+                uint256 userContribution = stats.totalFemaleSpent + stats.totalMaleSpent;
+                uint256 totalSpent = round.totalFemaleSpent + round.totalMaleSpent;
                 if (userContribution > 0) {
                     reward = (userContribution * round.totalRewards * winnerSharePercent) / (1000 * totalSpent);
                 }
             }
         } else {
             // Handle normal winner scenario
-            if (round.totalMermaidPower > round.totalSeaCreaturesPower && stats.totalMermaidSpent > 0) {
-                reward = (stats.totalMermaidSpent * round.totalRewards * winnerSharePercent) / 
-                        (1000 * round.totalMermaidSpent);
-            } else if (round.totalSeaCreaturesPower > round.totalMermaidPower && stats.totalSeaCreaturesSpent > 0) {
-                reward = (stats.totalSeaCreaturesSpent * round.totalRewards * winnerSharePercent) / 
-                        (1000 * round.totalSeaCreaturesSpent);
+            if (round.totalFemalePower > round.totalMalePower && stats.totalFemaleSpent > 0) {
+                reward = (stats.totalFemaleSpent * round.totalRewards * winnerSharePercent) / 
+                        (1000 * round.totalFemaleSpent);
+            } else if (round.totalMalePower > round.totalFemalePower && stats.totalMaleSpent > 0) {
+                reward = (stats.totalMaleSpent * round.totalRewards * winnerSharePercent) / 
+                        (1000 * round.totalMaleSpent);
             }
         }
 
@@ -318,8 +343,8 @@ contract MermaidVsSeaCreatures is Ownable, ReentrancyGuard {
     }
 
     function emergencyWithdraw() external onlyOwner {
-        uint256 balance = address(this).balance;
-        payable(devRecipient).transfer(balance);
+        uint256 balance = paymentToken.balanceOf(address(this));
+        require(paymentToken.transfer(devRecipient, balance), "Token transfer failed");
         emit EmergencyWithdrawal(msg.sender, balance);
     }
 }

@@ -2,45 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import MermaidVsSeaCreaturesGame from "@/lib/abi/MermaidVsSeaCreaturesGame.json";
+import ArchersGameABI from "@/lib/abi/ArchersGame.json";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
-import { formatEther, getContract, parseEther, parseUnits } from "viem";
+import {
+  formatEther,
+  formatUnits,
+  getContract,
+  parseEther,
+  parseUnits,
+} from "viem";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
-import {
-  KAIA_SCAN_URL,
-  MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
-} from "@/utils/environment";
+import { ARCHERS_GAME_ADDRESS, BOW_TOKEN_ADDRESS } from "@/utils/environment";
 import Countdown from "@/components/Countdown";
 import Modal from "@/components/Modal";
 import { FaSpinner } from "react-icons/fa";
+import ERC20ABI from "@/lib/abi/ERC20.json";
 
-const BET_TYPE = {
-  mermaid: "mermaid",
-  seaCreatures: "sea-creatures",
+const POWER_UP_TYPE = {
+  female: "female",
+  male: "male",
 };
 
-const MermaidVsSeaCreaturesGameTemplate = () => {
+const MINIMUM_AMOUNT = 2;
+const MAX_ITERATOR = 20;
+
+const ArchersGameTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
 
   const { address, isConnected } = useAccount();
-  const [betAmount, setBetAmount] = useState(1);
+  const [powerUpAmount, setPowerUpAmount] = useState(MINIMUM_AMOUNT);
   const [roundStats, setRoundStats] = useState();
   const [playerStats, setPlayerStats] = useState();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
   const [claimAmount, setClaimAmount] = useState(0);
   const [isClaiming, setIsClaiming] = useState(false);
-  const [isMermaidBetting, setIsMermaidBetting] = useState(false);
-  const [isSeaCreaturesBetting, setIsSeaCreaturesBetting] = useState(false);
+  const [isFemalePowerUping, setIsFemalePowerUping] = useState(false);
+  const [isMalePowerUping, setIsMalePowerUping] = useState(false);
 
   const fetchRound = async () => {
     try {
       const gameContract = getContract({
-        address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
-        abi: MermaidVsSeaCreaturesGame,
+        address: ARCHERS_GAME_ADDRESS,
+        abi: ArchersGameABI,
         client: publicClient,
       });
 
@@ -61,8 +68,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
 
     try {
       const gameContract = getContract({
-        address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
-        abi: MermaidVsSeaCreaturesGame,
+        address: ARCHERS_GAME_ADDRESS,
+        abi: ArchersGameABI,
         client: publicClient,
       });
       const roundId = await gameContract.read.getCurrentRoundIndex();
@@ -83,8 +90,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
 
     try {
       const gameContract = getContract({
-        address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
-        abi: MermaidVsSeaCreaturesGame,
+        address: ARCHERS_GAME_ADDRESS,
+        abi: ArchersGameABI,
         client: publicClient,
       });
       const roundId = await gameContract.read.getCurrentRoundIndex();
@@ -121,54 +128,90 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     fetchHasClaimed();
   }, [roundStats]);
 
-  const handleBet = async (type) => {
+  const handlePowerUp = async (type) => {
     try {
-      if (type === BET_TYPE.mermaid) {
-        setIsMermaidBetting(true);
+      if (type === POWER_UP_TYPE.female) {
+        setIsFemalePowerUping(true);
       } else {
-        setIsSeaCreaturesBetting(true);
+        setIsMalePowerUping(true);
+      }
+
+      const tokenReadContract = getContract({
+        address: BOW_TOKEN_ADDRESS,
+        abi: ERC20ABI,
+        client: publicClient,
+      });
+      const allowance = await tokenReadContract.read.allowance([
+        address,
+        ARCHERS_GAME_ADDRESS,
+      ]);
+
+      // Format the allowance based on token decimals
+      const formattedAllowance = parseFloat(formatUnits(allowance, 18));
+      console.log({ powerUpAmount, formattedAllowance });
+
+      if (formattedAllowance < powerUpAmount) {
+        const writeTokenContract = getContract({
+          address: BOW_TOKEN_ADDRESS,
+          abi: ERC20ABI,
+          client: walletClient,
+        });
+
+        const approveHash = await writeTokenContract.write.approve([
+          ARCHERS_GAME_ADDRESS,
+          parseUnits(powerUpAmount.toString(), 18),
+        ]);
+        await publicClient.waitForTransactionReceipt({
+          hash: approveHash,
+        });
       }
 
       const gameContract = getContract({
-        address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
-        abi: MermaidVsSeaCreaturesGame,
+        address: ARCHERS_GAME_ADDRESS,
+        abi: ArchersGameABI,
         client: walletClient,
       });
 
       let tx;
-      if (type === BET_TYPE.mermaid) {
-        tx = await gameContract.write.betOnMermaid([], {
-          value: parseEther(betAmount.toString()),
-        });
+      if (type === POWER_UP_TYPE.female) {
+        tx = await gameContract.write.powerUpOnFemale(
+          [parseEther(powerUpAmount.toString())],
+          {
+            value: 0,
+          }
+        );
       } else {
-        tx = await gameContract.write.betOnSeaCreatures([], {
-          value: parseEther(betAmount.toString()),
-        });
+        tx = await gameContract.write.powerUpOnMale(
+          [parseEther(powerUpAmount.toString())],
+          {
+            value: 0,
+          }
+        );
       }
       const transactionReceipt = await publicClient.waitForTransactionReceipt({
         hash: tx,
       });
 
       if (transactionReceipt.status === "success") {
-        toast.success("Bet successful");
+        toast.success("Power Up successful");
 
         fetchRound();
         fetchPlayer();
       } else {
-        toast.error("Bet failed, try it again");
+        toast.error("Power Up failed, try it again");
       }
     } catch (error) {
-      console.log("Bet failed", error);
+      console.log("Power Up failed", error);
       if (error.message.startsWith("User rejected the request")) {
         toast.error("You rejected the request");
       } else {
-        toast.error("Bet failed");
+        toast.error("Power Up failed");
       }
     } finally {
-      if (type === BET_TYPE.mermaid) {
-        setIsMermaidBetting(false);
+      if (type === POWER_UP_TYPE.female) {
+        setIsFemalePowerUping(false);
       } else {
-        setIsSeaCreaturesBetting(false);
+        setIsMalePowerUping(false);
       }
     }
   };
@@ -188,8 +231,8 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
       }
 
       const gameContract = getContract({
-        address: MERMAID_VS_SEA_CREATURES_GAME_ADDRESS,
-        abi: MermaidVsSeaCreaturesGame,
+        address: ARCHERS_GAME_ADDRESS,
+        abi: ArchersGameABI,
         client: walletClient,
       });
 
@@ -219,7 +262,7 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   };
 
   const handleGetAmount = (e) => {
-    setBetAmount(e.target.value);
+    setPowerUpAmount(e.target.value);
   };
 
   const handleHowToPlay = () => {
@@ -238,28 +281,29 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
     return difference <= 0;
   };
 
-  const isMermaidSideWinner = () => {
+  const isFemaleSideWinner = () => {
     return (
-      roundStats.totalMermaidPower > roundStats.totalSeaCreaturesPower ||
-      (roundStats.totalMermaidPower == roundStats.totalSeaCreaturesPower &&
-        roundStats.totalMermaidSpent > roundStats.totalSeaCreaturesSpent)
+      roundStats.totalFemalePower > roundStats.totalMalePower ||
+      (roundStats.totalFemalePower == roundStats.totalMalePower &&
+        roundStats.totalFemaleSpent > roundStats.totalMaleSpent)
     );
   };
 
   const isTie = () => {
     return (
-      roundStats.totalMermaidPower == roundStats.totalSeaCreaturesPower &&
-      roundStats.totalMermaidSpent == roundStats.totalSeaCreaturesSpent
+      roundStats.totalFemalePower == roundStats.totalMalePower &&
+      roundStats.totalFemaleSpent == roundStats.totalMaleSpent
     );
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-0 md:px-8">
-      <p className="text-4xl font-bold text-highlight py-4">
-        Mermaid Vs Sea Creatures Game
-      </p>
+      <p className="text-4xl font-bold text-highlight py-4">Archers Game</p>
       <div>
-        <button onClick={handleHowToPlay} className="text-xl text-hightlight">
+        <button
+          onClick={handleHowToPlay}
+          className="text-xl text-hightlight mb-4"
+        >
           [how to play]
         </button>
       </div>
@@ -272,63 +316,70 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
             <p className="text-2xl font-bold text-highlight">Total Rewards</p>
             <div className="flex">
               <p className="text-2xl text-highlight">
-                {formatEther(roundStats.totalRewards.toString())} KAIA
+                {formatEther(roundStats.totalRewards.toString())} BOW
               </p>
             </div>
           </div>
           {isDone() ? (
             <div className="flex justify-between gap-4 max-w-lg">
               <p className="text-2xl text-highlight">
-                {isTie() ? "Tie" : isMermaidSideWinner() ? "Winner" : "Loser"}{" "}
-                {roundStats.totalMermaidPower}
+                {isTie() ? "Tie" : isFemaleSideWinner() ? "Winner" : "Loser"}{" "}
+                {roundStats.totalFemalePower}
               </p>
               <p className="text-highlight">vs</p>
               <p className="text-2xl text-highlight">
-                {roundStats.totalSeaCreaturesPower}{" "}
-                {isTie() ? "Tie" : isMermaidSideWinner() ? "Loser" : "Winner"}
+                {roundStats.totalMalePower}{" "}
+                {isTie() ? "Tie" : isFemaleSideWinner() ? "Loser" : "Winner"}
               </p>
             </div>
           ) : null}
         </>
       ) : null}
       <Image
-        src="/images/mermaid-vs-sea-creatures.png"
+        src="/images/archers-game.png"
         width={888}
         height={500}
-        alt="Mermaid Vs Sea Creatures Bet Game Image"
+        alt="Archers Game"
       />
       <div className="flex items-center gap-4">
-        <input
-          type="number"
-          value={betAmount}
+        <select
+          value={powerUpAmount}
           onChange={handleGetAmount}
-          id="betAmount"
-          name="betAmount"
-          placeholder="Enter amount"
+          id="powerUpAmount"
+          name="powerUpAmount"
           className="block w-full px-4 py-2 mt-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-        />
-        <p className="mt-4 text-highlight">KAIA</p>
+        >
+          {Array.from(
+            { length: MAX_ITERATOR },
+            (_, i) => (i + 1) * MINIMUM_AMOUNT
+          ).map((number) => (
+            <option key={number} value={number}>
+              {number}
+            </option>
+          ))}
+        </select>
+        <p className="mt-4 text-highlight">BOW</p>
       </div>
       {isConnected ? (
         <>
           <div className="flex justify-between gap-4 md:gap-6 max-w-lg py-4">
             <button
-              onClick={() => handleBet(BET_TYPE.mermaid)}
+              onClick={() => handlePowerUp(POWER_UP_TYPE.seaCreatures)}
               className="bg-primary text-white font-bold py-2 px-4 rounded flex items-center"
               disabled={isDone()}
             >
-              Power Up Mermaid
-              {isMermaidBetting && (
+              Power Up Male
+              {isMalePowerUping && (
                 <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
               )}
             </button>
             <button
-              onClick={() => handleBet(BET_TYPE.seaCreatures)}
+              onClick={() => handlePowerUp(POWER_UP_TYPE.female)}
               className="bg-primary text-gray-700 font-bold py-2 px-4 rounded flex items-center"
               disabled={isDone()}
             >
-              Power Up Sea Creatures
-              {isSeaCreaturesBetting && (
+              Power Up Female
+              {isFemalePowerUping && (
                 <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
               )}
             </button>
@@ -337,30 +388,39 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
             <div className="flex justify-between gap-4 md:gap-6">
               <div>
                 <p className="text-highlight">
-                  Your Mermaid Power:{" "}
+                  Your Male Power:{" "}
                   <span className="text-highlight">
-                    {playerStats.totalMermaidPower.toString()}
+                    {playerStats.totalMalePower
+                      ? playerStats.totalMalePower.toString()
+                      : 0}
                   </span>
                 </p>
                 <p className="text-highlight">
-                  Your Mermaid Spent:{" "}
+                  Your Male Spent:{" "}
                   <span className="text-highlight">
-                    {formatEther(playerStats.totalMermaidSpent.toString())} KAIA
+                    {playerStats.totalMaleSpent
+                      ? formatEther(playerStats.totalMaleSpent?.toString())
+                      : 0}{" "}
+                    BOW
                   </span>
                 </p>
               </div>
               <div>
                 <p className="text-highlight">
-                  Your Sea Creatures Power:{" "}
+                  Your Female Power:{" "}
                   <span className="text-highlight">
-                    {playerStats.totalSeaCreaturesPower.toString()}
+                    {playerStats.totalFemalePower
+                      ? playerStats.totalFemalePower.toString()
+                      : 0}
                   </span>
                 </p>
                 <p className="text-highlight">
-                  Your Sea Creatures Spent:{" "}
+                  Your Female Spent:{" "}
                   <span className="text-highlight">
-                    {formatEther(playerStats.totalSeaCreaturesSpent.toString())}{" "}
-                    KAIA
+                    {playerStats.totalFemaleSpent
+                      ? formatEther(playerStats.totalFemaleSpent?.toString())
+                      : 0}{" "}
+                    BOW
                   </span>
                 </p>
               </div>
@@ -392,38 +452,29 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
             </p>
             <ul style={{ overflowY: "scroll", height: "24rem" }}>
               <li className="p-2 text-highlight">
-                1. Mint Mermaidswap NFT from{" "}
+                1. Buy Kyudo Archer NFT from{" "}
                 <a
-                  href="https://nft-launchpad.onero.app/mints/mermaid"
+                  href="https://app.youngparrotnft.com/core/collections/kyudo-archer"
                   className="text-white"
                   target="_blank"
                 >
-                  [Onero]
-                </a>{" "}
-                or buy from{" "}
-                <a
-                  href="https://opensea.io/collection/mermaid-vs-sea-creatures"
-                  className="text-white"
-                  target="_blank"
-                >
-                  [Opensea]
+                  [YoungParrot]
                 </a>
               </li>
               <li className="p-2 text-highlight">
                 2. Your NFT Represent the sides you will be powering up example
-                : If you hold #Mermaid NFT you can only power up #Mermaid, vice
-                versa if you hold #SeaCreature NFT you can only power up
-                #SeaCreature. However if you hold both, you can power up both up
-                to your choice.
+                : If you hold #Female NFT you can only power up #Female, vice
+                versa if you hold #Male NFT you can only power up #Male. However
+                if you hold both, you can power up both up to your choice.
               </li>
               <li className="p-2 text-highlight">
-                3. Each power up will cost 1 $KAIA and 1 $KAIA will then send to
-                the reward pool. The highest power NFT side will be the winner
-                and the reward ratio is depending on how many times you power up
-                the NFT.
+                3. Each power up will cost {MINIMUM_AMOUNT} $BOW and{" "}
+                {MINIMUM_AMOUNT} $BOW will then send to the reward pool. The
+                highest power NFT side will be the winner and the reward ratio
+                is depending on how many times you power up the NFT.
               </li>
               <li className="p-2 text-highlight">
-                4. Player can &quot;Power Up&quot; up to 100 $KAIA per
+                4. Player can &quot;Power Up&quot; up to 100 $BOW per
                 transaction.
               </li>
               <li className="p-2 text-highlight">
@@ -442,13 +493,12 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 0.05% Mythical Power Up : +500 Power
               </li>
               <li className="p-2 text-highlight">
-                6. Total power of both #Mermaid & #SeaCreature will be hidden
-                until the end of turn for the thrill and excitement of the
-                games, only a total of $KAIA pool will be shown. Users are only
-                able to view your own total power up, therefore team discussion
-                on{" "}
+                6. Total power of both #Female & #Male will be hidden until the
+                end of turn for the thrill and excitement of the games, only a
+                total of $BOW pool will be shown. Users are only able to view
+                your own total power up, therefore team discussion on{" "}
                 <a
-                  href="https://t.me/mermaidswapofficial"
+                  href="https://t.me/ArcherSwapDEX"
                   target="_blank"
                   className="text-white"
                 >
@@ -461,9 +511,9 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
                 <br />
                 80% will goes to winning NFT Team
                 <br />
-                15% will carry forward to the next round
+                10% will carry forward to the next round
                 <br />
-                5% Fees for maintenance and development
+                10% Fees for maintenance and development
               </li>
             </ul>
           </div>
@@ -473,4 +523,4 @@ const MermaidVsSeaCreaturesGameTemplate = () => {
   );
 };
 
-export default MermaidVsSeaCreaturesGameTemplate;
+export default ArchersGameTemplate;

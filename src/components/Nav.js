@@ -49,8 +49,8 @@ export default function Nav() {
         <Image
           width={60}
           height={60}
-          src="/images/mermaid-logo.png"
-          alt="Mermaid logo"
+          src="/images/archer-logo.png"
+          alt="Archer logo"
           className="rounded-full"
         />
       </Link>

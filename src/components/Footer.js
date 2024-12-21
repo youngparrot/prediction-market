@@ -2,13 +2,7 @@
 
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import {
-  FaTwitter,
-  FaTelegramPlane,
-  FaDiscord,
-  FaEnvelope,
-  FaTelegram,
-} from "react-icons/fa";
+import { FaTwitter, FaDiscord, FaTelegram } from "react-icons/fa";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -24,41 +18,41 @@ export default function Footer() {
             <Image
               width={60}
               height={60}
-              src="/images/mermaid-logo.png"
-              alt="Mermaid Logo"
+              src="/images/archer-logo.png"
+              alt="Archer Logo"
               className="rounded-full"
             />
           </div>
-          <p className="mt-4 text-highlight">Mermaid games</p>
+          <p className="mt-4 text-highlight">Archers games</p>
           {/* Social icons */}
           <div className="flex justify-center space-x-2 mt-4">
             <a
-              href="https://x.com/mermaidswap_xyz"
+              href="https://x.com/archerswapcore"
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaTwitter className="w-6 h-6 text-highlight hover:text-white" />
             </a>
             <a
-              href="https://t.co/Z2TMlnsFFh"
+              href="https://t.me/ArcherSwapDEX"
               target="_blank"
               rel="noopener noreferrer"
             >
               <FaTelegram className="w-6 h-6 text-highlight hover:text-white" />
             </a>
             <a
-              href="https://t.co/eSHnusQkG9"
+              href="https://discord.gg/3nuyJg97Hy"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaTelegram className="w-6 h-6 text-highlight hover:text-white" />
+              <FaDiscord className="w-6 h-6 text-highlight hover:text-white" />
             </a>
           </div>
         </div>
       </div>
       {/* Footer Bottom */}
       <div className="mt-8 border-t border-gray-800 pt-4 text-center text-highlight text-sm">
-        © {currentYear} Mermaid. All rights reserved.
+        © {currentYear} Archer. All rights reserved.
       </div>
     </footer>
   );

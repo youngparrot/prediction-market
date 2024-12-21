@@ -15,6 +15,11 @@
         "internalType": "address",
         "name": "_devReceipient",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_paymentToken",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -203,20 +208,6 @@
   },
   {
     "inputs": [],
-    "name": "betOnMermaid",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "betOnSeaCreatures",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "claimReward",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -281,6 +272,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "femalePowerMultiplier",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -336,26 +340,26 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "totalMermaidSpent",
+            "name": "totalFemaleSpent",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalSeaCreaturesSpent",
+            "name": "totalMaleSpent",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalMermaidPower",
+            "name": "totalFemalePower",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalSeaCreaturesPower",
+            "name": "totalMalePower",
             "type": "uint256"
           }
         ],
-        "internalType": "struct MermaidVsSeaCreatures.PlayerStats",
+        "internalType": "struct ArchersGame.PlayerStats",
         "name": "",
         "type": "tuple"
       }
@@ -402,26 +406,26 @@
           },
           {
             "internalType": "uint256",
-            "name": "totalMermaidSpent",
+            "name": "totalFemaleSpent",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalSeaCreaturesSpent",
+            "name": "totalMaleSpent",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalMermaidPower",
+            "name": "totalFemalePower",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "totalSeaCreaturesPower",
+            "name": "totalMalePower",
             "type": "uint256"
           }
         ],
-        "internalType": "struct MermaidVsSeaCreatures.RoundStats",
+        "internalType": "struct ArchersGame.RoundStats",
         "name": "",
         "type": "tuple"
       }
@@ -479,6 +483,19 @@
   },
   {
     "inputs": [],
+    "name": "maxIterations",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "minimumAmount",
     "outputs": [
       {
@@ -518,6 +535,19 @@
   },
   {
     "inputs": [],
+    "name": "paymentToken",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "platformFeePercent",
     "outputs": [
       {
@@ -540,6 +570,32 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "powerUpOnFemale",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "powerUpOnMale",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -566,22 +622,22 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "totalMermaidSpent",
+        "name": "totalFemaleSpent",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalSeaCreaturesSpent",
+        "name": "totalMaleSpent",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalMermaidPower",
+        "name": "totalFemalePower",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalSeaCreaturesPower",
+        "name": "totalMalePower",
         "type": "uint256"
       }
     ],
@@ -625,22 +681,22 @@
       },
       {
         "internalType": "uint256",
-        "name": "totalMermaidSpent",
+        "name": "totalFemaleSpent",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalSeaCreaturesSpent",
+        "name": "totalMaleSpent",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalMermaidPower",
+        "name": "totalFemalePower",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "totalSeaCreaturesPower",
+        "name": "totalMalePower",
         "type": "uint256"
       }
     ],
@@ -717,7 +773,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "setValidMermaidTokenIds",
+    "name": "setValidFemaleTokenIds",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -762,6 +818,45 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_newMultiplier",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateFemalePowerMultiplier",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_maxIterations",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateMaxIterations",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newMinimumAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateMinimumAmount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_startTime",
         "type": "uint256"
       },
@@ -784,7 +879,7 @@
         "type": "uint256"
       }
     ],
-    "name": "validMermaidTokenIds",
+    "name": "validFemaleTokenIds",
     "outputs": [
       {
         "internalType": "bool",
