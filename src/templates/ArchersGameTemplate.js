@@ -14,7 +14,11 @@ import {
 } from "viem";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
-import { ARCHERS_GAME_ADDRESS, BOW_TOKEN_ADDRESS } from "@/utils/environment";
+import {
+  ARCHERS_GAME_ADDRESS,
+  ARCHERS_GAME_OWNER_ADDRESS,
+  BOW_TOKEN_ADDRESS,
+} from "@/utils/environment";
 import Countdown from "@/components/Countdown";
 import Modal from "@/components/Modal";
 import { FaSpinner } from "react-icons/fa";
@@ -40,6 +44,8 @@ const ArchersGameTemplate = () => {
   const [hasClaimed, setHasClaimed] = useState(false);
   const [claimAmount, setClaimAmount] = useState(0);
   const [isClaiming, setIsClaiming] = useState(false);
+  const [isEndRounding, setIsEndRounding] = useState(false);
+  const [isStartNewRounding, setIsStartNewRounding] = useState(false);
   const [isFemalePowerUping, setIsFemalePowerUping] = useState(false);
   const [isMalePowerUping, setIsMalePowerUping] = useState(false);
 
@@ -261,6 +267,49 @@ const ArchersGameTemplate = () => {
     }
   };
 
+  const handleEndRound = async () => {
+    try {
+      setIsEndRounding(true);
+
+      if (!isDone()) {
+        toast.info("The round has not ended yet");
+        return;
+      }
+
+      const gameContract = getContract({
+        address: ARCHERS_GAME_ADDRESS,
+        abi: MermaidVsSeaCreaturesGame,
+        client: walletClient,
+      });
+
+      const tx = await gameContract.write.endRound([], {
+        value: 0,
+      });
+      const transactionReceipt = await publicClient.waitForTransactionReceipt({
+        hash: tx,
+      });
+
+      if (transactionReceipt.status === "success") {
+        toast.success("End Round successful");
+      } else {
+        toast.error("End Round failed, try it again");
+      }
+    } catch (error) {
+      console.log("End Round failed", error);
+      if (error.message.startsWith("User rejected the request")) {
+        toast.error("You rejected the request");
+      } else {
+        toast.error("End Round failed");
+      }
+    } finally {
+      setIsEndRounding(false);
+    }
+  };
+
+  const isGameOwner = () => {
+    return address === ARCHERS_GAME_OWNER_ADDRESS;
+  };
+
   const handleGetAmount = (e) => {
     setPowerUpAmount(e.target.value);
   };
@@ -427,16 +476,43 @@ const ArchersGameTemplate = () => {
             </div>
           ) : null}
           {isDone() ? (
-            <button
-              onClick={() => handleClaimReward()}
-              className="p-2 bg-secondary rounded mt-4 flex items-center"
-              disabled={isClaiming}
-            >
-              Claim Reward
-              {isClaiming && (
-                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+            <>
+              <button
+                onClick={() => handleClaimReward()}
+                className="p-2 bg-secondary rounded mt-4 flex items-center"
+                disabled={isClaiming}
+              >
+                Claim Reward
+                {isClaiming && (
+                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                )}
+              </button>
+              {isGameOwner() && (
+                <>
+                  <button
+                    onClick={() => handleEndRound()}
+                    className="p-2 bg-secondary rounded mt-4 flex items-center"
+                    disabled={isEndRounding}
+                  >
+                    End Round
+                    {isEndRounding && (
+                      <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                    )}
+                  </button>
+
+                  {/* <button
+                onClick={() => handleStartNewRound()}
+                className="p-2 bg-secondary rounded mt-4 flex items-center"
+                disabled={isStartNewRounding}
+              >
+                Start New Round
+                {isStartNewRounding && (
+                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                )}
+              </button> */}
+                </>
               )}
-            </button>
+            </>
           ) : null}
         </>
       ) : (
