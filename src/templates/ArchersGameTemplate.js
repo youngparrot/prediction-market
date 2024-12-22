@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import ArchersGameABI from "@/lib/abi/ArchersGame.json";
+import ERC721ABI from "@/lib/abi/ERC721.json";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import {
@@ -17,6 +18,7 @@ import dayjs from "dayjs";
 import {
   ARCHERS_GAME_ADDRESS,
   ARCHERS_GAME_OWNER_ADDRESS,
+  ARCHERS_NFT_ADDRESS,
   BOW_TOKEN_ADDRESS,
 } from "@/utils/environment";
 import Countdown from "@/components/Countdown";
@@ -48,6 +50,7 @@ const ArchersGameTemplate = () => {
   const [isStartNewRounding, setIsStartNewRounding] = useState(false);
   const [isFemalePowerUping, setIsFemalePowerUping] = useState(false);
   const [isMalePowerUping, setIsMalePowerUping] = useState(false);
+  const [amountNFT, setAmountNFT] = useState();
 
   const fetchRound = async () => {
     try {
@@ -89,6 +92,25 @@ const ArchersGameTemplate = () => {
     }
   };
 
+  const fetchBalanceNFT = async () => {
+    if (!address) {
+      return;
+    }
+
+    try {
+      const nftContract = getContract({
+        address: ARCHERS_NFT_ADDRESS,
+        abi: ERC721ABI,
+        client: publicClient,
+      });
+
+      const amountNFT = await nftContract.read.balanceOf([address]);
+      setAmountNFT(parseInt(amountNFT.toString()));
+    } catch (error) {
+      console.log("Fetch balance NFT failed", error);
+    }
+  };
+
   const fetchHasClaimed = async () => {
     if (!isDone()) {
       return;
@@ -124,6 +146,7 @@ const ArchersGameTemplate = () => {
 
     fetchRound();
     fetchPlayer();
+    fetchBalanceNFT();
   }, [publicClient, isConnected]);
 
   useEffect(() => {
@@ -136,6 +159,11 @@ const ArchersGameTemplate = () => {
 
   const handlePowerUp = async (type) => {
     try {
+      if (amountNFT === 0) {
+        toast.info("You do not have Kyudo Archer NFT in your wallet.");
+        return;
+      }
+
       if (type === POWER_UP_TYPE.female) {
         setIsFemalePowerUping(true);
       } else {
@@ -154,7 +182,6 @@ const ArchersGameTemplate = () => {
 
       // Format the allowance based on token decimals
       const formattedAllowance = parseFloat(formatUnits(allowance, 18));
-      console.log({ powerUpAmount, formattedAllowance });
 
       if (formattedAllowance < powerUpAmount) {
         const writeTokenContract = getContract({
@@ -355,6 +382,15 @@ const ArchersGameTemplate = () => {
         >
           [how to play]
         </button>
+      </div>
+      <div>
+        <a
+          href="https://app.youngparrotnft.com/core/collections/kyudo-archer"
+          title="Buy Kyudo Archer NFT"
+          target="_blank"
+        >
+          [Buy Kyudo Archer NFT]
+        </a>
       </div>
       {roundStats ? (
         <>
