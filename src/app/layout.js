@@ -24,7 +24,7 @@ function RootLayout({ children }) {
       <body
         className={`${inter.className} bg-secondary`}
         style={{
-          backgroundImage: "url('/images/archers-game-background.png')",
+          backgroundImage: "url('/images/yp-prediction-market-bg.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "repeat",

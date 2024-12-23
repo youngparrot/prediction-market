@@ -49,8 +49,8 @@ export default function Nav() {
         <Image
           width={60}
           height={60}
-          src="/images/archer-logo.png"
-          alt="Archer logo"
+          src="/images/yp-prediction-market-logo.png"
+          alt="YoungParrot Prediction Market Logo"
           className="rounded-full"
         />
       </Link>

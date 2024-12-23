@@ -42,7 +42,7 @@ const coreChain = {
 const chains = [coreChain];
 
 const config = getDefaultConfig({
-  appName: "Mermaid Games",
+  appName: "YoungParrot Prediction Market",
   projectId: WALLET_CONNECT_PROJECT_ID,
   chains,
   wallets: [

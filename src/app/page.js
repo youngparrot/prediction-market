@@ -1,8 +1,8 @@
 import HomeTemplate from "@/templates/HomeTemplate";
 
 export const metadata = {
-  title: "Mermaid Games",
-  description: "Mermaid Games on Kaia blockchain",
+  title: "YP Prediction Market",
+  description: "YP Prediction Market on Core blockchain",
 };
 
 function HomePage() {
