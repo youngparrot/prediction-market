@@ -22,7 +22,7 @@ function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.className} bg-secondary`}
+        className={`${inter.className}`}
         style={{
           backgroundImage: "url('/images/yp-prediction-market-bg.png')",
           backgroundSize: "cover",
@@ -33,14 +33,15 @@ function RootLayout({ children }) {
         }}
       >
         <I18nextProvider i18n={i18n}>
-          <main className="flex flex-col px-2 py-2 md:px-16 md:py-4">
-            <Providers>
-              <Nav />
+          <Providers>
+            <Nav />
+            <main className="flex flex-col px-2 py-2 md:px-16 md:py-4 relative z-10">
               {children}
-            </Providers>
-            <ToastProvider />
-          </main>
-          <Footer />
+              <ToastProvider />
+            </main>
+            <Footer />
+          </Providers>
+          <ToastProvider />
         </I18nextProvider>
       </body>
     </html>

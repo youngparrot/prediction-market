@@ -2,15 +2,12 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
-import LanguageMenu from "./LanguageMenu";
-import { useTranslation } from "react-i18next";
 
 export default function Nav() {
-  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [ypPrices, setYPPrices] = useState({});
 
   // Function to toggle the menu
   const toggleMenu = () => {
@@ -44,60 +41,53 @@ export default function Nav() {
   }, [isOpen]);
 
   return (
-    <div className="mb-8 pb-1 flex justify-between gap-4 sticky top-0 z-20">
-      <Link href="/">
-        <Image
-          width={60}
-          height={60}
-          src="/images/yp-prediction-market-logo.png"
-          alt="YoungParrot Prediction Market Logo"
-          className="rounded-full"
-        />
-      </Link>
-      <div className="flex gap-4 items-center hidden md:flex">
-        {/* <Link
-          href="/"
-          className="px-3 py-2 text-metallic rounded-md hover:text-white transition-all"
-        >
-          DEX
-        </Link> */}
-        {/* <LanguageMenu /> */}
-        <ConnectButton />
-      </div>
-      <div className="relative md:hidden">
-        {/* Toggle Button (Sandwich Icon) */}
-        <button
-          onClick={toggleMenu}
-          className="text-2xl p-3 text-gray-700 md:hidden"
-        >
-          <FaBars />
-        </button>
+    <nav className="mb-2 px-2 md:px-16 md:sticky top-0 z-50 bg-black bg-opacity-50">
+      <div className="relative mx-auto flex justify-between gap-4">
+        <div className="flex md:gap-8 gap-4 items-center">
+          <a href="/" title="Home">
+            <Image
+              width={221}
+              height={60}
+              src="/images/yp-prediction-market-logo.png"
+              alt="YoungParrot Prediction Market logo"
+              priority
+            />
+          </a>
+        </div>
+        <div className="flex gap-4 items-center hidden md:flex">
+          <ConnectButton />
+        </div>
+        <div className="relative md:hidden">
+          {/* Toggle Button (Sandwich Icon) */}
+          <button
+            onClick={toggleMenu}
+            className="text-2xl p-3 text-white-700 md:hidden"
+          >
+            <FaBars />
+          </button>
 
-        {/* Overlay (appears when menu is open) */}
-        {isOpen && (
+          {/* Overlay (appears when menu is open) */}
+          {isOpen && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={closeMenu}
+            ></div>
+          )}
+
+          {/* Side Menu - Hidden by default, visible when `isOpen` is true */}
           <div
-            className="fixed inset-0 bg-primary bg-opacity-50 z-40"
-            onClick={closeMenu}
-          ></div>
-        )}
-
-        {/* Side Menu - Hidden by default, visible when `isOpen` is true */}
-        <div
-          id="side-menu"
-          className={`fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-50 transform ${
-            isOpen ? "translate-x-0" : "-translate-x-full"
-          } transition-transform duration-300 ease-in-out md:hidden`}
-        >
-          {/* Menu Items */}
-          <nav className="p-5 space-y-4">
-            {/* <a href="/" className="block text-lg font-semibold text-purple-700">
-              DEX
-            </a> */}
-            {/* <LanguageMenu /> */}
-            <ConnectButton />
-          </nav>
+            id="side-menu"
+            className={`fixed top-0 left-0 w-64 h-full bg-gray-700 shadow-lg z-50 transform ${
+              isOpen ? "translate-x-0" : "-translate-x-full"
+            } transition-transform duration-300 ease-in-out md:hidden`}
+          >
+            {/* Menu Items */}
+            <nav className="p-5 space-y-4">
+              <ConnectButton />
+            </nav>
+          </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

@@ -5,14 +5,14 @@ import PredictionCard from "@/components/PredictionCard";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
-  CREATION_FEE,
   PAYMENT_TOKEN_ADDRESS,
   PREDICTION_MARKET_ADDRESS,
 } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import ERC20ABI from "@/lib/abi/ERC20.json";
 import { formatUnits, getContract, parseEther, parseUnits } from "viem";
-import CreatePredictionModal from "@/components/CreatePredictionModal";
+import CreatePredictionModal from "@/templates/CreatePredictionTemplate";
+import { toast } from "react-toastify";
 
 const HomeTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -22,6 +22,7 @@ const HomeTemplate = () => {
   const [predictions, setPredictions] = useState([]);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isPredicting, setIsPredicting] = useState(false);
 
   useEffect(() => {
     const fetchPredictions = async () => {
@@ -41,7 +42,6 @@ const HomeTemplate = () => {
             ...prediction,
           });
         }
-        console.log({ predictionsData });
 
         setPredictions(predictionsData);
       } catch (error) {
@@ -54,6 +54,7 @@ const HomeTemplate = () => {
 
   const handlePredict = async (answerIndex, amount) => {
     try {
+      setIsPredicting(true);
       const tokenReadContract = getContract({
         address: PAYMENT_TOKEN_ADDRESS,
         abi: ERC20ABI,
@@ -88,81 +89,32 @@ const HomeTemplate = () => {
         abi: PredictionMarketABI,
         client: walletClient,
       });
-      await writeContract.write.predict(
+      const tx = await writeContract.write.predict(
         [selectedPrediction.id, answerIndex, parseEther(amount.toString())],
         {
           value: 0,
         }
       );
-      setSelectedPrediction(null);
-    } catch (error) {
-      console.log("Predict failed", error);
-    }
-  };
-
-  const handleCreatePrediction = async (
-    question,
-    answers,
-    startTime,
-    endTime
-  ) => {
-    try {
-      const tokenReadContract = getContract({
-        address: PAYMENT_TOKEN_ADDRESS,
-        abi: ERC20ABI,
-        client: publicClient,
+      const transactionReceipt = await publicClient.waitForTransactionReceipt({
+        hash: tx,
       });
-      const allowance = await tokenReadContract.read.allowance([
-        address,
-        PREDICTION_MARKET_ADDRESS,
-      ]);
-
-      // Format the allowance based on token decimals
-      const formattedAllowance = parseFloat(formatUnits(allowance, 18));
-
-      if (formattedAllowance < CREATION_FEE) {
-        const writeTokenContract = getContract({
-          address: PAYMENT_TOKEN_ADDRESS,
-          abi: ERC20ABI,
-          client: walletClient,
-        });
-
-        const approveHash = await writeTokenContract.write.approve([
-          PREDICTION_MARKET_ADDRESS,
-          parseUnits(CREATION_FEE.toString(), 18),
-        ]);
-        await publicClient.waitForTransactionReceipt({
-          hash: approveHash,
-        });
+      if (transactionReceipt.status === "success") {
+        toast.success("Predict successful");
+        setSelectedPrediction(null);
+      } else {
+        toast.error("Predict failed, please try again");
       }
-
-      const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
-        client: walletClient,
-      });
-      await writeContract.write.createPrediction(
-        [question, answers, startTime, endTime],
-        {
-          value: 0,
-        }
-      );
-      setIsCreateModalOpen(false);
     } catch (error) {
       console.log("Predict failed", error);
+    } finally {
+      setIsPredicting(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Predictions</h1>
-      <button
-        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        onClick={() => setIsCreateModalOpen(true)}
-      >
-        Create Prediction
-      </button>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="container mx-auto w-full p-2 md:p-4">
+      <h1 className="text-accent text-xl font-bold mb-8">Predictions</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {predictions.map((prediction) => (
           <PredictionCard
             key={prediction.id}
@@ -176,6 +128,7 @@ const HomeTemplate = () => {
           prediction={selectedPrediction}
           onClose={() => setSelectedPrediction(null)}
           onSubmit={handlePredict}
+          isLoading={isPredicting}
         />
       )}
       {isCreateModalOpen && (
