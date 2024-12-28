@@ -1,11 +1,15 @@
 "use client";
 
-import { CREATION_FEE, PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
+import {
+  CREATION_FEE,
+  CREATION_SHARE_FEE_PERCENT,
+  PREDICTION_MARKET_ADDRESS,
+} from "@/utils/environment";
 import React, { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
-import { formatEther, getContract, parseEther } from "viem";
+import { getContract, parseEther } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import dayjs from "dayjs";
@@ -108,7 +112,9 @@ const CreatePredictionTemplate = () => {
       <h2 className="text-accent text-xl font-bold mb-8">Create Prediction</h2>
       <p className="text-white mb-4">
         Create your own prediction and earn fees with the prediction market
-        platform. Creation fee is {CREATION_FEE} CORE.
+        platform. Creation fee is {CREATION_FEE} CORE. Creator would earn{" "}
+        {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
+        prediction.
       </p>
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
