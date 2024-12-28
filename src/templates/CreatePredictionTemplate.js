@@ -108,7 +108,7 @@ const CreatePredictionTemplate = () => {
       <h2 className="text-accent text-xl font-bold mb-8">Create Prediction</h2>
       <p className="text-white mb-4">
         Create your own prediction and earn fees with the prediction market
-        platform. Creation fee is {CREATION_FEE} YPC.
+        platform. Creation fee is {CREATION_FEE} CORE.
       </p>
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <form onSubmit={handleSubmit(onSubmit)}>
