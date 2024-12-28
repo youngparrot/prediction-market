@@ -21,101 +21,75 @@ const HomeTemplate = () => {
 
   const { address, isConnected } = useAccount();
   const [isFetching, setIsFetching] = useState(false);
-  const [predictions, setPredictions] = useState([]);
-  const [selectedPrediction, setSelectedPrediction] = useState(null);
-  const [isPredicting, setIsPredicting] = useState(false);
+  const [activePredictions, setActivePredictions] = useState([]);
+  const [completedPredictions, setCompletedPredictions] = useState([]);
 
-  useEffect(() => {
-    const getPredictions = async () => {
-      try {
-        setIsFetching(true);
-        const predictionsData = await fetchPredictions({});
-        const metadataIds = predictionsData.predictions.map(
-          (prediction) => prediction._id
-        );
-
-        const readContract = getContract({
-          address: PREDICTION_MARKET_ADDRESS,
-          abi: PredictionMarketABI,
-          client: publicClient,
-        });
-        const predictionContractData =
-          await readContract.read.getPredictionsByIds([metadataIds]);
-
-        for (let i = 0; i < predictionsData.predictions.length; i++) {
-          predictionsData.predictions[i].total =
-            predictionContractData[i].totalStaked;
-        }
-
-        setPredictions(predictionsData);
-      } catch (error) {
-        console.log("Fetching predictions failed", error);
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    getPredictions();
-  }, []);
-
-  const handlePredict = async (answerIndex, amount) => {
+  const getActivePredictions = async () => {
     try {
-      setIsPredicting(true);
-      const tokenReadContract = getContract({
-        address: PAYMENT_TOKEN_ADDRESS,
-        abi: ERC20ABI,
-        client: publicClient,
-      });
-      const allowance = await tokenReadContract.read.allowance([
-        address,
-        PREDICTION_MARKET_ADDRESS,
-      ]);
+      setIsFetching(true);
+      const predictionsData = await fetchPredictions({});
+      const metadataIds = predictionsData.predictions.map(
+        (prediction) => prediction._id
+      );
 
-      // Format the allowance based on token decimals
-      const formattedAllowance = parseFloat(formatUnits(allowance, 18));
-
-      if (formattedAllowance < amount) {
-        const writeTokenContract = getContract({
-          address: PAYMENT_TOKEN_ADDRESS,
-          abi: ERC20ABI,
-          client: walletClient,
-        });
-
-        const approveHash = await writeTokenContract.write.approve([
-          PREDICTION_MARKET_ADDRESS,
-          parseUnits(amount.toString(), 18),
-        ]);
-        await publicClient.waitForTransactionReceipt({
-          hash: approveHash,
-        });
-      }
-
-      const writeContract = getContract({
+      const readContract = getContract({
         address: PREDICTION_MARKET_ADDRESS,
         abi: PredictionMarketABI,
-        client: walletClient,
+        client: publicClient,
       });
-      const tx = await writeContract.write.predict(
-        [selectedPrediction.id, answerIndex, parseEther(amount.toString())],
-        {
-          value: 0,
-        }
-      );
-      const transactionReceipt = await publicClient.waitForTransactionReceipt({
-        hash: tx,
-      });
-      if (transactionReceipt.status === "success") {
-        toast.success("Predict successful");
-        setSelectedPrediction(null);
-      } else {
-        toast.error("Predict failed, please try again");
+      const predictionContractData =
+        await readContract.read.getPredictionsByIds([metadataIds]);
+
+      for (let i = 0; i < predictionsData.predictions.length; i++) {
+        predictionsData.predictions[i].total =
+          predictionContractData[i].totalStaked;
+        predictionsData.predictions[i].winningAnswerIndex =
+          predictionContractData[i].winningAnswerIndex;
       }
+
+      setActivePredictions(predictionsData);
     } catch (error) {
-      console.log("Predict failed", error);
+      console.log("Fetching predictions failed", error);
     } finally {
-      setIsPredicting(false);
+      setIsFetching(false);
     }
   };
+
+  const getCompletedPredictions = async () => {
+    try {
+      setIsFetching(true);
+      const predictionsData = await fetchPredictions({ status: "completed" });
+      const metadataIds = predictionsData.predictions.map(
+        (prediction) => prediction._id
+      );
+
+      const readContract = getContract({
+        address: PREDICTION_MARKET_ADDRESS,
+        abi: PredictionMarketABI,
+        client: publicClient,
+      });
+      const predictionContractData =
+        await readContract.read.getPredictionsByIds([metadataIds]);
+
+      for (let i = 0; i < predictionsData.predictions.length; i++) {
+        predictionsData.predictions[i].total =
+          predictionContractData[i].totalStaked;
+        predictionsData.predictions[i].winningAnswerIndex =
+          predictionContractData[i].winningAnswerIndex;
+      }
+
+      setCompletedPredictions(predictionsData);
+    } catch (error) {
+      console.log("Fetching predictions failed", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    getActivePredictions();
+    getCompletedPredictions();
+  }, []);
 
   if (isFetching) {
     return (
@@ -127,30 +101,48 @@ const HomeTemplate = () => {
 
   return (
     <div className="container mx-auto w-full p-2 md:p-4">
-      <h1 className="text-accent text-xl font-bold mb-8">Predictions</h1>
-      {predictions.predictions && predictions.predictions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {predictions.predictions.map((prediction) => (
-            <a
-              href={`/prediction/${prediction._id}`}
-              title={prediction.question}
-              key={prediction._id}
-            >
-              <PredictionCard prediction={prediction} />
-            </a>
-          ))}
-        </div>
-      ) : (
-        <p>No predictions</p>
-      )}
-      {selectedPrediction && (
-        <PredictionModal
-          prediction={selectedPrediction}
-          onClose={() => setSelectedPrediction(null)}
-          onSubmit={handlePredict}
-          isLoading={isPredicting}
-        />
-      )}
+      <div className="mb-8">
+        <h1 className="text-accent text-xl font-bold mb-4">
+          Active Predictions
+        </h1>
+        {activePredictions.predictions &&
+        activePredictions.predictions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {activePredictions.predictions.map((prediction) => (
+              <a
+                href={`/prediction/${prediction._id}`}
+                title={prediction.question}
+                key={prediction._id}
+              >
+                <PredictionCard prediction={prediction} />
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p>No active predictions</p>
+        )}
+      </div>
+      <div className="mb-8">
+        <h1 className="text-accent text-xl font-bold mb-4">
+          Completed Predictions
+        </h1>
+        {completedPredictions.predictions &&
+        completedPredictions.predictions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {completedPredictions.predictions.map((prediction) => (
+              <a
+                href={`/prediction/${prediction._id}`}
+                title={prediction.question}
+                key={prediction._id}
+              >
+                <PredictionCard prediction={prediction} />
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p>No completed predictions</p>
+        )}
+      </div>
     </div>
   );
 };

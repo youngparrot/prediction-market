@@ -1,13 +1,21 @@
 import Image from "next/image";
 import React from "react";
+import { FaCheck } from "react-icons/fa";
 import { formatEther } from "viem";
 
 const PredictionCard = ({ prediction, onClick }) => {
+  const isDone = prediction.endDate
+    ? new Date(prediction.endDate).getTime() <= Date.now()
+    : false;
+
   return (
     <div
-      className="flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl"
+      className="relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl"
       onClick={onClick}
     >
+      {isDone ? (
+        <FaCheck className="text-green-500 absolute right-2 top-2" />
+      ) : null}
       <div className="flex gap-4 items-center mb-4">
         <Image
           src={prediction.image}
@@ -19,6 +27,12 @@ const PredictionCard = ({ prediction, onClick }) => {
           {prediction.question}
         </h3>
       </div>
+      {isDone ? (
+        <div className="text-green-500 mb-2 font-bold">
+          <span className="text-primary">Answer:</span>{" "}
+          {prediction.answers[parseInt(prediction.winningAnswerIndex)]}
+        </div>
+      ) : null}
       <div>
         <p className="text-sm text-gray-600">
           Asked By:{" "}
@@ -31,7 +45,7 @@ const PredictionCard = ({ prediction, onClick }) => {
         </p>
       </div>
       <div className="pt-4">
-        <p className="text-sm font-bold text-secondary-light">
+        <p className="font-bold text-secondary-light">
           Total: {formatEther(prediction.total)} $CORE
         </p>
       </div>

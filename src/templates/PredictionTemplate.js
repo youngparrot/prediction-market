@@ -11,7 +11,7 @@ import { fetchPredictions } from "@/utils/api";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
-import { FaSpinner } from "react-icons/fa";
+import { FaCheck, FaSpinner } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const PredictionTemplate = () => {
@@ -44,6 +44,7 @@ const PredictionTemplate = () => {
         abi: PredictionMarketABI,
         client: publicClient,
       });
+
       const hasClaimed = await readContract.read.hasUserClaimed([
         predictionData.prediction._id,
         address,
@@ -76,13 +77,34 @@ const PredictionTemplate = () => {
 
       setPredictionContract(predictionContractData);
     } catch (error) {
-      console.log("Fetching predictions failed", error);
+      console.log("Fetching predictions contract failed", error);
+    }
+  };
+
+  const fetchHasClaimed = async () => {
+    try {
+      const readContract = getContract({
+        address: PREDICTION_MARKET_ADDRESS,
+        abi: PredictionMarketABI,
+        client: publicClient,
+      });
+      const hasClaimed = await readContract.read.hasUserClaimed([
+        prediction.prediction._id,
+        address,
+      ]);
+      setHasClaimed(hasClaimed);
+    } catch (error) {
+      console.log("Fetching has claimed contract failed", error);
     }
   };
 
   useEffect(() => {
+    if (!address) {
+      return;
+    }
+
     getPrediction();
-  }, []);
+  }, [address]);
 
   useEffect(() => {
     if (!prediction?.prediction?._id) {
@@ -163,6 +185,7 @@ const PredictionTemplate = () => {
       });
       if (transactionReceipt.status === "success") {
         toast.success("Claim rewards successful");
+        fetchHasClaimed();
       } else {
         toast.error("Claim rewards failed, please try again");
       }
@@ -223,9 +246,17 @@ const PredictionTemplate = () => {
             {prediction.prediction.answers.map((answer, index) => (
               <p
                 key={index}
-                className={`w-full text-left text-primary-light rounded mb-2`}
+                className={`flex items-center gap-2 w-full text-left text-primary-light rounded mb-2`}
               >
-                {index + 1}: {answer}
+                {index + 1}: {answer}{" "}
+                {isDone && predictionContract ? (
+                  parseInt(predictionContract[0].winningAnswerIndex) ==
+                  index ? (
+                    <FaCheck className="text-green-500" />
+                  ) : (
+                    ""
+                  )
+                ) : null}
               </p>
             ))}
           </div>
@@ -236,26 +267,33 @@ const PredictionTemplate = () => {
               className="text-gray-600"
             ></p>
           </div>
-          <div className="mt-4 flex gap-4">
+          <div className="mt-4">
             {isConnected ? (
               <>
-                <button
-                  onClick={handlePredictButtonClick}
-                  className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
-                >
-                  Predict
-                </button>
-                {isDone ? (
+                <div className="mb-2">
+                  <p>
+                    Your rewards: {formatEther(claimAmount.toString())} $CORE
+                  </p>
+                </div>
+                <div className="flex gap-4">
                   <button
-                    onClick={handleClaimRewards}
-                    className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
+                    onClick={handlePredictButtonClick}
+                    className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
                   >
-                    Claim Rewards
-                    {isClaiming && (
-                      <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-                    )}
+                    Predict
                   </button>
-                ) : null}
+                  {isDone ? (
+                    <button
+                      onClick={handleClaimRewards}
+                      className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
+                    >
+                      Claim Rewards
+                      {isClaiming && (
+                        <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                      )}
+                    </button>
+                  ) : null}
+                </div>
               </>
             ) : (
               <ConnectButton />

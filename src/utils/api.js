@@ -24,8 +24,13 @@ export async function createPrediction(
   }
 }
 
-export async function fetchPredictions({ page = 1, limit = 20, id }) {
-  let url = `${PREDICTION_MARKET_API}/api/fetchPredictions?page=${page}&limit=${limit}`;
+export async function fetchPredictions({
+  page = 1,
+  limit = 20,
+  id,
+  status = "active",
+}) {
+  let url = `${PREDICTION_MARKET_API}/api/fetchPredictions?page=${page}&limit=${limit}&status=${status}`;
   if (id) {
     url += `&id=${id}`;
   }
