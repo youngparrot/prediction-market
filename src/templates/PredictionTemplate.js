@@ -196,7 +196,7 @@ const PredictionTemplate = () => {
               {prediction.prediction.question}
             </h1>
           </div>
-          <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-4 text-gray-600">
+          <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
             <p>
               Asked By:{" "}
               {`${prediction.prediction.createdBy.slice(
@@ -205,15 +205,17 @@ const PredictionTemplate = () => {
               )}...${prediction.prediction.createdBy.slice(-4)}`}
             </p>
             <p>
+              Ended At:{" "}
+              {new Date(prediction.prediction.endDate).toLocaleString()}
+            </p>
+          </div>
+          <div className="mb-2">
+            <p className="text-secondary font-bold">
               Total:{" "}
               {predictionContract
                 ? formatEther(predictionContract[0].totalStaked)
                 : 0}{" "}
               $CORE
-            </p>
-            <p>
-              Ended At:{" "}
-              {new Date(prediction.prediction.endDate).toLocaleString()}
             </p>
           </div>
           <div className="text-primary font-bold mb-2">Outcomes:</div>
@@ -228,9 +230,10 @@ const PredictionTemplate = () => {
             ))}
           </div>
           <div className="mt-2">
-            <h1 className="text-primary font-bold mb-2">Rules:</h1>
+            <h1 className="text-gray-600 font-bold mb-2">Rules:</h1>
             <p
               dangerouslySetInnerHTML={{ __html: prediction.prediction.rules }}
+              className="text-gray-600"
             ></p>
           </div>
           <div className="mt-4 flex gap-4">
