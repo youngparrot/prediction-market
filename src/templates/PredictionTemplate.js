@@ -198,21 +198,21 @@ const PredictionTemplate = () => {
           </div>
           <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-4 text-gray-600">
             <p>
-              ASKED BY:{" "}
+              Asked By:{" "}
               {`${prediction.prediction.createdBy.slice(
                 0,
                 6
               )}...${prediction.prediction.createdBy.slice(-4)}`}
             </p>
             <p>
-              TOTAL:{" "}
+              Total:{" "}
               {predictionContract
                 ? formatEther(predictionContract[0].totalStaked)
                 : 0}{" "}
               $CORE
             </p>
             <p>
-              ENDED BY:{" "}
+              Ended At:{" "}
               {new Date(prediction.prediction.endDate).toLocaleString()}
             </p>
           </div>

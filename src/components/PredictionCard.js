@@ -21,18 +21,18 @@ const PredictionCard = ({ prediction, onClick }) => {
       </div>
       <div>
         <p className="text-sm text-gray-600">
-          ENDED BY: {new Date(prediction.endDate).toLocaleString()}
-        </p>
-        <p className="text-sm text-gray-600">
-          ASKED BY:{" "}
+          Asked By:{" "}
           {`${prediction.createdBy.slice(0, 6)}...${prediction.createdBy.slice(
             -4
           )}`}
         </p>
+        <p className="text-sm text-gray-600">
+          Ended At: {new Date(prediction.endDate).toLocaleString()}
+        </p>
       </div>
       <div className="pt-4">
         <p className="text-sm font-bold text-secondary-light">
-          TOTAL: {formatEther(prediction.total)} $CORE
+          Total: {formatEther(prediction.total)} $CORE
         </p>
       </div>
     </div>
