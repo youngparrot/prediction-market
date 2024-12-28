@@ -27,6 +27,7 @@ const PredictionTemplate = () => {
   const [prediction, setPrediction] = useState();
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [isPredicting, setIsPredicting] = useState(false);
+  const [predictionContract, setPredictionContract] = useState();
 
   const { id } = useParams();
 
@@ -34,18 +35,6 @@ const PredictionTemplate = () => {
     try {
       setIsFetching(true);
       const predictionData = await fetchPredictions({ id });
-
-      const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
-        client: publicClient,
-      });
-      const predictionContractData = await readContract.read.getPrediction([
-        predictionData.prediction._id,
-      ]);
-      predictionData.stakes = predictionContractData[1];
-      predictionData.winningAnswerIndex = predictionContractData[3];
-      predictionData.totalStaked = formatEther(predictionContractData[5]);
 
       setPrediction(predictionData);
     } catch (error) {
@@ -55,9 +44,35 @@ const PredictionTemplate = () => {
     }
   };
 
+  const getPredictionContract = async () => {
+    try {
+      const readContract = getContract({
+        address: PREDICTION_MARKET_ADDRESS,
+        abi: PredictionMarketABI,
+        client: publicClient,
+      });
+      const predictionContractData =
+        await readContract.read.getPredictionsByIds([
+          [prediction.prediction._id],
+        ]);
+
+      setPredictionContract(predictionContractData);
+    } catch (error) {
+      console.log("Fetching predictions failed", error);
+    }
+  };
+
   useEffect(() => {
     getPrediction();
   }, []);
+
+  useEffect(() => {
+    if (!prediction?.prediction?._id) {
+      return;
+    }
+
+    getPredictionContract();
+  }, [prediction?.prediction?._id]);
 
   const handlePredict = async (answerIndex, amount) => {
     try {
@@ -80,7 +95,7 @@ const PredictionTemplate = () => {
       if (transactionReceipt.status === "success") {
         toast.success("Predict successful");
         setSelectedPrediction(null);
-        getPrediction();
+        getPredictionContract();
       } else {
         toast.error("Predict failed, please try again");
       }
@@ -114,7 +129,13 @@ const PredictionTemplate = () => {
                 6
               )}...${prediction.prediction.createdBy.slice(-4)}`}
             </p>
-            <p>TOTAL: {prediction.totalStaked} $CORE</p>
+            <p>
+              TOTAL:{" "}
+              {predictionContract
+                ? formatEther(predictionContract[0].totalStaked)
+                : 0}{" "}
+              $CORE
+            </p>
             <p>
               ENDED BY:{" "}
               {new Date(prediction.prediction.endDate).toLocaleString()}

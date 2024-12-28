@@ -30,6 +30,22 @@ const HomeTemplate = () => {
       try {
         setIsFetching(true);
         const predictionsData = await fetchPredictions({});
+        const metadataIds = predictionsData.predictions.map(
+          (prediction) => prediction._id
+        );
+
+        const readContract = getContract({
+          address: PREDICTION_MARKET_ADDRESS,
+          abi: PredictionMarketABI,
+          client: publicClient,
+        });
+        const predictionContractData =
+          await readContract.read.getPredictionsByIds([metadataIds]);
+
+        for (let i = 0; i < predictionsData.predictions.length; i++) {
+          predictionsData.predictions[i].total =
+            predictionContractData[i].totalStaked;
+        }
 
         setPredictions(predictionsData);
       } catch (error) {

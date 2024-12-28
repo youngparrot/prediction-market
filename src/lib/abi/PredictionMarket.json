@@ -371,6 +371,62 @@
   {
     "inputs": [
       {
+        "internalType": "string[]",
+        "name": "_metadataIds",
+        "type": "string[]"
+      }
+    ],
+    "name": "getPredictionsByIds",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "metadataId",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "stakes",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "bool",
+            "name": "ended",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "winningAnswerIndex",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStaked",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "endTime",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PredictionMarket.PredictionDetails[]",
+        "name": "predictionsa",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "_metadataId",
         "type": "string"
@@ -607,6 +663,24 @@
       }
     ],
     "name": "updateCreationShareFeePercent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_endTime",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateEndTime",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

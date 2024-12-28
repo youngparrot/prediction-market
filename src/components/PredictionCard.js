@@ -1,6 +1,5 @@
 import React from "react";
-import { FaUser } from "react-icons/fa";
-import { formatUnits } from "viem";
+import { formatEther } from "viem";
 
 const PredictionCard = ({ prediction, onClick }) => {
   return (
@@ -24,7 +23,7 @@ const PredictionCard = ({ prediction, onClick }) => {
       </div>
       <div className="pt-4">
         <p className="text-sm font-bold text-secondary-light">
-          TOTAL: {prediction.total} $CORE
+          TOTAL: {formatEther(prediction.total)} $CORE
         </p>
       </div>
     </div>
