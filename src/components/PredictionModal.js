@@ -71,19 +71,16 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
             <button className="text-gray-500" onClick={onClose}>
               Cancel
             </button>
-            {isConnected ? (
-              <button
-                className="flex bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={handleSubmit}
-              >
-                Predict
-                {isLoading && (
-                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-                )}
-              </button>
-            ) : (
-              <ConnectButton />
-            )}
+
+            <button
+              className="flex bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={handleSubmit}
+            >
+              Predict
+              {isLoading && (
+                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+              )}
+            </button>
           </div>
         </div>
       </Modal>

@@ -12,6 +12,7 @@ import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
 import { FaSpinner } from "react-icons/fa";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -233,23 +234,29 @@ const PredictionTemplate = () => {
             ></p>
           </div>
           <div className="mt-4 flex gap-4">
-            <button
-              onClick={handlePredictButtonClick}
-              className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
-            >
-              Predict
-            </button>
-            {isDone ? (
-              <button
-                onClick={handleClaimRewards}
-                className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
-              >
-                Claim Rewards
-                {isClaiming && (
-                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-                )}
-              </button>
-            ) : null}
+            {isConnected ? (
+              <>
+                <button
+                  onClick={handlePredictButtonClick}
+                  className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
+                >
+                  Predict
+                </button>
+                {isDone ? (
+                  <button
+                    onClick={handleClaimRewards}
+                    className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
+                  >
+                    Claim Rewards
+                    {isClaiming && (
+                      <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                    )}
+                  </button>
+                ) : null}
+              </>
+            ) : (
+              <ConnectButton />
+            )}
           </div>
         </div>
       ) : (
