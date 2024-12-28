@@ -270,11 +270,13 @@ const PredictionTemplate = () => {
           <div className="mt-4">
             {isConnected ? (
               <>
-                <div className="mb-2">
-                  <p>
-                    Your rewards: {formatEther(claimAmount.toString())} $CORE
-                  </p>
-                </div>
+                {isDone ? (
+                  <div className="mb-2">
+                    <p>
+                      Your rewards: {formatEther(claimAmount.toString())} $CORE
+                    </p>
+                  </div>
+                ) : null}
                 <div className="flex gap-4">
                   <button
                     onClick={handlePredictButtonClick}

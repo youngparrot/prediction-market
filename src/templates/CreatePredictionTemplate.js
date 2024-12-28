@@ -15,11 +15,13 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import dayjs from "dayjs";
 import { FaSpinner } from "react-icons/fa";
 import { createPrediction } from "@/utils/api";
+import { useRouter } from "next/navigation";
 
 const CreatePredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
   const { address, isConnected } = useAccount();
+  const router = useRouter();
 
   const {
     register,
@@ -98,6 +100,7 @@ const CreatePredictionTemplate = () => {
 
       if (transactionReceipt.status === "success") {
         toast.success("Create prediction successful");
+        router.push(`/prediction/${metadataId}`);
       } else {
         toast.error("Create prediction failed, please try again");
       }
