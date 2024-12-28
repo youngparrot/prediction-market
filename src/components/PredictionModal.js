@@ -10,11 +10,21 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [amount, setAmount] = useState(amounts[0]);
   const { address, isConnected } = useAccount();
+  const [answerError, setAnswerError] = useState();
 
   const handleSubmit = () => {
-    if (selectedAnswer !== null) {
-      onSubmit(selectedAnswer, amount);
+    if (selectedAnswer === null) {
+      setAnswerError("Outcome is required");
+      return;
     }
+
+    setAnswerError("");
+    onSubmit(selectedAnswer, amount);
+  };
+
+  const handleAnswerClick = (index) => {
+    setSelectedAnswer(index);
+    setAnswerError("");
   };
 
   return (
@@ -25,7 +35,7 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
             {prediction.question}
           </h2>
           <div className="mb-4">
-            <p className="text-primary-light font-bold">Select Answer:</p>
+            <p className="text-primary-light font-bold">Select Outcome:</p>
             {prediction.answers.map((answer, index) => (
               <button
                 key={index}
@@ -34,11 +44,14 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
                     ? "text-white bg-blue-500"
                     : "bg-gray-100"
                 }`}
-                onClick={() => setSelectedAnswer(index)}
+                onClick={() => handleAnswerClick(index)}
               >
                 {answer}
               </button>
             ))}
+            {answerError ? (
+              <p className="text-secondary">{answerError}</p>
+            ) : null}
           </div>
           <div className="mb-4">
             <p className="text-primary-light font-bold">Select Amount:</p>

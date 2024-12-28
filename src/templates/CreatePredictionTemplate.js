@@ -136,7 +136,7 @@ const CreatePredictionTemplate = () => {
           </div>
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
-              Answers:
+              Outcomes:
             </label>
             {answers.map((answer, index) => (
               <div key={index} className="flex gap-4 mb-2">
@@ -144,7 +144,7 @@ const CreatePredictionTemplate = () => {
                   type="text"
                   value={answer}
                   onChange={(e) => handleAnswerChange(index, e.target.value)}
-                  placeholder={`Answer ${index + 1}`}
+                  placeholder={`Outcome ${index + 1}`}
                   className="text-primary-light bg-gray-100 w-full p-2 border rounded"
                 />
                 {answers.length > 2 ? (
@@ -160,14 +160,14 @@ const CreatePredictionTemplate = () => {
             ))}
             {answersError && <p style={{ color: "red" }}>{answersError}</p>}
             {answers.length <= 1 && (
-              <p style={{ color: "red" }}>At least two answers is required</p>
+              <p style={{ color: "red" }}>At least two outcomes is required</p>
             )}
             <button
               type="button"
               onClick={addAnswer} // Add a new empty string to the answers array
               className="text-blue-500 underline"
             >
-              Add Answer
+              Add Outcome
             </button>
           </div>
           <div className="mb-4">

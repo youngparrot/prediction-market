@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React from "react";
 import { formatEther } from "viem";
 
@@ -7,9 +8,17 @@ const PredictionCard = ({ prediction, onClick }) => {
       className="flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl"
       onClick={onClick}
     >
-      <h3 className="text-primary text-lg font-semibold mb-2">
-        {prediction.question}
-      </h3>
+      <div className="flex gap-4 items-center mb-4">
+        <Image
+          src={prediction.image}
+          width={60}
+          height={60}
+          alt={`${prediction.question} logo`}
+        />
+        <h3 className="text-primary text-lg font-semibold mb-2">
+          {prediction.question}
+        </h3>
+      </div>
       <div>
         <p className="text-sm text-gray-600">
           ENDED BY: {new Date(prediction.endDate).toLocaleString()}
