@@ -1,108 +1,105 @@
 "use client";
 
-import {
-  CREATION_FEE,
-  PAYMENT_TOKEN_ADDRESS,
-  PREDICTION_MARKET_ADDRESS,
-} from "@/utils/environment";
+import { CREATION_FEE, PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
 import React, { useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { toast } from "react-toastify";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
-import ERC20ABI from "@/lib/abi/ERC20.json";
-import { formatUnits, getContract, parseUnits } from "viem";
+import { formatEther, getContract, parseEther } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import { FaSpinner } from "react-icons/fa";
+import { createPrediction } from "@/utils/api";
 
 const CreatePredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
-
   const { address, isConnected } = useAccount();
 
-  const [question, setQuestion] = useState("");
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { isSubmitting, errors },
+  } = useForm({
+    defaultValues: {
+      question: "",
+      answers: ["", ""],
+      endTime: "",
+      rules: "",
+    },
+  });
+
   const [answers, setAnswers] = useState(["", ""]);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [isCreating, setIsCreating] = useState(false);
+  const [answersError, setAnswersError] = useState(""); // Error message for answers
+
+  const handleAnswerChange = (index, value) => {
+    const updatedAnswers = [...answers];
+    updatedAnswers[index] = value;
+    setAnswers(updatedAnswers);
+  };
 
   const addAnswer = () => {
     setAnswers([...answers, ""]);
   };
 
-  const updateAnswer = (index, value) => {
-    const newAnswers = [...answers];
-    newAnswers[index] = value;
-    setAnswers(newAnswers);
+  const removeAnswer = (index) => {
+    const updatedAnswers = answers.filter((_, i) => i !== index);
+    setAnswers(updatedAnswers);
   };
 
-  const handleSubmit = async () => {
-    if (!question || !startTime || !endTime) {
-      toast.info("Please fill out the form");
-      return;
+  const validateAnswers = () => {
+    if (answers.some((answer) => answer.trim() === "")) {
+      setAnswersError("All answers must be non-empty.");
+      return false;
+    }
+    setAnswersError(""); // Clear error if valid
+    return true;
+  };
+
+  const onSubmit = async (data) => {
+    if (!validateAnswers()) {
+      return; // Prevent submission if answers are invalid
     }
 
+    const { question, endTime, rules } = data;
+
     try {
-      setIsCreating(true);
-      const tokenReadContract = getContract({
-        address: PAYMENT_TOKEN_ADDRESS,
-        abi: ERC20ABI,
-        client: publicClient,
-      });
-      const allowance = await tokenReadContract.read.allowance([
+      const predictionRes = await createPrediction(
+        question,
+        answers,
+        endTime,
         address,
-        PREDICTION_MARKET_ADDRESS,
-      ]);
-
-      // Format the allowance based on token decimals
-      const formattedAllowance = parseFloat(formatUnits(allowance, 18));
-
-      if (formattedAllowance < CREATION_FEE) {
-        const writeTokenContract = getContract({
-          address: PAYMENT_TOKEN_ADDRESS,
-          abi: ERC20ABI,
-          client: walletClient,
-        });
-
-        const approveHash = await writeTokenContract.write.approve([
-          PREDICTION_MARKET_ADDRESS,
-          parseUnits(CREATION_FEE.toString(), 18),
-        ]);
-        await publicClient.waitForTransactionReceipt({
-          hash: approveHash,
-        });
-      }
+        rules
+      );
+      const metadataId = String(predictionRes.prediction._id);
 
       const writeContract = getContract({
         address: PREDICTION_MARKET_ADDRESS,
         abi: PredictionMarketABI,
         client: walletClient,
       });
+
       const tx = await writeContract.write.createPrediction(
-        [
-          question,
-          answers,
-          BigInt(dayjs(startTime).unix()),
-          BigInt(dayjs(endTime).unix()),
-        ],
+        [metadataId, answers.length, BigInt(dayjs(endTime).unix())],
         {
-          value: 0,
+          value: parseEther(CREATION_FEE),
         }
       );
+
       const transactionReceipt = await publicClient.waitForTransactionReceipt({
-        hash: txResponse,
+        hash: tx,
       });
+
       if (transactionReceipt.status === "success") {
         toast.success("Create prediction successful");
       } else {
-        toast.error("Create prediction failed, please try it again");
+        toast.error("Create prediction failed, please try again");
       }
     } catch (error) {
-      console.log("Predict failed", error);
-    } finally {
-      setIsCreating(false);
+      console.error("Prediction creation failed", error);
+      toast.error("An error occurred while creating the prediction");
     }
   };
 
@@ -110,87 +107,123 @@ const CreatePredictionTemplate = () => {
     <div className="p-6">
       <h2 className="text-accent text-xl font-bold mb-8">Create Prediction</h2>
       <p className="text-white mb-4">
-        Create your own prediction and earn fee with the market. You would need
-        to hold{" "}
-        <a
-          href="https://app.youngparrotnft.com/core/collections/youngparrot-member"
-          target="_blank"
-          className="text-accent underline"
-        >
-          YoungParrot Member NFT
-        </a>{" "}
-        in your wallet to be able to create prediction. Creation fee is{" "}
-        {CREATION_FEE} YPC.
+        Create your own prediction and earn fees with the prediction market
+        platform. Creation fee is {CREATION_FEE} YPC.
       </p>
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <div className="mb-4">
-          <label className="text-primary-light block font-semibold mb-1">
-            Question:
-          </label>
-          <input
-            type="text"
-            className="text-primary-light bg-gray-100 w-full p-2 border rounded"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="text-primary-light block font-semibold mb-1">
-            Answers:
-          </label>
-          {answers.map((answer, index) => (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <label className="text-primary-light block font-semibold mb-1">
+              Question:
+            </label>
             <input
-              key={index}
+              {...register("question", {
+                required: "Question is required",
+                maxLength: {
+                  value: 100,
+                  message: "Max 100 characters allowed",
+                },
+              })}
               type="text"
-              className="text-primary-light bg-gray-100 w-full p-2 border rounded mb-2"
-              value={answer}
-              onChange={(e) => updateAnswer(index, e.target.value)}
+              placeholder="Enter your question (max 100 characters)"
+              className={`text-primary-light bg-gray-100 w-full p-2 border rounded ${
+                errors.question ? "border-red-500" : ""
+              }`}
             />
-          ))}
-          <button
-            className="text-blue-500 text-sm underline"
-            onClick={addAnswer}
-          >
-            Add Answer
-          </button>
-        </div>
-        <div className="mb-4">
-          <label className="text-primary-light block font-semibold mb-1">
-            Start Time:
-          </label>
-          <input
-            type="datetime-local"
-            className="text-primary-light bg-gray-100 w-full p-2 border rounded"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-        </div>
-        <div className="mb-4">
-          <label className="text-primary-light block font-semibold mb-1">
-            End Time:
-          </label>
-          <input
-            type="datetime-local"
-            className="text-primary-light bg-gray-100 w-full p-2 border rounded"
-            value={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-          />
-        </div>
-        <div className="flex justify-end space-x-4">
-          {isConnected ? (
+            {errors.question && (
+              <p className="text-red-500 text-sm">{errors.question.message}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="text-primary-light block font-semibold mb-1">
+              Answers:
+            </label>
+            {answers.map((answer, index) => (
+              <div key={index} className="flex gap-4 mb-2">
+                <input
+                  type="text"
+                  value={answer}
+                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                  placeholder={`Answer ${index + 1}`}
+                  className="text-primary-light bg-gray-100 w-full p-2 border rounded"
+                />
+                {answers.length > 2 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeAnswer(index)}
+                    className="text-blue-500 underline"
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+            ))}
+            {answersError && <p style={{ color: "red" }}>{answersError}</p>}
+            {answers.length <= 1 && (
+              <p style={{ color: "red" }}>At least two answers is required</p>
+            )}
             <button
-              className="flex bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={handleSubmit}
+              type="button"
+              onClick={addAnswer} // Add a new empty string to the answers array
+              className="text-blue-500 underline"
             >
-              Create
-              {isCreating && (
-                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-              )}
+              Add Answer
             </button>
-          ) : (
-            <ConnectButton />
-          )}
-        </div>
+          </div>
+          <div className="mb-4">
+            <label className="text-primary-light block font-semibold mb-1">
+              End Time:
+            </label>
+            <input
+              {...register("endTime", { required: "End time is required" })}
+              type="datetime-local"
+              className={`text-gray-400 bg-gray-100 w-full p-2 border rounded ${
+                errors.endTime ? "border-red-500" : ""
+              }`}
+            />
+            {errors.endTime && (
+              <p className="text-red-500 text-sm">{errors.endTime.message}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="text-primary-light block font-semibold mb-1">
+              Rules:
+            </label>
+            <textarea
+              {...register("rules", {
+                required: "Rules are required",
+                maxLength: {
+                  value: 400,
+                  message: "Max 400 characters allowed",
+                },
+              })}
+              rows="4"
+              className={`text-primary-light bg-gray-100 w-full p-2 border rounded ${
+                errors.rules ? "border-red-500" : ""
+              }`}
+              placeholder="Enter your rules (max 400 characters)"
+            ></textarea>
+            {errors.rules && (
+              <p className="text-red-500 text-sm">{errors.rules.message}</p>
+            )}
+          </div>
+          <div className="flex justify-end space-x-4">
+            {isConnected ? (
+              <button
+                type="submit"
+                className="flex bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={isSubmitting}
+              >
+                Create
+                {isSubmitting && (
+                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                )}
+              </button>
+            ) : (
+              <ConnectButton />
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
 import { FaSpinner } from "react-icons/fa";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
-const amounts = [20, 40, 60, 80, 100, 120, 140, 160, 180, 200];
+const amounts = [1, 2, 4, 8, 10, 14, 18, 20, 30, 40, 50, 80, 100];
 
 const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [amount, setAmount] = useState(amounts[0]);
+  const { address, isConnected } = useAccount();
 
   const handleSubmit = () => {
     if (selectedAnswer !== null) {
@@ -15,13 +18,15 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
       <Modal isOpen={prediction} onClose={onClose}>
         <div className="p-6 rounded-lg shadow-lg">
-          <h2 className="text-primary font-bold mb-4">{prediction[0]}</h2>
+          <h2 className="text-primary text-xl font-bold mb-4">
+            {prediction.question}
+          </h2>
           <div className="mb-4">
             <p className="text-primary-light font-bold">Select Answer:</p>
-            {prediction[1].map((answer, index) => (
+            {prediction.answers.map((answer, index) => (
               <button
                 key={index}
                 className={`w-full text-left text-primary p-2 rounded mb-2 ${
@@ -53,15 +58,19 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
             <button className="text-gray-500" onClick={onClose}>
               Cancel
             </button>
-            <button
-              className="flex bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={handleSubmit}
-            >
-              Predict
-              {isLoading && (
-                <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-              )}
-            </button>
+            {isConnected ? (
+              <button
+                className="flex bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={handleSubmit}
+              >
+                Predict
+                {isLoading && (
+                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                )}
+              </button>
+            ) : (
+              <ConnectButton />
+            )}
           </div>
         </div>
       </Modal>

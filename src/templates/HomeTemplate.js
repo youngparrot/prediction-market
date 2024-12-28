@@ -11,45 +11,35 @@ import {
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import ERC20ABI from "@/lib/abi/ERC20.json";
 import { formatUnits, getContract, parseEther, parseUnits } from "viem";
-import CreatePredictionModal from "@/templates/CreatePredictionTemplate";
 import { toast } from "react-toastify";
+import { fetchPredictions } from "@/utils/api";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const HomeTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
 
   const { address, isConnected } = useAccount();
+  const [isFetching, setIsFetching] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isPredicting, setIsPredicting] = useState(false);
 
   useEffect(() => {
-    const fetchPredictions = async () => {
+    const getPredictions = async () => {
       try {
-        const readContract = getContract({
-          address: PREDICTION_MARKET_ADDRESS,
-          abi: PredictionMarketABI,
-          client: publicClient,
-        });
-        const count = await readContract.read.getPredictionCount();
-
-        const predictionsData = [];
-        for (let i = 0; i < count; i++) {
-          const prediction = await readContract.read.getPrediction([i]);
-          predictionsData.push({
-            id: i,
-            ...prediction,
-          });
-        }
+        setIsFetching(true);
+        const predictionsData = await fetchPredictions({});
 
         setPredictions(predictionsData);
       } catch (error) {
         console.log("Fetching predictions failed", error);
+      } finally {
+        setIsFetching(false);
       }
     };
 
-    fetchPredictions();
+    getPredictions();
   }, []);
 
   const handlePredict = async (answerIndex, amount) => {
@@ -111,30 +101,38 @@ const HomeTemplate = () => {
     }
   };
 
+  if (isFetching) {
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto w-full p-2 md:p-4">
       <h1 className="text-accent text-xl font-bold mb-8">Predictions</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {predictions.map((prediction) => (
-          <PredictionCard
-            key={prediction.id}
-            prediction={prediction}
-            onClick={() => setSelectedPrediction(prediction)}
-          />
-        ))}
-      </div>
+      {predictions.predictions && predictions.predictions.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {predictions.predictions.map((prediction) => (
+            <a
+              href={`/prediction/${prediction._id}`}
+              title={prediction.question}
+              key={prediction._id}
+            >
+              <PredictionCard prediction={prediction} />
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p>No predictions</p>
+      )}
       {selectedPrediction && (
         <PredictionModal
           prediction={selectedPrediction}
           onClose={() => setSelectedPrediction(null)}
           onSubmit={handlePredict}
           isLoading={isPredicting}
-        />
-      )}
-      {isCreateModalOpen && (
-        <CreatePredictionModal
-          onClose={() => setIsCreateModalOpen(false)}
-          onSubmit={handleCreatePrediction}
         />
       )}
     </div>

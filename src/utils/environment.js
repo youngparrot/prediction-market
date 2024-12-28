@@ -9,3 +9,6 @@ export const PAYMENT_TOKEN_ADDRESS =
   process.env.NEXT_PUBLIC_PAYMENT_TOKEN_ADDRESS;
 export const NFT_ADDRESS = process.env.NEXT_PUBLIC_NFT_ADDRESS;
 export const CREATION_FEE = process.env.NEXT_PUBLIC_CREATION_FEE;
+
+export const PREDICTION_MARKET_API =
+  process.env.NEXT_PUBLIC_PREDICTION_MARKET_API;

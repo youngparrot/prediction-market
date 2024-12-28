@@ -9,22 +9,22 @@ const PredictionCard = ({ prediction, onClick }) => {
       onClick={onClick}
     >
       <h3 className="text-primary text-lg font-semibold mb-2">
-        {prediction[0]}
+        {prediction.question}
       </h3>
       <div>
         <p className="text-sm text-gray-600">
-          Start: {new Date(prediction[7].toString() * 1000).toLocaleString()}
+          ENDED BY: {new Date(prediction.endDate).toLocaleString()}
         </p>
         <p className="text-sm text-gray-600">
-          End: {new Date(prediction[8].toString() * 1000).toLocaleString()}
-        </p>
-        <p className="text-sm text-gray-600">
-          Creator: {`${prediction[5].slice(0, 6)}...${prediction[5].slice(-4)}`}
+          ASKED BY:{" "}
+          {`${prediction.createdBy.slice(0, 6)}...${prediction.createdBy.slice(
+            -4
+          )}`}
         </p>
       </div>
       <div className="pt-4">
         <p className="text-sm font-bold text-secondary-light">
-          {formatUnits(prediction[6], 18)} $YPC Vol
+          TOTAL: {prediction.total} $CORE
         </p>
       </div>
     </div>

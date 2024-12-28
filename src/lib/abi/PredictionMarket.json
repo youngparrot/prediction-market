@@ -3,16 +3,6 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_nftContract",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_paymentToken",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_platformRecipient",
         "type": "address"
       }
@@ -51,9 +41,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "metadataId",
+        "type": "string"
       },
       {
         "indexed": true,
@@ -140,9 +130,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "metadataId",
+        "type": "string"
       },
       {
         "indexed": true,
@@ -171,14 +161,8 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "predictionId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
         "internalType": "string",
-        "name": "question",
+        "name": "metadataId",
         "type": "string"
       },
       {
@@ -196,9 +180,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "metadataId",
+        "type": "string"
       },
       {
         "indexed": false,
@@ -215,9 +199,9 @@
     "inputs": [
       {
         "indexed": true,
-        "internalType": "uint256",
-        "name": "predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "metadataId",
+        "type": "string"
       },
       {
         "indexed": true,
@@ -238,9 +222,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
       }
     ],
     "name": "claimRewards",
@@ -252,17 +236,12 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "_question",
+        "name": "_metadataId",
         "type": "string"
       },
       {
-        "internalType": "string[]",
-        "name": "_answers",
-        "type": "string[]"
-      },
-      {
         "internalType": "uint256",
-        "name": "_startTime",
+        "name": "_answersLength",
         "type": "uint256"
       },
       {
@@ -273,7 +252,7 @@
     ],
     "name": "createPrediction",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -305,9 +284,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
       }
     ],
     "name": "emergencyWithdraw",
@@ -325,9 +304,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
       },
       {
         "internalType": "uint256",
@@ -343,22 +322,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
       }
     ],
     "name": "getPrediction",
     "outputs": [
       {
         "internalType": "string",
-        "name": "question",
+        "name": "metadataId",
         "type": "string"
-      },
-      {
-        "internalType": "string[]",
-        "name": "answers",
-        "type": "string[]"
       },
       {
         "internalType": "uint256[]",
@@ -387,25 +361,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "startTime",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
         "name": "endTime",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getPredictionCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
         "type": "uint256"
       }
     ],
@@ -415,9 +371,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
       },
       {
         "internalType": "address",
@@ -437,13 +393,67 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "nftContract",
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
+      }
+    ],
+    "name": "getTotalStakesForPrediction",
     "outputs": [
       {
-        "internalType": "contract IERC721Enumerable",
+        "internalType": "uint256[]",
         "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_user",
         "type": "address"
+      }
+    ],
+    "name": "getUserStakesForPrediction",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
+      },
+      {
+        "internalType": "address",
+        "name": "_user",
+        "type": "address"
+      }
+    ],
+    "name": "hasUserClaimed",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -455,19 +465,6 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "paymentToken",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
         "name": "",
         "type": "address"
       }
@@ -504,40 +501,40 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_predictionId",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "_metadataId",
+        "type": "string"
       },
       {
         "internalType": "uint256",
         "name": "_answerIndex",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
       }
     ],
     "name": "predict",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "uint256",
+        "internalType": "string",
         "name": "",
-        "type": "uint256"
+        "type": "string"
       }
     ],
     "name": "predictions",
     "outputs": [
       {
         "internalType": "string",
-        "name": "question",
+        "name": "metadataId",
         "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "answersLength",
+        "type": "uint256"
       },
       {
         "internalType": "bool",
@@ -558,11 +555,6 @@
         "internalType": "address",
         "name": "creator",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "startTime",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -615,32 +607,6 @@
       }
     ],
     "name": "updateCreationShareFeePercent",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_nftContract",
-        "type": "address"
-      }
-    ],
-    "name": "updateNftContract",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_paymentToken",
-        "type": "address"
-      }
-    ],
-    "name": "updatePaymentToken",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
