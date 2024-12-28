@@ -32,7 +32,7 @@ export default function Footer() {
             />
           </div>
           <p className="mt-4 text-gray-400">
-            The world's digital marketplace for crypto collectibles,
+            The world&apos;s digital marketplace for crypto collectibles,
             non-fungible tokens (NFTs), DEX aggregator, prediction market,
             decentralized token launchpad, dev tools, and games.
           </p>
