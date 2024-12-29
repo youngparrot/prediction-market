@@ -128,12 +128,16 @@ const CreatePredictionTemplate = () => {
       }
     } catch (error) {
       console.error("Prediction creation failed", error);
-      toast.error("An error occurred while creating the prediction");
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: "create-failed",
-          userAddress: `address_${address}`,
-        });
+      if (error.message.startsWith("User rejected the request")) {
+        toast.error("You rejected the request");
+      } else {
+        toast.error("An error occurred while creating the prediction");
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "create-failed",
+            userAddress: `address_${address}`,
+          });
+        }
       }
     }
   };

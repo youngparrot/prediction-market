@@ -194,14 +194,18 @@ const PredictionTemplate = () => {
       }
     } catch (error) {
       console.log("Predict failed", error);
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: "predict-failed",
-          predictionId: prediction.prediction._id,
-          userAddress: `address_${address}`,
-          value: amount,
-          answerIndex,
-        });
+      if (error.message.startsWith("User rejected the request")) {
+        toast.error("You rejected the request");
+      } else {
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "predict-failed",
+            predictionId: prediction.prediction._id,
+            userAddress: `address_${address}`,
+            value: amount,
+            answerIndex,
+          });
+        }
       }
     } finally {
       setIsPredicting(false);
@@ -259,12 +263,16 @@ const PredictionTemplate = () => {
       }
     } catch (error) {
       console.log("Claim rewards failed", error);
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: "claim-rewards-failed",
-          userAddress: `address_${address}`,
-          value: claimAmount,
-        });
+      if (error.message.startsWith("User rejected the request")) {
+        toast.error("You rejected the request");
+      } else {
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "claim-rewards-failed",
+            userAddress: `address_${address}`,
+            value: claimAmount,
+          });
+        }
       }
     } finally {
       setIsClaiming(false);
