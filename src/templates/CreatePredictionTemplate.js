@@ -99,14 +99,36 @@ const CreatePredictionTemplate = () => {
       });
 
       if (transactionReceipt.status === "success") {
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "create-success",
+            userAddress: `address_${address}`,
+            metadataId,
+            transaction_id: `id_${transactionReceipt.transactionHash}`,
+          });
+        }
         toast.success("Create prediction successful");
         router.push(`/prediction/${metadataId}`);
       } else {
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "create-failed-try-again",
+            userAddress: `address_${address}`,
+            metadataId,
+            transaction_id: `id_${transactionReceipt.transactionHash}`,
+          });
+        }
         toast.error("Create prediction failed, please try again");
       }
     } catch (error) {
       console.error("Prediction creation failed", error);
       toast.error("An error occurred while creating the prediction");
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "create-failed",
+          userAddress: `address_${address}`,
+        });
+      }
     }
   };
 
@@ -220,6 +242,7 @@ const CreatePredictionTemplate = () => {
           <div className="flex justify-end space-x-4">
             {isConnected ? (
               <button
+                id="create-button"
                 type="submit"
                 className="flex bg-blue-500 text-white px-4 py-2 rounded"
                 disabled={isSubmitting}
