@@ -31,7 +31,7 @@ export default function Footer() {
               alt="YoungParrot Logo"
             />
           </div>
-          <p className="mt-4 text-gray-400">
+          <p className="mt-4 text-white">
             The world&apos;s digital marketplace for crypto collectibles,
             non-fungible tokens (NFTs), DEX aggregator, prediction market,
             decentralized token launchpad, dev tools, and games.
