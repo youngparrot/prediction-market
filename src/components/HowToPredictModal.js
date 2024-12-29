@@ -42,7 +42,8 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
                 </h3>
                 <p className="text-gray-500 pb-4">
                   After placing a prediction, it will appear in your dashboard.
-                  Track the market's progress and stay updated with live data.
+                  Track the market&lsquo;s progress and stay updated with live
+                  data.
                 </p>
                 <h3 className="text-primary font-bold">
                   Step 5: Claim Rewards
