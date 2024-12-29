@@ -20,7 +20,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="text-white px-2 mt-4 md:px-16">
+    <footer className="text-white px-2 mt-4 pb-8 md:px-16 bg-black bg-opacity-50">
       <div className="pt-8 md:pt-8 relative mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
         {/* Logo and description */}
         <div>
