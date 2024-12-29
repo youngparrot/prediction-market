@@ -152,8 +152,9 @@ const CreatePredictionTemplate = () => {
                 <input
                   type="text"
                   value={answer}
+                  maxLength={100}
                   onChange={(e) => handleAnswerChange(index, e.target.value)}
-                  placeholder={`Outcome ${index + 1}`}
+                  placeholder={`Outcome ${index + 1} (max 100 characters)`}
                   className="text-primary-light bg-gray-100 w-full p-2 border rounded"
                 />
                 {answers.length > 2 ? (
@@ -181,7 +182,7 @@ const CreatePredictionTemplate = () => {
           </div>
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
-              End Time:
+              End Time (UTC):
             </label>
             <input
               {...register("endTime", { required: "End time is required" })}
