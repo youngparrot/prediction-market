@@ -155,8 +155,6 @@ const PredictionTemplate = () => {
 
       if (transactionReceipt.status === "success") {
         toast.success("Predict successful");
-        setSelectedPrediction(null);
-        getPredictionContract();
 
         try {
           await createTransaction(
@@ -179,6 +177,9 @@ const PredictionTemplate = () => {
             transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
+
+        getPredictionContract();
+        setSelectedPrediction(null);
       } else {
         toast.error("Predict failed, please try again");
         if (window.dataLayer) {
