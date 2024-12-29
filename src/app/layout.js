@@ -18,7 +18,7 @@ const I18nextProvider = dynamic(
 
 const inter = Inter({ subsets: ["latin"] });
 
-const GTM_ID = "GTM-TGGCTWTL";
+const GTM_ID = "GTM-NPT5D8DZ";
 
 function RootLayout({ children }) {
   return (
