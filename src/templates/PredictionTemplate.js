@@ -155,11 +155,37 @@ const PredictionTemplate = () => {
         toast.success("Predict successful");
         setSelectedPrediction(null);
         getPredictionContract();
+
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "predict-success",
+            userAddress: `address_${address}`,
+            value: amount,
+            answerIndex,
+            transaction_id: `id_${transactionReceipt.transactionHash}`,
+          });
+        }
       } else {
         toast.error("Predict failed, please try again");
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "predict-failed-try-again",
+            userAddress: `address_${address}`,
+            value: amount,
+            answerIndex,
+          });
+        }
       }
     } catch (error) {
       console.log("Predict failed", error);
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "predict-failed",
+          userAddress: `address_${address}`,
+          value: amount,
+          answerIndex,
+        });
+      }
     } finally {
       setIsPredicting(false);
     }
@@ -196,11 +222,32 @@ const PredictionTemplate = () => {
       if (transactionReceipt.status === "success") {
         toast.success("Claim rewards successful");
         fetchHasClaimed();
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "claim-rewards-success",
+            userAddress: `address_${address}`,
+            value: claimAmount,
+          });
+        }
       } else {
         toast.error("Claim rewards failed, please try again");
+        if (window.dataLayer) {
+          window.dataLayer.push({
+            event: "claim-rewards-failed-try-again",
+            userAddress: `address_${address}`,
+            value: claimAmount,
+          });
+        }
       }
     } catch (error) {
       console.log("Claim rewards failed", error);
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: "claim-rewards-failed",
+          userAddress: `address_${address}`,
+          value: claimAmount,
+        });
+      }
     } finally {
       setIsClaiming(false);
     }
@@ -289,6 +336,7 @@ const PredictionTemplate = () => {
                 ) : null}
                 <div className="flex gap-4">
                   <button
+                    id="predict-button"
                     onClick={handlePredictButtonClick}
                     className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
                   >
@@ -296,6 +344,7 @@ const PredictionTemplate = () => {
                   </button>
                   {isDone ? (
                     <button
+                      id="claim-rewards"
                       onClick={handleClaimRewards}
                       className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
                     >

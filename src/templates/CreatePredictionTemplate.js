@@ -111,7 +111,7 @@ const CreatePredictionTemplate = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-2 md:p-6">
       <h2 className="text-accent text-xl font-bold mb-4">Create Prediction</h2>
       <p className="text-white mb-4">
         Create your own prediction and earn fees with the prediction market

@@ -73,6 +73,7 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
             </button>
 
             <button
+              id="predict-button-on-modal"
               className="flex bg-blue-500 text-white px-4 py-2 rounded"
               onClick={handleSubmit}
             >
