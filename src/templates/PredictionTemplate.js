@@ -313,7 +313,7 @@ const PredictionTemplate = () => {
           </div>
         </div>
       ) : (
-        <div>No prediction</div>
+        <div className="text-white">Prediction is not found</div>
       )}
 
       {selectedPrediction && (

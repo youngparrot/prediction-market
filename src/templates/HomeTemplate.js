@@ -119,7 +119,7 @@ const HomeTemplate = () => {
             ))}
           </div>
         ) : (
-          <p>No active predictions</p>
+          <p className="text-white">No active predictions</p>
         )}
       </div>
       <div className="mb-8">
@@ -140,7 +140,7 @@ const HomeTemplate = () => {
             ))}
           </div>
         ) : (
-          <p>No completed predictions</p>
+          <p className="text-white">No completed predictions</p>
         )}
       </div>
     </div>

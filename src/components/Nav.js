@@ -61,7 +61,7 @@ export default function Nav() {
           {/* Toggle Button (Sandwich Icon) */}
           <button
             onClick={toggleMenu}
-            className="text-2xl p-3 text-white-700 md:hidden"
+            className="text-2xl p-3 text-white md:hidden"
           >
             <FaBars />
           </button>
