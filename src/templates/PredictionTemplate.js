@@ -38,24 +38,6 @@ const PredictionTemplate = () => {
       setIsFetching(true);
       const predictionData = await fetchPredictions({ id });
       setPrediction(predictionData);
-
-      const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
-        client: publicClient,
-      });
-
-      const hasClaimed = await readContract.read.hasUserClaimed([
-        predictionData.prediction._id,
-        address,
-      ]);
-      setHasClaimed(hasClaimed);
-
-      const claimAmount = await readContract.read.getRewardToClaim([
-        predictionData.prediction._id,
-        address,
-      ]);
-      setClaimAmount(claimAmount.toString());
     } catch (error) {
       console.log("Fetching predictions failed", error);
     } finally {
@@ -99,12 +81,40 @@ const PredictionTemplate = () => {
   };
 
   useEffect(() => {
-    if (!address) {
+    getPrediction();
+  }, []);
+
+  const fetchUserContract = async () => {
+    try {
+      const readContract = getContract({
+        address: PREDICTION_MARKET_ADDRESS,
+        abi: PredictionMarketABI,
+        client: publicClient,
+      });
+
+      const hasClaimed = await readContract.read.hasUserClaimed([
+        prediction.prediction._id,
+        address,
+      ]);
+      setHasClaimed(hasClaimed);
+
+      const claimAmount = await readContract.read.getRewardToClaim([
+        prediction.prediction._id,
+        address,
+      ]);
+      setClaimAmount(claimAmount.toString());
+    } catch (error) {
+      console.log("Fetching user contract failed", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!address || !prediction) {
       return;
     }
 
-    getPrediction();
-  }, [address]);
+    fetchUserContract();
+  }, [address, prediction]);
 
   useEffect(() => {
     if (!prediction?.prediction?._id) {
