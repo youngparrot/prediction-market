@@ -227,6 +227,7 @@ const PredictionTemplate = () => {
             event: "claim-rewards-success",
             userAddress: `address_${address}`,
             value: claimAmount,
+            transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
       } else {
