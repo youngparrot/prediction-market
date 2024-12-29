@@ -10,6 +10,8 @@ import Footer from "@/components/Footer";
 import dynamic from "next/dynamic";
 import i18n from "./i18n";
 import Script from "next/script";
+import HowToPredictModal from "@/components/HowToPredictModal";
+import { useState } from "react";
 
 const I18nextProvider = dynamic(
   () => import("react-i18next").then((mod) => mod.I18nextProvider),
@@ -21,6 +23,8 @@ const inter = Inter({ subsets: ["latin"] });
 const GTM_ID = "GTM-NPT5D8DZ";
 
 function RootLayout({ children }) {
+  const [showHowToPredict, setShowHowToPredict] = useState(false);
+
   return (
     <html lang="en">
       <body
@@ -60,12 +64,16 @@ function RootLayout({ children }) {
         </noscript>
         <I18nextProvider i18n={i18n}>
           <Providers>
-            <Nav />
+            <Nav setShowHowToPredict={setShowHowToPredict} />
             <main className="flex flex-col px-2 py-2 md:px-16 md:py-4 relative z-10">
               {children}
               <ToastProvider />
             </main>
             <Footer />
+            <HowToPredictModal
+              isOpen={showHowToPredict}
+              onClose={() => setShowHowToPredict(false)}
+            />
           </Providers>
           <ToastProvider />
         </I18nextProvider>

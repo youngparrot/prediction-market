@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-export default function Nav() {
+export default function Nav({ setShowHowToPredict }) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Function to toggle the menu
@@ -64,6 +64,15 @@ export default function Nav() {
           </motion.a>
         </div>
         <div className="flex gap-4 items-center hidden md:flex">
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
+            title="How to Predict"
+            onClick={() => setShowHowToPredict(true)}
+          >
+            How to Predict
+          </motion.button>
           <ConnectButton />
         </div>
         <div className="relative md:hidden">
@@ -92,6 +101,15 @@ export default function Nav() {
           >
             {/* Menu Items */}
             <nav className="p-5 space-y-4">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
+                title="How to Predict"
+                onClick={() => setShowHowToPredict(true)}
+              >
+                How to Predict
+              </motion.button>
               <ConnectButton />
             </nav>
           </div>
