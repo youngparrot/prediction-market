@@ -324,6 +324,13 @@ const PredictionTemplate = () => {
                   className={`flex items-center gap-2 w-full text-left text-primary-light rounded mb-2`}
                 >
                   {index + 1}: {answer}{" "}
+                  <span className="text-gray-500">
+                    (
+                    {predictionContract
+                      ? formatEther(predictionContract[0].stakes[index])
+                      : null}{" "}
+                    $CORE)
+                  </span>
                   {isDone && predictionContract ? (
                     parseInt(predictionContract[0].winningAnswerIndex) ==
                     index ? (

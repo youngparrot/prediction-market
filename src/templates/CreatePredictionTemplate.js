@@ -14,7 +14,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import dayjs from "dayjs";
 import { FaSpinner } from "react-icons/fa";
-import { createPrediction } from "@/utils/api";
+import { createPrediction, updatePrediction } from "@/utils/api";
 import { useRouter } from "next/navigation";
 
 const CreatePredictionTemplate = () => {
@@ -107,6 +107,12 @@ const CreatePredictionTemplate = () => {
             transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
+        try {
+          await updatePrediction(metadataId, "active");
+        } catch (error) {
+          console.log("Update prediction failed ", error);
+        }
+
         toast.success("Create prediction successful");
         router.push(`/prediction/${metadataId}`);
       } else {

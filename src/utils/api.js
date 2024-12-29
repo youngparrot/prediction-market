@@ -45,6 +45,20 @@ export async function createTransaction(
   }
 }
 
+export async function updatePrediction(predictionId, status) {
+  const url = `${PREDICTION_MARKET_API}/api/updatePrediction`;
+  try {
+    const response = await axios.put(url, {
+      predictionId,
+      status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error update prediction:", error);
+    return null;
+  }
+}
+
 export async function fetchPredictions({
   page = 1,
   limit = 20,
