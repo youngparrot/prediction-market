@@ -138,44 +138,45 @@ const PredictionTemplate = () => {
     try {
       setIsPredicting(true);
 
-      // const writeContract = getContract({
-      //   address: PREDICTION_MARKET_ADDRESS,
-      //   abi: PredictionMarketABI,
-      //   client: walletClient,
-      // });
-      // const tx = await writeContract.write.predict(
-      //   [prediction.prediction._id, answerIndex],
-      //   {
-      //     value: parseEther(amount.toString()),
-      //   }
-      // );
-      // const transactionReceipt = await publicClient.waitForTransactionReceipt({
-      //   hash: tx,
-      // });
-      if (true || transactionReceipt.status === "success") {
+      const writeContract = getContract({
+        address: PREDICTION_MARKET_ADDRESS,
+        abi: PredictionMarketABI,
+        client: walletClient,
+      });
+      const tx = await writeContract.write.predict(
+        [prediction.prediction._id, answerIndex],
+        {
+          value: parseEther(amount.toString()),
+        }
+      );
+      const transactionReceipt = await publicClient.waitForTransactionReceipt({
+        hash: tx,
+      });
+
+      if (transactionReceipt.status === "success") {
         toast.success("Predict successful");
         setSelectedPrediction(null);
         getPredictionContract();
 
         try {
           await createTransaction(
-            "67708c72086dce8df5ba1eaf",
+            prediction.prediction._id,
             answerIndex,
             address,
             parseInt(amount)
           );
         } catch (error) {
-          console.log("Create transaction failed, ", error);
+          console.log("Create transaction failed ", error);
         }
 
         if (window.dataLayer) {
           window.dataLayer.push({
             event: "predict-success",
-            predictionId: "67708c72086dce8df5ba1eaf",
+            predictionId: prediction.prediction._id,
             userAddress: `address_${address}`,
             value: amount,
             answerIndex,
-            // transaction_id: `id_${transactionReceipt.transactionHash}`,
+            transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
       } else {
