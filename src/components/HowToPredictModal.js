@@ -33,9 +33,9 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
                 <p className="text-gray-500 pb-4">
                   Click on a prediction to view its details, such as the
                   question, outcomes, rules, and closing time. Choose your
-                  prediction from the available options (e.g., "Yes" or "No").
-                  Enter the amount you want to predict and confirm your
-                  prediction.
+                  prediction from the available options (e.g., &quot;Yes&quot;
+                  or &quot;No&quot;). Enter the amount you want to predict and
+                  confirm your prediction.
                 </p>
                 <h3 className="text-primary font-bold">
                   Step 4: Monitor Your Predictions
