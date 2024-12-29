@@ -1,7 +1,7 @@
 import HomeTemplate from "@/templates/HomeTemplate";
 
 export const metadata = {
-  title: "YP Prediction Market",
+  title: "Prediction Homepage",
   description: "YP Prediction Market on Core blockchain",
 };
 
