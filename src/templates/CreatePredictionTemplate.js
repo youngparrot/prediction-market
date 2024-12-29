@@ -103,7 +103,7 @@ const CreatePredictionTemplate = () => {
           window.dataLayer.push({
             event: "create-success",
             userAddress: `address_${address}`,
-            metadataId,
+            predictionId: metadataId,
             transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
@@ -114,7 +114,7 @@ const CreatePredictionTemplate = () => {
           window.dataLayer.push({
             event: "create-failed-try-again",
             userAddress: `address_${address}`,
-            metadataId,
+            predictionId: metadataId,
             transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }

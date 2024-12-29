@@ -7,12 +7,13 @@ import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { formatEther, getContract, parseEther } from "viem";
 import { toast } from "react-toastify";
-import { fetchPredictions } from "@/utils/api";
+import { createTransaction, fetchPredictions } from "@/utils/api";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
 import { FaCheck, FaSpinner } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Giscus from "@giscus/react";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -137,32 +138,44 @@ const PredictionTemplate = () => {
     try {
       setIsPredicting(true);
 
-      const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
-        client: walletClient,
-      });
-      const tx = await writeContract.write.predict(
-        [selectedPrediction._id, answerIndex],
-        {
-          value: parseEther(amount.toString()),
-        }
-      );
-      const transactionReceipt = await publicClient.waitForTransactionReceipt({
-        hash: tx,
-      });
-      if (transactionReceipt.status === "success") {
+      // const writeContract = getContract({
+      //   address: PREDICTION_MARKET_ADDRESS,
+      //   abi: PredictionMarketABI,
+      //   client: walletClient,
+      // });
+      // const tx = await writeContract.write.predict(
+      //   [prediction.prediction._id, answerIndex],
+      //   {
+      //     value: parseEther(amount.toString()),
+      //   }
+      // );
+      // const transactionReceipt = await publicClient.waitForTransactionReceipt({
+      //   hash: tx,
+      // });
+      if (true || transactionReceipt.status === "success") {
         toast.success("Predict successful");
         setSelectedPrediction(null);
         getPredictionContract();
 
+        try {
+          await createTransaction(
+            "67708c72086dce8df5ba1eaf",
+            answerIndex,
+            address,
+            parseInt(amount)
+          );
+        } catch (error) {
+          console.log("Create transaction failed, ", error);
+        }
+
         if (window.dataLayer) {
           window.dataLayer.push({
             event: "predict-success",
+            predictionId: "67708c72086dce8df5ba1eaf",
             userAddress: `address_${address}`,
             value: amount,
             answerIndex,
-            transaction_id: `id_${transactionReceipt.transactionHash}`,
+            // transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
       } else {
@@ -170,6 +183,7 @@ const PredictionTemplate = () => {
         if (window.dataLayer) {
           window.dataLayer.push({
             event: "predict-failed-try-again",
+            predictionId: prediction.prediction._id,
             userAddress: `address_${address}`,
             value: amount,
             answerIndex,
@@ -181,6 +195,7 @@ const PredictionTemplate = () => {
       if (window.dataLayer) {
         window.dataLayer.push({
           event: "predict-failed",
+          predictionId: prediction.prediction._id,
           userAddress: `address_${address}`,
           value: amount,
           answerIndex,
@@ -263,105 +278,124 @@ const PredictionTemplate = () => {
   }
 
   return (
-    <div className="container mx-auto w-full p-2 md:p-4 bg-white text-primary-light rounded-md">
+    <div className="container mx-auto w-full text-primary-light">
       {prediction && prediction.prediction ? (
-        <div>
-          <div className="flex gap-4 items-center mb-4">
-            <Image
-              src={prediction.prediction.image}
-              width={60}
-              height={60}
-              alt={`${prediction.prediction.question} logo`}
-            />
-            <h1 className="text-primary text-xl font-bold">
-              {prediction.prediction.question}
-            </h1>
-          </div>
-          <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
-            <p>
-              Asked By:{" "}
-              {`${prediction.prediction.createdBy.slice(
-                0,
-                6
-              )}...${prediction.prediction.createdBy.slice(-4)}`}
-            </p>
-            <p>
-              Ended At:{" "}
-              {new Date(prediction.prediction.endDate).toLocaleString()}
-            </p>
-          </div>
-          <div className="mb-2">
-            <p className="text-secondary font-bold">
-              Total:{" "}
-              {predictionContract
-                ? formatEther(predictionContract[0].totalStaked)
-                : 0}{" "}
-              $CORE
-            </p>
-          </div>
-          <div className="text-primary font-bold mb-2">Outcomes:</div>
-          <div className="flex flex-col">
-            {prediction.prediction.answers.map((answer, index) => (
-              <p
-                key={index}
-                className={`flex items-center gap-2 w-full text-left text-primary-light rounded mb-2`}
-              >
-                {index + 1}: {answer}{" "}
-                {isDone && predictionContract ? (
-                  parseInt(predictionContract[0].winningAnswerIndex) ==
-                  index ? (
-                    <FaCheck className="text-green-500" />
-                  ) : (
-                    ""
-                  )
-                ) : null}
+        <>
+          <div className="bg-white mb-8 p-2 md:p-4 rounded-md">
+            <div className="flex gap-4 items-center mb-4">
+              <Image
+                src={prediction.prediction.image}
+                width={60}
+                height={60}
+                alt={`${prediction.prediction.question} logo`}
+              />
+              <h1 className="text-primary text-xl font-bold">
+                {prediction.prediction.question}
+              </h1>
+            </div>
+            <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
+              <p>
+                Asked By:{" "}
+                {`${prediction.prediction.createdBy.slice(
+                  0,
+                  6
+                )}...${prediction.prediction.createdBy.slice(-4)}`}
               </p>
-            ))}
-          </div>
-          <div className="mt-2">
-            <h1 className="text-gray-600 font-bold mb-2">Rules:</h1>
-            <p
-              dangerouslySetInnerHTML={{ __html: prediction.prediction.rules }}
-              className="text-gray-600"
-            ></p>
-          </div>
-          <div className="mt-4">
-            {isConnected ? (
-              <>
-                {isDone ? (
-                  <div className="mb-2">
-                    <p>
-                      Your rewards: {formatEther(claimAmount.toString())} $CORE
-                    </p>
-                  </div>
-                ) : null}
-                <div className="flex gap-4">
-                  <button
-                    id="predict-button"
-                    onClick={handlePredictButtonClick}
-                    className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
-                  >
-                    Predict
-                  </button>
-                  {isDone ? (
-                    <button
-                      id="claim-rewards"
-                      onClick={handleClaimRewards}
-                      className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
-                    >
-                      Claim Rewards
-                      {isClaiming && (
-                        <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-                      )}
-                    </button>
+              <p>
+                Ended At:{" "}
+                {new Date(prediction.prediction.endDate).toLocaleString()}
+              </p>
+            </div>
+            <div className="mb-2">
+              <p className="text-secondary font-bold">
+                Total:{" "}
+                {predictionContract
+                  ? formatEther(predictionContract[0].totalStaked)
+                  : 0}{" "}
+                $CORE
+              </p>
+            </div>
+            <div className="text-primary font-bold mb-2">Outcomes:</div>
+            <div className="flex flex-col">
+              {prediction.prediction.answers.map((answer, index) => (
+                <p
+                  key={index}
+                  className={`flex items-center gap-2 w-full text-left text-primary-light rounded mb-2`}
+                >
+                  {index + 1}: {answer}{" "}
+                  {isDone && predictionContract ? (
+                    parseInt(predictionContract[0].winningAnswerIndex) ==
+                    index ? (
+                      <FaCheck className="text-green-500" />
+                    ) : (
+                      ""
+                    )
                   ) : null}
-                </div>
-              </>
-            ) : (
-              <ConnectButton />
-            )}
+                </p>
+              ))}
+            </div>
+            <div className="mt-2">
+              <h1 className="text-gray-600 font-bold mb-2">Rules:</h1>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: prediction.prediction.rules,
+                }}
+                className="text-gray-600"
+              ></p>
+            </div>
+            <div className="mt-4">
+              {isConnected ? (
+                <>
+                  {isDone ? (
+                    <div className="mb-2">
+                      <p>
+                        Your rewards: {formatEther(claimAmount.toString())}{" "}
+                        $CORE
+                      </p>
+                    </div>
+                  ) : null}
+                  <div className="flex gap-4">
+                    <button
+                      id="predict-button"
+                      onClick={handlePredictButtonClick}
+                      className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
+                    >
+                      Predict
+                    </button>
+                    {isDone ? (
+                      <button
+                        id="claim-rewards"
+                        onClick={handleClaimRewards}
+                        className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
+                      >
+                        Claim Rewards
+                        {isClaiming && (
+                          <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                        )}
+                      </button>
+                    ) : null}
+                  </div>
+                </>
+              ) : (
+                <ConnectButton />
+              )}
+            </div>
           </div>
-        </div>
+          <div className="bg-white p-2 md:p-4 rounded-md">
+            <Giscus
+              repo="youngparrot/prediction-market"
+              repoId="R_kgDONg2FQw"
+              category="General"
+              categoryId="DIC_kwDONg2FQ84Cll6f"
+              mapping={`/prediction/${id}`}
+              reactionsEnabled="1"
+              emitMetadata="0"
+              inputPosition="bottom"
+              theme="light"
+              lang="en"
+            />
+          </div>
+        </>
       ) : (
         <div className="text-white">Prediction is not found</div>
       )}
