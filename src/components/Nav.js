@@ -4,10 +4,10 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
-  const [ypPrices, setYPPrices] = useState({});
 
   // Function to toggle the menu
   const toggleMenu = () => {
@@ -53,6 +53,15 @@ export default function Nav() {
               priority
             />
           </a>
+          <motion.a
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
+            href="/create-prediction"
+            title="Create Prediction"
+          >
+            Create Prediction
+          </motion.a>
         </div>
         <div className="flex gap-4 items-center hidden md:flex">
           <ConnectButton />
