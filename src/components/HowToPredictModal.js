@@ -50,7 +50,7 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
                 </h3>
                 <p className="text-gray-500 pb-4">
                   If your prediction is correct, you will earn the rewards as
-                  (total amount of user predicted)/(total amount of all users
+                  (total amount of you predicted)/(total amount of all users
                   predicted for correct outcome) * (total amount of all users
                   predicted for whole prediction) * {100 - PLATFORM_FEE_PERCENT}
                   %. Platform fee is {PLATFORM_FEE_PERCENT}%.
