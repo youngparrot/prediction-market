@@ -30,7 +30,7 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <Modal isOpen={prediction} onClose={onClose}>
-        <div className="p-6 rounded-lg shadow-lg">
+        <div className="p-4 rounded-lg shadow-lg">
           <h2 className="text-primary text-xl font-bold mb-4">
             {prediction.question}
           </h2>
