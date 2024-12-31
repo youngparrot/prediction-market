@@ -14,6 +14,7 @@ import Image from "next/image";
 import { FaCheck, FaSpinner } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Giscus from "@giscus/react";
+import dayjs from "dayjs";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -33,6 +34,24 @@ const PredictionTemplate = () => {
     : false;
 
   const { id } = useParams();
+
+  const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
+
+  useEffect(() => {
+    if (!prediction?.prediction.endDate) {
+      return;
+    }
+
+    // Calculate the time one hour before the end date
+    const oneHourBeforeEnd = dayjs(prediction?.prediction.endDate).subtract(
+      1,
+      "hour"
+    );
+    const now = dayjs();
+
+    // Disable prediction if the current time is past the one-hour mark
+    setIsPredictionAllowed(now.isBefore(oneHourBeforeEnd));
+  }, [prediction?.prediction.endDate]);
 
   const getPrediction = async () => {
     try {
@@ -128,6 +147,13 @@ const PredictionTemplate = () => {
   const handlePredictButtonClick = () => {
     if (isDone) {
       toast.info("This prediction is done, so you cannot predict anymore");
+      return;
+    }
+
+    if (!isPredictionAllowed) {
+      toast.info(
+        "Predictions are not accepted within the last hour of this event"
+      );
       return;
     }
 
@@ -359,6 +385,10 @@ const PredictionTemplate = () => {
                 }}
                 className="text-gray-600"
               ></p>
+
+              <p className="text-secondary mt-2">
+                Predictions are not accepted within the last hour of this event.
+              </p>
             </div>
             <div className="mt-4">
               {isConnected ? (
