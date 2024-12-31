@@ -24,7 +24,10 @@ const Modal = ({ isOpen, onClose, children }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-      <div ref={modalRef} className="bg-white rounded-lg max-w-md w-full">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-lg max-w-md md:max-w-2xl w-full"
+      >
         <div className="p-4">
           <button onClick={onClose} className="text-secondary float-right">
             ✕

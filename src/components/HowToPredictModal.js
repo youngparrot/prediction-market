@@ -11,7 +11,7 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
               <h2 className="text-primary text-xl font-bold mb-4">
                 How to Predict
               </h2>
-              <div className="mb-4 overflow-y-scroll h-80">
+              <div className="mb-4 overflow-y-scroll h-80 md:h-1/3">
                 <h3 className="text-primary font-bold">
                   Step 1: Connect wallet
                 </h3>
