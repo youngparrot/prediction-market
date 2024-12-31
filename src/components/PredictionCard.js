@@ -10,7 +10,7 @@ const PredictionCard = ({ prediction, onClick }) => {
 
   return (
     <div
-      className="relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl"
+      className="relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl h-full"
       onClick={onClick}
     >
       {isDone ? (
@@ -33,21 +33,24 @@ const PredictionCard = ({ prediction, onClick }) => {
           {prediction.answers[parseInt(prediction.winningAnswerIndex)]}
         </div>
       ) : null}
-      <div>
-        <p className="text-sm text-gray-600">
-          Asked By:{" "}
-          {`${prediction.createdBy.slice(0, 6)}...${prediction.createdBy.slice(
-            -4
-          )}`}
-        </p>
-        <p className="text-sm text-gray-600">
-          Ended At: {new Date(prediction.endDate).toLocaleString()}
-        </p>
-      </div>
-      <div className="pt-4">
-        <p className="font-bold text-secondary-light">
-          Total: {formatEther(prediction.total)} $CORE
-        </p>
+      <div className="mt-auto">
+        <div>
+          <p className="text-sm text-gray-600">
+            Asked By:{" "}
+            {`${prediction.createdBy.slice(
+              0,
+              6
+            )}...${prediction.createdBy.slice(-4)}`}
+          </p>
+          <p className="text-sm text-gray-600">
+            Ended At: {new Date(prediction.endDate).toLocaleString()}
+          </p>
+        </div>
+        <div className="pt-4">
+          <p className="font-bold text-secondary-light">
+            Total: {formatEther(prediction.total)} $CORE
+          </p>
+        </div>
       </div>
     </div>
   );
