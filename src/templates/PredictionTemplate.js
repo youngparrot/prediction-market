@@ -39,20 +39,16 @@ const PredictionTemplate = () => {
   const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
 
   useEffect(() => {
-    if (!prediction?.prediction.endDate) {
+    if (!prediction?.prediction.predictionCutoffDate) {
       return;
     }
 
-    // Calculate the time one hour before the end date
-    const oneHourBeforeEnd = dayjs(prediction?.prediction.endDate).subtract(
-      1,
-      "hour"
-    );
     const now = dayjs();
 
-    // Disable prediction if the current time is past the one-hour mark
-    setIsPredictionAllowed(now.isBefore(oneHourBeforeEnd));
-  }, [prediction?.prediction.endDate]);
+    setIsPredictionAllowed(
+      now.isBefore(prediction?.prediction.predictionCutoffDate)
+    );
+  }, [prediction?.prediction.predictionCutoffDate]);
 
   const getPrediction = async () => {
     try {
@@ -345,6 +341,12 @@ const PredictionTemplate = () => {
                 )}...${prediction.prediction.createdBy.slice(-4)}`}
               </p>
               <p>
+                Prediction Cutoff At:{" "}
+                {new Date(
+                  prediction.prediction.predictionCutoffDate
+                ).toLocaleString()}
+              </p>
+              <p>
                 Ended At:{" "}
                 {new Date(prediction.prediction.endDate).toLocaleString()}
               </p>
@@ -406,10 +408,6 @@ const PredictionTemplate = () => {
                 }}
                 className="text-gray-600"
               ></p>
-
-              <p className="text-secondary mt-2">
-                Predictions are not accepted within the last hour of this event.
-              </p>
             </div>
             <div className="mt-4">
               {isConnected ? (
