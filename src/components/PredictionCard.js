@@ -13,14 +13,14 @@ const PredictionCard = ({ prediction, onClick }) => {
       className="relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl h-full"
       onClick={onClick}
     >
-      <div className="flex gap-4 items-center mb-4">
+      <div className="flex gap-4 items-start justify-start mb-4">
         <Image
-          src={prediction.image}
+          src={prediction.image ?? "/images/prediction-no-image.png"}
           width={60}
           height={60}
           alt={`${prediction.question} logo`}
         />
-        <h3 className="text-primary text-lg font-semibold mb-2">
+        <h3 className="text-primary text-lg font-semibold">
           {prediction.question}
         </h3>
       </div>
