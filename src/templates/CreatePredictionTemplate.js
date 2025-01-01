@@ -16,6 +16,7 @@ import dayjs from "dayjs";
 import { FaSpinner } from "react-icons/fa";
 import { createPrediction, updatePrediction } from "@/utils/api";
 import { useRouter } from "next/navigation";
+import { RequiredField, RequiredLabel } from "@/components/RequiredLabel";
 
 const CreatePredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -32,6 +33,7 @@ const CreatePredictionTemplate = () => {
     defaultValues: {
       question: "",
       answers: ["", ""],
+      predictionCutoffDate: "",
       endTime: "",
       rules: "",
     },
@@ -69,12 +71,18 @@ const CreatePredictionTemplate = () => {
       return; // Prevent submission if answers are invalid
     }
 
-    const { question, endTime, rules } = data;
+    const { question, predictionCutoffDate, endTime, rules } = data;
+
+    if (dayjs(predictionCutoffDate) > dayjs(endTime)) {
+      toast.info("Prediction Cutoff Time should not be after the End Time");
+      return;
+    }
 
     try {
       const predictionRes = await createPrediction(
         question,
         answers,
+        predictionCutoffDate,
         endTime,
         address,
         rules
@@ -156,6 +164,7 @@ const CreatePredictionTemplate = () => {
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
               Question:
+              <RequiredField />
             </label>
             <input
               {...register("question", {
@@ -178,6 +187,7 @@ const CreatePredictionTemplate = () => {
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
               Outcomes:
+              <RequiredField />
             </label>
             {answers.map((answer, index) => (
               <div key={index} className="flex gap-4 mb-2">
@@ -214,10 +224,31 @@ const CreatePredictionTemplate = () => {
           </div>
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
-              End Time (UTC):
+              Prediction Cutoff Time (UTC):
+              <RequiredField />
             </label>
             <input
-              {...register("endTime", { required: "End time is required" })}
+              {...register("predictionCutoffDate", {
+                required: "Prediction Cutoff Time is required",
+              })}
+              type="datetime-local"
+              className={`text-gray-400 bg-gray-100 w-full p-2 border rounded ${
+                errors.predictionCutoffDate ? "border-red-500" : ""
+              }`}
+            />
+            {errors.predictionCutoffDate && (
+              <p className="text-red-500 text-sm">
+                {errors.predictionCutoffDate.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="text-primary-light block font-semibold mb-1">
+              End Time (UTC):
+              <RequiredField />
+            </label>
+            <input
+              {...register("endTime", { required: "End Time is required" })}
               type="datetime-local"
               className={`text-gray-400 bg-gray-100 w-full p-2 border rounded ${
                 errors.endTime ? "border-red-500" : ""
@@ -230,6 +261,7 @@ const CreatePredictionTemplate = () => {
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
               Rules:
+              <RequiredField />
             </label>
             <textarea
               {...register("rules", {
@@ -265,6 +297,10 @@ const CreatePredictionTemplate = () => {
             ) : (
               <ConnectButton />
             )}
+          </div>
+          <div className="flex items-center gap-2">
+            <RequiredField />
+            <RequiredLabel />
           </div>
         </form>
       </div>

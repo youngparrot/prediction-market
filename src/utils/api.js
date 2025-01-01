@@ -4,6 +4,7 @@ import { PREDICTION_MARKET_API } from "./environment";
 export async function createPrediction(
   question,
   answers,
+  predictionCutoffDate,
   endDate,
   createdBy,
   rules
@@ -13,6 +14,7 @@ export async function createPrediction(
     const response = await axios.post(url, {
       question,
       answers: answers,
+      predictionCutoffDate,
       endDate,
       createdBy,
       rules,
