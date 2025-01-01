@@ -27,6 +27,7 @@ const PredictionTemplate = () => {
   const [isPredicting, setIsPredicting] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
   const [claimAmount, setClaimAmount] = useState(0);
+  const [userStaked, setUserStaked] = useState();
   const [isClaiming, setIsClaiming] = useState(false);
   const [predictionContract, setPredictionContract] = useState();
   const isDone = prediction?.prediction?.endDate
@@ -123,6 +124,12 @@ const PredictionTemplate = () => {
         address,
       ]);
       setClaimAmount(claimAmount.toString());
+
+      const userStaked = await readContract.read.getUserStakesForPrediction([
+        prediction.prediction._id,
+        address,
+      ]);
+      setUserStaked(userStaked);
     } catch (error) {
       console.log("Fetching user contract failed", error);
     }
@@ -354,18 +361,32 @@ const PredictionTemplate = () => {
             <div className="text-primary font-bold mb-2">Outcomes:</div>
             <div className="flex flex-col">
               {prediction.prediction.answers.map((answer, index) => (
-                <p
+                <div
                   key={index}
-                  className={`flex items-center gap-2 w-full text-left text-primary-light rounded mb-2`}
+                  className={`flex flex-row items-center gap-4 w-full text-left text-primary-light rounded mb-2`}
                 >
-                  {index + 1}: {answer}{" "}
-                  <span className="text-gray-500">
-                    (
-                    {predictionContract
-                      ? formatEther(predictionContract[0].stakes[index])
-                      : null}{" "}
-                    $CORE)
-                  </span>
+                  <div className="flex flex-col md:flex-row">
+                    <div>
+                      <span className="text-gray-500 font-bold mr-2">
+                        {index + 1}.
+                      </span>
+                      {answer}{" "}
+                    </div>
+                    <div className="flex gap-4 ml-4">
+                      <span className="text-gray-500 font-bold">
+                        Total:{" "}
+                        {predictionContract
+                          ? formatEther(predictionContract[0].stakes[index])
+                          : null}{" "}
+                        $CORE
+                      </span>
+                      <span className="text-gray-500">
+                        Your:{" "}
+                        {userStaked ? formatEther(userStaked[index]) : null}{" "}
+                        $CORE
+                      </span>
+                    </div>
+                  </div>
                   {isDone && predictionContract ? (
                     parseInt(predictionContract[0].winningAnswerIndex) ==
                     index ? (
@@ -374,7 +395,7 @@ const PredictionTemplate = () => {
                       ""
                     )
                   ) : null}
-                </p>
+                </div>
               ))}
             </div>
             <div className="mt-2">
