@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import { FaSpinner } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import QuantitySlider from "./QuantitySlider";
 
 const amounts = [1, 2, 4, 8, 10, 14, 18, 20, 30, 40, 50, 80, 100];
 
@@ -55,7 +56,7 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
           </div>
           <div className="mb-4">
             <p className="text-primary-light font-bold">Select Amount:</p>
-            <select
+            {/* <select
               className="w-full p-2 border rounded text-primary"
               value={amount}
               onChange={(e) => setAmount(Number(e.target.value))}
@@ -65,7 +66,8 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
                   {amt}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <QuantitySlider max={100} onChange={setAmount} />
           </div>
           <div className="flex justify-end space-x-4">
             <button className="text-gray-500" onClick={onClose}>
