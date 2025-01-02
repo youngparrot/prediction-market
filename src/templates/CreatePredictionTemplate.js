@@ -74,7 +74,7 @@ const CreatePredictionTemplate = () => {
     const { question, predictionCutoffDate, endTime, rules } = data;
 
     if (dayjs(predictionCutoffDate) > dayjs(endTime)) {
-      toast.info("Prediction Cutoff Time should not be after the End Time");
+      toast.info("Cutoff Time should not be after the End Time");
       return;
     }
 
@@ -224,12 +224,12 @@ const CreatePredictionTemplate = () => {
           </div>
           <div className="mb-4">
             <label className="text-primary-light block font-semibold mb-1">
-              Prediction Cutoff Time (UTC):
+              Cutoff Time (UTC):
               <RequiredField />
             </label>
             <input
               {...register("predictionCutoffDate", {
-                required: "Prediction Cutoff Time is required",
+                required: "Cutoff Time is required",
               })}
               type="datetime-local"
               className={`text-gray-400 bg-gray-100 w-full p-2 border rounded ${
