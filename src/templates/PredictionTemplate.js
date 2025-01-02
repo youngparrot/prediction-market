@@ -340,7 +340,7 @@ const PredictionTemplate = () => {
                 )}...${prediction.prediction.createdBy.slice(-4)}`}
               </p>
               <p>
-                Prediction Cutoff At:{" "}
+                Cutoff At:{" "}
                 {new Date(
                   prediction.prediction.predictionCutoffDate
                 ).toLocaleString()}

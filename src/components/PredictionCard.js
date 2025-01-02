@@ -40,7 +40,7 @@ const PredictionCard = ({ prediction, onClick }) => {
             )}...${prediction.createdBy.slice(-4)}`}
           </p>
           <p className="text-sm text-gray-600">
-            Prediction Cutoff At:{" "}
+            Cutoff At:{" "}
             {new Date(prediction.predictionCutoffDate).toLocaleString()}
           </p>
           <p className="text-sm text-gray-600">
