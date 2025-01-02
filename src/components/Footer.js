@@ -33,8 +33,8 @@ export default function Footer() {
           </div>
           <p className="mt-4 text-white">
             The world&apos;s digital marketplace for crypto collectibles,
-            non-fungible tokens (NFTs), DEX aggregator, prediction market,
-            decentralized token launchpad, dev tools, and games.
+            non-fungible tokens (NFTs), DEX, prediction market, decentralized
+            token launchpad, dev tools, and games.
           </p>
           {/* Social icons */}
           <div className="flex space-x-4 mt-4">
