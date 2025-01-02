@@ -122,7 +122,11 @@ const CreatePredictionTemplate = () => {
         }
 
         toast.success("Create prediction successful");
-        router.push(`/prediction/${metadataId}`);
+
+        // Delay the redirect by 3 seconds
+        setTimeout(() => {
+          router.push(`/prediction/${metadataId}`);
+        }, 3000);
       } else {
         if (window.dataLayer) {
           window.dataLayer.push({
