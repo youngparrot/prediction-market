@@ -154,9 +154,7 @@ const PredictionTemplate = () => {
     }
 
     if (!isPredictionAllowed) {
-      toast.info(
-        "Predictions are not accepted within the last hour of this event"
-      );
+      toast.info("Predictions are not accepted after Prediction Cutoff Time");
       return;
     }
 
@@ -208,6 +206,7 @@ const PredictionTemplate = () => {
         }
 
         getPredictionContract();
+        fetchUserContract();
         setSelectedPrediction(null);
       } else {
         toast.error("Predict failed, please try again");
