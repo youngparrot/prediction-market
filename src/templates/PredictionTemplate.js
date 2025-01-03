@@ -3,7 +3,11 @@
 import React, { useEffect, useState } from "react";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
+import {
+  CREATION_SHARE_FEE_PERCENT,
+  PLATFORM_FEE_PERCENT,
+  PREDICTION_MARKET_ADDRESS,
+} from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { formatEther, getContract, parseEther } from "viem";
 import { toast } from "react-toastify";
@@ -415,8 +419,23 @@ const PredictionTemplate = () => {
                 <>
                   {isDone ? (
                     <div className="mb-2">
-                      <p>
+                      <p className="text-primary">
                         Your rewards: {formatEther(claimAmount.toString())}{" "}
+                        $CORE
+                      </p>
+                    </div>
+                  ) : null}
+                  {isDone && prediction?.prediction.createdBy === address ? (
+                    <div className="mb-2">
+                      <p className="text-primary font-bold">
+                        Your creator rewards:{" "}
+                        {predictionContract
+                          ? (((formatEther(predictionContract[0].totalStaked) *
+                              PLATFORM_FEE_PERCENT) /
+                              100) *
+                              CREATION_SHARE_FEE_PERCENT) /
+                            100
+                          : 0}{" "}
                         $CORE
                       </p>
                     </div>
