@@ -4,14 +4,9 @@ import React, { useEffect, useState } from "react";
 import PredictionCard from "@/components/PredictionCard";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import {
-  PAYMENT_TOKEN_ADDRESS,
-  PREDICTION_MARKET_ADDRESS,
-} from "@/utils/environment";
+import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
-import ERC20ABI from "@/lib/abi/ERC20.json";
-import { formatUnits, getContract, parseEther, parseUnits } from "viem";
-import { toast } from "react-toastify";
+import { getContract } from "viem";
 import { fetchPredictions } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
@@ -45,11 +40,12 @@ const HomeTemplate = () => {
           predictionContractData[i].totalStaked;
         predictionsData.predictions[i].winningAnswerIndex =
           predictionContractData[i].winningAnswerIndex;
+        predictionsData.predictions[i].ended = predictionContractData[i].ended;
       }
 
       setActivePredictions(predictionsData);
     } catch (error) {
-      console.log("Fetching predictions failed", error);
+      console.log("Fetching active predictions failed", error);
     } finally {
       setIsFetching(false);
     }
@@ -76,11 +72,12 @@ const HomeTemplate = () => {
           predictionContractData[i].totalStaked;
         predictionsData.predictions[i].winningAnswerIndex =
           predictionContractData[i].winningAnswerIndex;
+        predictionsData.predictions[i].ended = predictionContractData[i].ended;
       }
 
       setCompletedPredictions(predictionsData);
     } catch (error) {
-      console.log("Fetching predictions failed", error);
+      console.log("Fetching completed predictions failed", error);
     } finally {
       setIsFetching(false);
     }

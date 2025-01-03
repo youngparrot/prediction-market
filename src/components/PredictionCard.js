@@ -25,7 +25,7 @@ const PredictionCard = ({ prediction, onClick }) => {
         </h3>
       </div>
       <div className="mt-auto">
-        {isDone ? (
+        {isDone && prediction.ended ? (
           <div className="text-green-500 mb-2 font-bold">
             <span className="text-primary">Answer:</span>{" "}
             {prediction.answers[parseInt(prediction.winningAnswerIndex)]}
