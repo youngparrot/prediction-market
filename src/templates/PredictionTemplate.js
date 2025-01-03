@@ -388,7 +388,9 @@ const PredictionTemplate = () => {
                       </span>
                     </div>
                   </div>
-                  {isDone && predictionContract ? (
+                  {isDone &&
+                  predictionContract &&
+                  predictionContract[0].ended ? (
                     parseInt(predictionContract[0].winningAnswerIndex) ==
                     index ? (
                       <FaCheck className="text-green-500" />
@@ -419,25 +421,34 @@ const PredictionTemplate = () => {
                       </p>
                     </div>
                   ) : null}
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 items-center mb-4">
                     <button
                       id="predict-button"
                       onClick={handlePredictButtonClick}
-                      className="bg-blue-500 text-white py-2 px-4 rounded mb-4"
+                      className="bg-blue-500 text-white py-2 px-4 rounded"
                     >
                       Predict
                     </button>
-                    {isDone ? (
-                      <button
-                        id="claim-rewards"
-                        onClick={handleClaimRewards}
-                        className="flex items-center bg-secondary text-white py-2 px-4 rounded mb-4"
-                      >
-                        Claim Rewards
-                        {isClaiming && (
-                          <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                    {isDone && predictionContract ? (
+                      <>
+                        {predictionContract[0].ended ? (
+                          <button
+                            id="claim-rewards"
+                            onClick={handleClaimRewards}
+                            className="flex items-center bg-secondary text-white py-2 px-4 rounded"
+                          >
+                            Claim Rewards
+                            {isClaiming && (
+                              <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                            )}
+                          </button>
+                        ) : (
+                          <span>
+                            Prediction is completed and we're setting correct
+                            outcome
+                          </span>
                         )}
-                      </button>
+                      </>
                     ) : null}
                   </div>
                 </>
