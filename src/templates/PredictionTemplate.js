@@ -444,8 +444,8 @@ const PredictionTemplate = () => {
                           </button>
                         ) : (
                           <span className="text-green-500">
-                            Prediction is completed and we&apos;re setting
-                            correct outcome
+                            The prediction has concluded, and we are now
+                            determining the correct outcome.
                           </span>
                         )}
                       </>
