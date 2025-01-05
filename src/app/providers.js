@@ -29,7 +29,13 @@ const coreChain = {
     symbol: "CORE",
   },
   rpcUrls: {
-    default: { http: ["https://rpc.coredao.org"] },
+    default: {
+      http: [
+        "https://rpc.coredao.org",
+        "https://rpc.ankr.com/core",
+        "https://rpc-core.icecreamswap.com",
+      ],
+    },
     public: {
       http: [
         "https://rpc.coredao.org",
