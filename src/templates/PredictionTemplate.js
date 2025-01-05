@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
+  CORE_SCAN_URL,
   CREATION_SHARE_FEE_PERCENT,
   PLATFORM_FEE_PERCENT,
   PREDICTION_MARKET_ADDRESS,
@@ -15,7 +16,7 @@ import { createTransaction, fetchPredictions } from "@/utils/api";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
-import { FaCheck, FaSpinner } from "react-icons/fa";
+import { FaCheck, FaSpinner, FaTwitter } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Giscus from "@giscus/react";
 import dayjs from "dayjs";
@@ -339,12 +340,23 @@ const PredictionTemplate = () => {
               </h1>
             </div>
             <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
-              <p>
+              <p className="flex gap-1 items-center">
                 Asked By:{" "}
-                {`${prediction.prediction.createdBy.slice(
+                <a
+                  href={`${CORE_SCAN_URL}/address/${prediction.prediction.createdBy}`}
+                  title="Creator Address"
+                  target="_blank"
+                >{`${prediction.prediction.createdBy.slice(
                   0,
                   6
-                )}...${prediction.prediction.createdBy.slice(-4)}`}
+                )}...${prediction.prediction.createdBy.slice(-4)}`}</a>
+                <a
+                  href={prediction.prediction.twitter}
+                  title="Creator Twitter/X"
+                  target="_blank"
+                >
+                  <FaTwitter />
+                </a>
               </p>
               <p>
                 Cutoff At:{" "}

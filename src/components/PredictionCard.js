@@ -1,6 +1,7 @@
+import { CORE_SCAN_URL } from "@/utils/environment";
 import Image from "next/image";
 import React from "react";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaTwitter } from "react-icons/fa";
 import { formatEther } from "viem";
 
 const PredictionCard = ({ prediction, onClick }) => {
@@ -32,12 +33,23 @@ const PredictionCard = ({ prediction, onClick }) => {
           </div>
         ) : null}
         <div>
-          <p className="text-sm text-gray-600">
+          <p className="flex gap-1 items-center text-sm text-gray-600">
             Asked By:{" "}
-            {`${prediction.createdBy.slice(
+            <a
+              href={`${CORE_SCAN_URL}/address/${prediction.createdBy}`}
+              title="Creator Address"
+              target="_blank"
+            >{`${prediction.createdBy.slice(
               0,
               6
-            )}...${prediction.createdBy.slice(-4)}`}
+            )}...${prediction.createdBy.slice(-4)}`}</a>
+            <a
+              href={prediction.twitter}
+              title="Creator Twitter/X"
+              target="_blank"
+            >
+              <FaTwitter />
+            </a>
           </p>
           <p className="text-sm text-gray-600">
             Cutoff At:{" "}
