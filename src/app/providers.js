@@ -30,7 +30,13 @@ const coreChain = {
   },
   rpcUrls: {
     default: { http: ["https://rpc.coredao.org"] },
-    public: { http: ["https://rpc.coredao.org"] },
+    public: {
+      http: [
+        "https://rpc.coredao.org",
+        "https://rpc.ankr.com/core",
+        "https://rpc-core.icecreamswap.com",
+      ],
+    },
   },
   blockExplorers: {
     default: { name: "CoreScan", url: "https://scan.coredao.org" },

@@ -36,6 +36,7 @@ const CreatePredictionTemplate = () => {
       predictionCutoffDate: "",
       endTime: "",
       rules: "",
+      twitter: "",
     },
   });
 
@@ -71,7 +72,7 @@ const CreatePredictionTemplate = () => {
       return; // Prevent submission if answers are invalid
     }
 
-    const { question, predictionCutoffDate, endTime, rules } = data;
+    const { question, predictionCutoffDate, endTime, rules, twitter } = data;
 
     if (dayjs(predictionCutoffDate) > dayjs(endTime)) {
       toast.info("Cutoff Time should not be after the End Time");
@@ -85,7 +86,8 @@ const CreatePredictionTemplate = () => {
         predictionCutoffDate,
         endTime,
         address,
-        rules
+        rules,
+        twitter
       );
       const metadataId = String(predictionRes.prediction._id);
 
@@ -283,6 +285,29 @@ const CreatePredictionTemplate = () => {
             ></textarea>
             {errors.rules && (
               <p className="text-red-500 text-sm">{errors.rules.message}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="text-primary-light block font-semibold mb-1">
+              Twitter/X:
+              <RequiredField />
+            </label>
+            <input
+              {...register("twitter", {
+                required: "Twitter/X is required",
+                maxLength: {
+                  value: 100,
+                  message: "Max 100 characters allowed",
+                },
+              })}
+              type="text"
+              placeholder="Enter your Twitter/X (max 100 characters)"
+              className={`text-primary-light bg-gray-100 w-full p-2 border rounded ${
+                errors.twitter ? "border-red-500" : ""
+              }`}
+            />
+            {errors.twitter && (
+              <p className="text-red-500 text-sm">{errors.twitter.message}</p>
             )}
           </div>
           <div className="flex justify-end space-x-4">

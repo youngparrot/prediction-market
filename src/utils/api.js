@@ -7,7 +7,8 @@ export async function createPrediction(
   predictionCutoffDate,
   endDate,
   createdBy,
-  rules
+  rules,
+  twitter
 ) {
   const url = `${PREDICTION_MARKET_API}/api/createPrediction`;
   try {
@@ -18,6 +19,7 @@ export async function createPrediction(
       endDate,
       createdBy,
       rules,
+      twitter,
     });
     return response.data;
   } catch (error) {
