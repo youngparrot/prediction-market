@@ -326,7 +326,10 @@ const PredictionTemplate = () => {
           <div className="bg-white mb-8 p-2 md:p-4 rounded-md">
             <div className="flex gap-4 items-center mb-4">
               <Image
-                src={prediction.prediction.image}
+                src={
+                  prediction.prediction.image ??
+                  "/images/prediction-no-image.png"
+                }
                 width={60}
                 height={60}
                 alt={`${prediction.prediction.question} logo`}
