@@ -43,9 +43,9 @@ export default function LeaderboardTemplate() {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <>
+        <div className="p-2 md:p-6">
           <h1
-            className="pb-8 text-lg font-bold"
+            className="pb-8 text-accent text-xl font-bold"
             style={{
               paddingBottom: "24px",
             }}
@@ -165,7 +165,7 @@ export default function LeaderboardTemplate() {
               )}
             </tbody>
           </table>
-        </>
+        </div>
       )}
     </div>
   );
