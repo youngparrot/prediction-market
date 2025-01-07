@@ -62,7 +62,7 @@ export default function LeaderboardTemplate() {
             The leaderboard will incentivize competition by offering rewards
             like exclusive NFTs, token bonuses, or access to premium features.
           </p>
-          <table className="w-full table-auto mt-8">
+          <table className="w-full table-auto mt-8 bg-background">
             <thead
               className="text-white"
               style={{
