@@ -43,13 +43,13 @@ const PredictionCard = ({ prediction, onClick }) => {
               0,
               6
             )}...${prediction.createdBy.slice(-4)}`}</a>
-            <a
+            {/* <a
               href={prediction.twitter}
               title="Creator Twitter/X"
               target="_blank"
             >
               <FaTwitter />
-            </a>
+            </a> */}
           </p>
           <p className="text-sm text-gray-600">
             Cutoff At:{" "}

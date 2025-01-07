@@ -350,13 +350,13 @@ const PredictionTemplate = () => {
                   0,
                   6
                 )}...${prediction.prediction.createdBy.slice(-4)}`}</a>
-                <a
+                {/* <a
                   href={prediction.prediction.twitter}
                   title="Creator Twitter/X"
                   target="_blank"
                 >
                   <FaTwitter />
-                </a>
+                </a> */}
               </p>
               <p>
                 Cutoff At:{" "}
