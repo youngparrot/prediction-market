@@ -103,6 +103,17 @@ export default function Footer() {
                 Create Prediction
               </motion.a>
             </li>
+            <li>
+              <motion.a
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                href="/learderboard"
+                className="inline-block"
+                title="Leaderboard"
+              >
+                Leaderboard
+              </motion.a>
+            </li>
           </ul>
         </div>
 

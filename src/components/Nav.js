@@ -62,6 +62,15 @@ export default function Nav({ setShowHowToPredict }) {
           >
             Create Prediction
           </motion.a>
+          <motion.a
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="font-bold hidden md:flex text-white flex items-center gap-1 flex-row cursor-pointer"
+            title="Leaderboard"
+            href="/leaderboard"
+          >
+            Leaderboard
+          </motion.a>
         </div>
         <div className="flex gap-4 items-center hidden md:flex">
           <motion.button
@@ -101,6 +110,15 @@ export default function Nav({ setShowHowToPredict }) {
           >
             {/* Menu Items */}
             <nav className="p-5 space-y-4">
+              <motion.a
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
+                title="Leaderboard"
+                href="/leaderboard"
+              >
+                Leaderboard
+              </motion.a>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 300 }}

@@ -12,7 +12,7 @@ import {
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { formatEther, getContract, parseEther } from "viem";
 import { toast } from "react-toastify";
-import { createTransaction, fetchPredictions } from "@/utils/api";
+import { createTransaction, fetchPredictions, postUser } from "@/utils/api";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
@@ -186,7 +186,11 @@ const PredictionTemplate = () => {
       });
 
       if (transactionReceipt.status === "success") {
-        toast.success("Predict successful");
+        try {
+          await postUser(address, parseInt(amount));
+        } catch (error) {
+          console.log("Post user failed ", error);
+        }
 
         try {
           await createTransaction(
@@ -209,6 +213,8 @@ const PredictionTemplate = () => {
             transaction_id: `id_${transactionReceipt.transactionHash}`,
           });
         }
+
+        toast.success("Predict successful");
 
         getPredictionContract();
         fetchUserContract();

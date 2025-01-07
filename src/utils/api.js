@@ -82,3 +82,32 @@ export async function fetchPredictions({
     return null;
   }
 }
+
+export async function postUser(userAddress, volume) {
+  const url = `${PREDICTION_MARKET_API}/api/user`;
+  try {
+    const response = await axios.post(url, {
+      user_address: userAddress,
+      volume: parseFloat(volume),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error posting user:", error);
+    return null;
+  }
+}
+
+export async function fetchLeaderboard(userAddress = null) {
+  let url = `${PREDICTION_MARKET_API}/api/leaderboard`;
+  if (userAddress) {
+    url += `?user_address=${userAddress}`;
+  }
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
+    return null;
+  }
+}
