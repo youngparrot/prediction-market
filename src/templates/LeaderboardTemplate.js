@@ -75,7 +75,7 @@ export default function LeaderboardTemplate() {
                 <th className="px-2 py-2 text-right">Total Volume</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-white">
               {leaderboard?.leaderboard?.length === 0 ? (
                 <tr className="border-b border-gray-300">
                   <td colSpan="3" className="h-4 py-4 text-center">
