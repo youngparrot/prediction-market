@@ -1,97 +1,100 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC721/IERC721.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/token/ERC20/IERC20.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/access/Ownable.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v4.9/contracts/security/ReentrancyGuard.sol";
 
 contract PredictionMarket is Ownable, ReentrancyGuard {
     struct Prediction {
-        string metadataId;
-        uint256 answersLength;
+        string question;
+        string[] answers;
         uint256[] stakes;
         mapping(address => mapping(uint256 => uint256)) userStakes;
-        mapping(address => bool) hasClaimed;
         bool ended;
         uint256 winningAnswerIndex;
         uint256 totalStaked;
         address creator;
+        uint256 startTime;
         uint256 endTime;
     }
 
-    // Define a struct to encapsulate prediction details
-    struct PredictionDetails {
-        string metadataId;
-        uint256[] stakes;
-        bool ended;
-        uint256 winningAnswerIndex;
-        address creator;
-        uint256 totalStaked;
-        uint256 endTime;
-    }
-
+    IERC721Enumerable public nftContract;
+    IERC20 public paymentToken;
     uint256 public platformFee = 5; // 5% fee
-    uint256 public creationFee = 1 ether; // 1 CORE
+    uint256 public creationFee = 10000 * 10**18; // 10000 YPC
     uint256 public creationShareFeePercent = 20; // 20% of platform fee
     address public platformRecipient;
 
-    mapping(string => Prediction) public predictions;
+    Prediction[] public predictions;
 
-    event PredictionCreated(string indexed metadataId, address indexed creator);
-    event Predicted(string indexed metadataId, address indexed user, uint256 answerIndex, uint256 amount);
-    event PredictionEnded(string indexed metadataId, uint256 winningAnswerIndex);
-    event RewardsClaimed(string indexed metadataId, address indexed user, uint256 amount);
-    event EmergencyWithdraw(string indexed metadataId, address indexed to, uint256 amount);
+    event PredictionCreated(uint256 indexed predictionId, string question, address indexed creator);
+    event Predicted(uint256 indexed predictionId, address indexed user, uint256 answerIndex, uint256 amount);
+    event PredictionEnded(uint256 indexed predictionId, uint256 winningAnswerIndex);
+    event RewardsClaimed(uint256 indexed predictionId, address indexed user, uint256 amount);
+    event EmergencyWithdraw(uint256 indexed predictionId, address indexed to, uint256 amount);
     event EmergencyWithdrawAll(address indexed to, uint256 amount);
     event PlatformFeeUpdated(uint256 newPlatformFee);
     event CreationFeeUpdated(uint256 newCreationFee);
     event PlatformRecipientUpdated(address newPlatformRecipient);
     event CreationShareFeePercentUpdated(uint256 newCreationShareFeePercent);
 
-    constructor(address _platformRecipient) {
+    constructor(address _nftContract, address _paymentToken, address _platformRecipient) {
+        nftContract = IERC721Enumerable(_nftContract);
+        paymentToken = IERC20(_paymentToken);
         platformRecipient = _platformRecipient;
     }
 
     function createPrediction(
-        string memory _metadataId,
-        uint256 _answersLength,
+        string memory _question,
+        string[] memory _answers,
+        uint256 _startTime,
         uint256 _endTime
-    ) external payable nonReentrant {
-        require(bytes(_metadataId).length > 0, "Metadata ID cannot be empty");
-        require(_answersLength > 1, "At least two answers required");
-        require(msg.value >= creationFee, "Insufficient creation fee");
-        require(predictions[_metadataId].creator == address(0), "Prediction already exists");
+    ) external nonReentrant {
+        require(_answers.length > 1, "At least two answers required");
+        require(_endTime > _startTime, "Invalid start and end time");
+        require(paymentToken.transferFrom(msg.sender, platformRecipient, creationFee), "Creation fee transfer failed");
+        uint256 balance = nftContract.balanceOf(msg.sender);
+        require(balance > 0, "You do not have YoungParrot Member NFT in your wallet");
 
-        (bool sent, ) = platformRecipient.call{value: msg.value}("");
-        require(sent, "Creation fee transfer failed");
+        predictions.push();
+        uint256 predictionId = predictions.length - 1;
+        Prediction storage prediction = predictions[predictionId];
 
-        Prediction storage prediction = predictions[_metadataId];
-        prediction.stakes = new uint256[](_answersLength);
+        prediction.question = _question;
+        prediction.answers = _answers;
+        prediction.stakes = new uint256[](_answers.length);
         prediction.creator = msg.sender;
+        prediction.startTime = _startTime;
         prediction.endTime = _endTime;
-        prediction.answersLength = _answersLength;
 
-        emit PredictionCreated(_metadataId, msg.sender);
+        emit PredictionCreated(predictionId, _question, msg.sender);
     }
 
-    function predict(string memory _metadataId, uint256 _answerIndex) external payable nonReentrant {
-        Prediction storage prediction = predictions[_metadataId];
+    function predict(uint256 _predictionId, uint256 _answerIndex, uint256 _amount) external nonReentrant {
+        Prediction storage prediction = predictions[_predictionId];
+        require(block.timestamp >= prediction.startTime, "Prediction not started");
         require(block.timestamp <= prediction.endTime, "Prediction ended");
         require(!prediction.ended, "Prediction already ended");
-        require(_answerIndex < prediction.answersLength, "Invalid answer index");
-        require(msg.value > 0, "Amount must be greater than zero");
+        require(_answerIndex < prediction.answers.length, "Invalid answer index");
+        require(_amount > 0, "Amount must be greater than zero");
 
-        prediction.stakes[_answerIndex] += msg.value;
-        prediction.userStakes[msg.sender][_answerIndex] += msg.value;
-        prediction.totalStaked += msg.value;
+        paymentToken.transferFrom(msg.sender, address(this), _amount);
 
-        emit Predicted(_metadataId, msg.sender, _answerIndex, msg.value);
+        prediction.stakes[_answerIndex] += _amount;
+        prediction.userStakes[msg.sender][_answerIndex] += _amount;
+        prediction.totalStaked += _amount;
+
+        emit Predicted(_predictionId, msg.sender, _answerIndex, _amount);
     }
 
-    function endPrediction(string memory _metadataId, uint256 _winningAnswerIndex) external onlyOwner nonReentrant {
-        Prediction storage prediction = predictions[_metadataId];
+    function endPrediction(uint256 _predictionId, uint256 _winningAnswerIndex) external onlyOwner nonReentrant {
+        Prediction storage prediction = predictions[_predictionId];
         require(!prediction.ended, "Prediction already ended");
-        require(block.timestamp > prediction.endTime, "Prediction has not ended");
-        require(_winningAnswerIndex < prediction.answersLength, "Invalid winning answer index");
+        require(block.timestamp > prediction.endTime, "Prediciton has not ended");
+        require(_winningAnswerIndex < prediction.answers.length, "Invalid winning answer index");
 
         prediction.ended = true;
         prediction.winningAnswerIndex = _winningAnswerIndex;
@@ -101,22 +104,18 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
         uint256 platformFeeAmount = totalFee - creatorFee; // Remaining fee for platform
 
         if (creatorFee > 0) {
-            (bool sentToCreator, ) = prediction.creator.call{value: creatorFee}("");
-            require(sentToCreator, "Transfer to creator failed");
+            paymentToken.transfer(prediction.creator, creatorFee);
         }
         if (platformFeeAmount > 0) {
-            (bool sentToPlatform, ) = platformRecipient.call{value: platformFeeAmount}("");
-            require(sentToPlatform, "Transfer to platform failed");
+            paymentToken.transfer(platformRecipient, platformFeeAmount);
         }
 
-        emit PredictionEnded(_metadataId, _winningAnswerIndex);
+        emit PredictionEnded(_predictionId, _winningAnswerIndex);
     }
 
-    function claimRewards(string memory _metadataId) external nonReentrant {
-        Prediction storage prediction = predictions[_metadataId];
+    function claimRewards(uint256 _predictionId) external nonReentrant {
+        Prediction storage prediction = predictions[_predictionId];
         require(prediction.ended, "Prediction not ended");
-        require(!prediction.hasClaimed[msg.sender], "Rewards already claimed");
-
         uint256 userStake = prediction.userStakes[msg.sender][prediction.winningAnswerIndex];
         require(userStake > 0, "No stake to claim");
 
@@ -124,21 +123,14 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
         uint256 reward = (userStake * winnerShare) / prediction.stakes[prediction.winningAnswerIndex];
 
         prediction.userStakes[msg.sender][prediction.winningAnswerIndex] = 0;
-        prediction.hasClaimed[msg.sender] = true;
-        (bool sent, ) = msg.sender.call{value: reward}("");
-        require(sent, "Transfer to user failed");
+        paymentToken.transfer(msg.sender, reward);
 
-        emit RewardsClaimed(_metadataId, msg.sender, reward);
+        emit RewardsClaimed(_predictionId, msg.sender, reward);
     }
 
-    function hasUserClaimed(string memory _metadataId, address _user) external view returns (bool) {
-        Prediction storage prediction = predictions[_metadataId];
-        return prediction.hasClaimed[_user];
-    }
-
-    function getRewardToClaim(string memory _metadataId, address _user) external view returns (uint256) {
-        Prediction storage prediction = predictions[_metadataId];
-        if (!prediction.ended || prediction.hasClaimed[_user]) {
+    function getRewardToClaim(uint256 _predictionId, address _user) external view returns (uint256) {
+        Prediction storage prediction = predictions[_predictionId];
+        if (!prediction.ended) {
             return 0;
         }
 
@@ -153,25 +145,35 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
         return reward;
     }
 
-    function emergencyWithdraw(string memory _metadataId) external onlyOwner nonReentrant {
-        Prediction storage prediction = predictions[_metadataId];
+    function emergencyWithdraw(uint256 _predictionId) external onlyOwner nonReentrant {
+        Prediction storage prediction = predictions[_predictionId];
         uint256 amount = prediction.totalStaked;
         require(amount > 0, "No tokens to withdraw");
 
         prediction.totalStaked = 0;
-        (bool sent, ) = owner().call{value: amount}("");
-        require(sent, "Emergency withdraw failed");
+        paymentToken.transfer(owner(), amount);
 
-        emit EmergencyWithdraw(_metadataId, owner(), amount);
+        emit EmergencyWithdraw(_predictionId, owner(), amount);
     }
 
     function emergencyWithdrawAll() external onlyOwner nonReentrant {
-        uint256 balance = address(this).balance;
+        uint256 balance = paymentToken.balanceOf(address(this));
         require(balance > 0, "No tokens to withdraw");
-        (bool sent, ) = owner().call{value: balance}("");
-        require(sent, "Emergency withdraw all failed");
+        paymentToken.transfer(owner(), balance);
 
         emit EmergencyWithdrawAll(owner(), balance);
+    }
+
+    // Function to update the NFT contract address
+    function updateNftContract(address _nftContract) external onlyOwner {
+        require(_nftContract != address(0), "Invalid address");
+        nftContract = IERC721Enumerable(_nftContract);
+    }
+
+    // Function to update the payment token address
+    function updatePaymentToken(address _paymentToken) external onlyOwner {
+        require(_paymentToken != address(0), "Invalid address");
+        paymentToken = IERC20(_paymentToken);
     }
 
     function updatePlatformFee(uint256 _newPlatformFee) external onlyOwner {
@@ -185,11 +187,6 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
         creationFee = _newCreationFee;
 
         emit CreationFeeUpdated(_newCreationFee);
-    }
-
-    function updateEndTime(string memory _metadataId, uint256 _endTime) external onlyOwner {
-        Prediction storage prediction = predictions[_metadataId];
-        prediction.endTime = _endTime;
     }
 
     function updateCreationShareFeePercent(uint256 _newCreationShareFeePercent) external onlyOwner {
@@ -206,63 +203,32 @@ contract PredictionMarket is Ownable, ReentrancyGuard {
         emit PlatformRecipientUpdated(_newPlatformRecipient);
     }
 
-    function getPrediction(string memory _metadataId) external view returns (
-        string memory metadataId,
+    function getPrediction(uint256 _predictionId) external view returns (
+        string memory question,
+        string[] memory answers,
         uint256[] memory stakes,
         bool ended,
         uint256 winningAnswerIndex,
         address creator,
         uint256 totalStaked,
+        uint256 startTime,
         uint256 endTime
     ) {
-        Prediction storage prediction = predictions[_metadataId];
+        Prediction storage prediction = predictions[_predictionId];
         return (
-            prediction.metadataId,
+            prediction.question,
+            prediction.answers,
             prediction.stakes,
             prediction.ended,
             prediction.winningAnswerIndex,
             prediction.creator,
             prediction.totalStaked,
+            prediction.startTime,
             prediction.endTime
         );
     }
 
-    function getPredictionsByIds(string[] memory _metadataIds) external view returns (
-        PredictionDetails[] memory predictionsa
-    ) {
-        uint256 length = _metadataIds.length;
-
-        // Initialize arrays for the return values
-        predictionsa = new PredictionDetails[](length);
-
-        for (uint256 i = 0; i < length; i++) {
-            string memory metadataId = _metadataIds[i];
-            Prediction storage prediction = predictions[metadataId];
-
-            // Use the PredictionDetails struct to hold prediction data
-            predictionsa[i] = PredictionDetails({
-                metadataId: prediction.metadataId,
-                stakes: prediction.stakes,
-                ended: prediction.ended,
-                winningAnswerIndex: prediction.winningAnswerIndex,
-                creator: prediction.creator,
-                totalStaked: prediction.totalStaked,
-                endTime: prediction.endTime
-            });
-        }
-    }
-
-    function getUserStakesForPrediction(string memory _metadataId, address _user) external view returns (uint256[] memory) {
-        Prediction storage prediction = predictions[_metadataId];
-        uint256[] memory userStakes = new uint256[](prediction.answersLength);
-        for (uint256 i = 0; i < prediction.answersLength; i++) {
-            userStakes[i] = prediction.userStakes[_user][i];
-        }
-        return userStakes;
-    }
-
-    function getTotalStakesForPrediction(string memory _metadataId) external view returns (uint256[] memory) {
-        Prediction storage prediction = predictions[_metadataId];
-        return prediction.stakes;
+    function getPredictionCount() external view returns (uint256) {
+        return predictions.length;
     }
 }
