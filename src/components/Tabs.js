@@ -139,7 +139,9 @@ const TopHolders = ({ id }) => {
                     0,
                     6
                   )}...${holder.userAddress.slice(-4)}`}</div>
-                  <div className="font-bold">{holder.totalAmount}</div>
+                  <div className="text-secondary font-bold">
+                    {holder.totalAmount} $CORE
+                  </div>
                 </div>
               ))}
             </div>
