@@ -106,7 +106,7 @@ const TopHolders = ({ id }) => {
       const transactionsData = await fetchTransactions(type, id);
       setHoldersList(transactionsData.data);
     } catch (error) {
-      console.log("Fetch transaction failed", error);
+      console.log("Fetch top holders failed", error);
     } finally {
       setIsFetching(false);
     }
@@ -125,13 +125,20 @@ const TopHolders = ({ id }) => {
   }
 
   return (
-    <div className="bg-white text-gray-600 p-4 rounded-md">
+    <div className="bg-white text-gray-600 p-4 rounded-md grid grid-cols-1 md:grid-cols-2 gap-6">
       {holdersList
         ? holdersList.map((holders) => (
-            <div key={holders.outcomeIndex} className="grid grid-col-2 gap-2">
+            <div key={holders.outcomeIndex}>
+              <div className="flex justify-between font-bold text-primary">
+                <p>Holders</p>
+                <p>Amount</p>
+              </div>
               {holders.holders.map((holder) => (
                 <div key={holder._id} className="flex justify-between">
-                  <div className="font-bold">{holder.userAddress}</div>
+                  <div className="font-bold">{`${holder.userAddress.slice(
+                    0,
+                    6
+                  )}...${holder.userAddress.slice(-4)}`}</div>
                   <div className="font-bold">{holder.totalAmount}</div>
                 </div>
               ))}
