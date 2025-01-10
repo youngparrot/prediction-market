@@ -175,18 +175,20 @@ const Tabs = ({ id, answers }) => {
   return (
     <div>
       {/* Tab headers */}
-      <div style={{ display: "flex", borderBottom: "1px solid #F7C942" }}>
+      <div
+        style={{ display: "flex", borderBottom: "1px solid #F7C942" }}
+        className="gap-1 md:gap-4"
+      >
         {["Comments", "Activity", "Top Holders"].map((tab) => (
           <div
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              padding: "10px 20px",
               cursor: "pointer",
               borderBottom: activeTab === tab ? "2px solid #F7C942" : "none",
-              fontWeight: activeTab === tab ? "bold" : "normal",
               color: "#F7C942",
             }}
+            className="px-4 md:px-6 py-2 font-bold"
           >
             {tab}
           </div>
@@ -194,7 +196,7 @@ const Tabs = ({ id, answers }) => {
       </div>
 
       {/* Tab content */}
-      <div style={{ padding: "20px" }}>{renderTabContent()}</div>
+      <div className="py-2">{renderTabContent()}</div>
     </div>
   );
 };
