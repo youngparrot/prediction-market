@@ -115,11 +115,12 @@ export async function fetchLeaderboard(userAddress = null) {
 }
 
 export async function fetchTransactions(
-  predictionId = null,
+  type,
+  predictionId,
   page = 1,
   limit = 20
 ) {
-  let url = `${PREDICTION_MARKET_API}/api/transaction?page=${page}&limit=${limit}`;
+  let url = `${PREDICTION_MARKET_API}/api/transaction?type=${type}&page=${page}&limit=${limit}`;
   if (predictionId) {
     url += `&predictionId=${predictionId}`;
   }

@@ -30,10 +30,10 @@ const Activity = ({ id }) => {
   const [transactions, setTransactions] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
-  const getTransactions = async (id) => {
+  const getTransactions = async (type, id) => {
     try {
       setIsFetching(true);
-      const transactionsData = await fetchTransactions(id);
+      const transactionsData = await fetchTransactions(type, id);
       setTransactions(transactionsData.data);
     } catch (error) {
       console.log("Fetch transaction failed", error);
@@ -43,7 +43,7 @@ const Activity = ({ id }) => {
   };
 
   useEffect(() => {
-    getTransactions(id);
+    getTransactions("transactions", id);
   }, []);
 
   if (isFetching) {
@@ -96,9 +96,51 @@ const Activity = ({ id }) => {
     </div>
   );
 };
-const TopHolders = ({ id }) => (
-  <div className="bg-white text-gray-600 p-4 rounded-md">Incoming</div>
-);
+const TopHolders = ({ id }) => {
+  const [holdersList, setHoldersList] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
+
+  const getTopHolders = async (type, id) => {
+    try {
+      setIsFetching(true);
+      const transactionsData = await fetchTransactions(type, id);
+      setHoldersList(transactionsData.data);
+    } catch (error) {
+      console.log("Fetch transaction failed", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    getTopHolders("topHolders", id);
+  }, []);
+
+  if (isFetching) {
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white text-gray-600 p-4 rounded-md">
+      {holdersList
+        ? holdersList.map((holders) => (
+            <div key={holders.outcomeIndex} className="grid grid-col-2 gap-2">
+              {holders.holders.map((holder) => (
+                <div key={holder._id} className="flex justify-between">
+                  <div className="font-bold">{holder.userAddress}</div>
+                  <div className="font-bold">{holder.totalAmount}</div>
+                </div>
+              ))}
+            </div>
+          ))
+        : null}
+    </div>
+  );
+};
 
 const Tabs = ({ id }) => {
   const [activeTab, setActiveTab] = useState("Comments");
