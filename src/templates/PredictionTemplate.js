@@ -503,7 +503,7 @@ const PredictionTemplate = () => {
               )}
             </div>
           </div>
-          <Tabs id={id} />
+          <Tabs id={id} answers={prediction?.prediction.answers} />
         </>
       ) : (
         <div className="text-white">Prediction is not found</div>

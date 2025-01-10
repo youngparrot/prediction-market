@@ -26,7 +26,7 @@ const Comments = ({ id }) => (
     />
   </div>
 );
-const Activity = ({ id }) => {
+const Activity = ({ id, answers }) => {
   const [transactions, setTransactions] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -72,6 +72,10 @@ const Activity = ({ id }) => {
                   )}...${transaction.userAddress.slice(-4)}`}
                 </a>{" "}
                 predicted{" "}
+                <span className="font-bold">
+                  {answers[transaction.outcomeIndex]}
+                </span>
+                {" with "}
                 <span className="text-secondary font-bold">
                   {transaction.amount} $CORE
                 </span>
@@ -96,7 +100,7 @@ const Activity = ({ id }) => {
     </div>
   );
 };
-const TopHolders = ({ id }) => {
+const TopHolders = ({ id, answers }) => {
   const [holdersList, setHoldersList] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -130,11 +134,11 @@ const TopHolders = ({ id }) => {
         ? holdersList.map((holders) => (
             <div key={holders.outcomeIndex}>
               <div className="flex justify-between font-bold text-primary">
-                <p>Holders</p>
+                <p>{answers[holders.outcomeIndex]} Holders</p>
                 <p>Amount</p>
               </div>
               {holders.holders.map((holder) => (
-                <div key={holder._id} className="flex justify-between">
+                <div key={holder.userAddress} className="flex justify-between">
                   <div className="font-bold">{`${holder.userAddress.slice(
                     0,
                     6
@@ -151,7 +155,7 @@ const TopHolders = ({ id }) => {
   );
 };
 
-const Tabs = ({ id }) => {
+const Tabs = ({ id, answers }) => {
   const [activeTab, setActiveTab] = useState("Comments");
 
   // Function to render the component based on the active tab
@@ -160,9 +164,9 @@ const Tabs = ({ id }) => {
       case "Comments":
         return <Comments id={id} />;
       case "Activity":
-        return <Activity id={id} />;
+        return <Activity id={id} answers={answers} />;
       case "Top Holders":
-        return <TopHolders id={id} />;
+        return <TopHolders id={id} answers={answers} />;
       default:
         return null;
     }
