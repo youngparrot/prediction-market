@@ -4,6 +4,7 @@ import Giscus from "@giscus/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useEffect, useState } from "react";
+import LoadingSpinner from "./LoadingSpinner";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -27,19 +28,31 @@ const Comments = ({ id }) => (
 );
 const Activity = ({ id }) => {
   const [transactions, setTransactions] = useState(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   const getTransactions = async (id) => {
     try {
+      setIsFetching(true);
       const transactionsData = await fetchTransactions(id);
       setTransactions(transactionsData.data);
     } catch (error) {
       console.log("Fetch transaction failed", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
   useEffect(() => {
     getTransactions(id);
   }, []);
+
+  if (isFetching) {
+    return (
+      <div className="flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white text-gray-600 p-4 rounded-md">
