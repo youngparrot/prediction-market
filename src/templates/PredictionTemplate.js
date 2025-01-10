@@ -198,7 +198,7 @@ const PredictionTemplate = () => {
             answerIndex,
             address,
             parseInt(amount),
-            transactionReceipt.id
+            transactionReceipt.transactionHash
           );
         } catch (error) {
           console.log("Create transaction failed ", error);
@@ -353,6 +353,7 @@ const PredictionTemplate = () => {
                   href={`${CORE_SCAN_URL}/address/${prediction.prediction.createdBy}`}
                   title="Creator Address"
                   target="_blank"
+                  className="font-bold"
                 >{`${prediction.prediction.createdBy.slice(
                   0,
                   6
@@ -367,13 +368,17 @@ const PredictionTemplate = () => {
               </p>
               <p>
                 Cutoff At:{" "}
-                {new Date(
-                  prediction.prediction.predictionCutoffDate
-                ).toLocaleString()}
+                <span className="font-bold">
+                  {new Date(
+                    prediction.prediction.predictionCutoffDate
+                  ).toLocaleString()}
+                </span>
               </p>
               <p>
                 Ended At:{" "}
-                {new Date(prediction.prediction.endDate).toLocaleString()}
+                <span className="font-bold">
+                  {new Date(prediction.prediction.endDate).toLocaleString()}
+                </span>
               </p>
             </div>
             <div className="mb-2">

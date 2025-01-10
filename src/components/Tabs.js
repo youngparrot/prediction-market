@@ -64,7 +64,7 @@ const Activity = ({ id }) => {
                   href={`${CORE_SCAN_URL}/address/${transaction.userAddress}`}
                   title="Predictor Address"
                   target="_blank"
-                  className="text-primary font-bold"
+                  className="font-bold"
                 >
                   {`${transaction.userAddress.slice(
                     0,
@@ -76,7 +76,20 @@ const Activity = ({ id }) => {
                   {transaction.amount} $CORE
                 </span>
               </div>
-              <div>{dayjs(transaction.createdAt).fromNow()}</div>
+              <div>
+                {transaction.transactionId ? (
+                  <a
+                    href={`${CORE_SCAN_URL}/tx/${transaction.transactionId}`}
+                    title="Transaction Link"
+                    target="_blank"
+                    className="font-bold"
+                  >
+                    {dayjs(transaction.createdAt).fromNow()}
+                  </a>
+                ) : (
+                  dayjs(transaction.createdAt).fromNow()
+                )}
+              </div>
             </div>
           ))
         : null}
