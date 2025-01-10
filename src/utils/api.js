@@ -32,7 +32,8 @@ export async function createTransaction(
   predictionId,
   outcomeIndex,
   userAddress,
-  amount
+  amount,
+  transactionId
 ) {
   const url = `${PREDICTION_MARKET_API}/api/transaction`;
   try {
@@ -41,6 +42,7 @@ export async function createTransaction(
       outcomeIndex,
       userAddress,
       amount,
+      transactionId,
     });
     return response.data;
   } catch (error) {
@@ -108,6 +110,25 @@ export async function fetchLeaderboard(userAddress = null) {
     return response.data;
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
+    return null;
+  }
+}
+
+export async function fetchTransactions(
+  predictionId = null,
+  page = 1,
+  limit = 20
+) {
+  let url = `${PREDICTION_MARKET_API}/api/transaction?page=${page}&limit=${limit}`;
+  if (predictionId) {
+    url += `&predictionId=${predictionId}`;
+  }
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching transaction:", error);
     return null;
   }
 }

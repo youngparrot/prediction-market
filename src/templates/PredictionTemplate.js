@@ -18,8 +18,8 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
 import { FaCheck, FaSpinner, FaTwitter } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Giscus from "@giscus/react";
 import dayjs from "dayjs";
+import Tabs from "@/components/Tabs";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -197,7 +197,8 @@ const PredictionTemplate = () => {
             prediction.prediction._id,
             answerIndex,
             address,
-            parseInt(amount)
+            parseInt(amount),
+            transactionReceipt.id
           );
         } catch (error) {
           console.log("Create transaction failed ", error);
@@ -497,20 +498,7 @@ const PredictionTemplate = () => {
               )}
             </div>
           </div>
-          <div className="bg-white p-2 md:p-4 rounded-md">
-            <Giscus
-              repo="youngparrot/prediction-market"
-              repoId="R_kgDONg2FQw"
-              category="General"
-              categoryId="DIC_kwDONg2FQ84Cll6f"
-              mapping={`/prediction/${id}`}
-              reactionsEnabled="1"
-              emitMetadata="0"
-              inputPosition="bottom"
-              theme="light"
-              lang="en"
-            />
-          </div>
+          <Tabs id={id} />
         </>
       ) : (
         <div className="text-white">Prediction is not found</div>
