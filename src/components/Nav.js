@@ -5,9 +5,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useAccount } from "wagmi";
 
 export default function Nav({ setShowHowToPredict }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { address, isConnected } = useAccount();
 
   // Function to toggle the menu
   const toggleMenu = () => {
@@ -82,6 +84,17 @@ export default function Nav({ setShowHowToPredict }) {
           >
             How to Predict
           </motion.button>
+          {address ? (
+            <motion.a
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
+              title="Profile"
+              href={`/profile/${address}`}
+            >
+              Profile
+            </motion.a>
+          ) : null}
           <ConnectButton />
         </div>
         <div className="relative md:hidden">
@@ -128,6 +141,17 @@ export default function Nav({ setShowHowToPredict }) {
               >
                 How to Predict
               </motion.button>
+              {address ? (
+                <motion.a
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
+                  title="Profile"
+                  href={`/profile/${address}`}
+                >
+                  Profile
+                </motion.a>
+              ) : null}
               <ConnectButton />
             </nav>
           </div>

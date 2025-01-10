@@ -157,18 +157,19 @@ const CreatePredictionTemplate = () => {
   };
 
   return (
-    <div className="p-2 md:p-6">
+    <div>
       <h2 className="text-accent text-xl font-bold mb-4">Create Prediction</h2>
-      <p className="text-white mb-4">
-        Create your own prediction and earn fees with the prediction market
-        platform. Creation fee is {CREATION_FEE} CORE. Creator would earn{" "}
-        {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
-        prediction.
-      </p>
+
       <div className="bg-white p-6 rounded-lg shadow-lg">
+        <p className="py-2 px-2 md:px-4 text-white bg-gray-700 mb-6">
+          Create your own prediction and earn fees with the prediction market
+          platform. Creation fee is {CREATION_FEE} CORE. Creator would earn{" "}
+          {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
+          prediction.
+        </p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label className="text-primary-light block font-semibold mb-1">
+            <label className="text-primary font-bold block mb-1">
               Question:
               <RequiredField />
             </label>
@@ -191,7 +192,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary-light block font-semibold mb-1">
+            <label className="text-primary font-bold block mb-1">
               Outcomes:
               <RequiredField />
             </label>
@@ -223,13 +224,13 @@ const CreatePredictionTemplate = () => {
             <button
               type="button"
               onClick={addAnswer} // Add a new empty string to the answers array
-              className="text-blue-500 underline"
+              className="text-primary font-bold underline"
             >
               Add Outcome
             </button>
           </div>
           <div className="mb-4">
-            <label className="text-primary-light block font-semibold mb-1">
+            <label className="text-primary font-bold block mb-1">
               Cutoff Time (UTC):
               <RequiredField />
             </label>
@@ -249,7 +250,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary-light block font-semibold mb-1">
+            <label className="text-primary font-bold block mb-1">
               End Time (UTC):
               <RequiredField />
             </label>
@@ -265,7 +266,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary-light block font-semibold mb-1">
+            <label className="text-primary font-bold block mb-1">
               Rules:
               <RequiredField />
             </label>
@@ -288,7 +289,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary-light block font-semibold mb-1">
+            <label className="text-primary font-bold block mb-1">
               Twitter/X:
               <RequiredField />
             </label>
