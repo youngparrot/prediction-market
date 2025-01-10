@@ -62,7 +62,7 @@ const Activity = ({ id, answers }) => {
               <div>
                 <a
                   href={`${CORE_SCAN_URL}/address/${transaction.userAddress}`}
-                  title="Predictor Address"
+                  title={transaction.userAddress}
                   target="_blank"
                   className="font-bold"
                 >
@@ -139,10 +139,17 @@ const TopHolders = ({ id, answers }) => {
               </div>
               {holders.holders.map((holder) => (
                 <div key={holder.userAddress} className="flex justify-between">
-                  <div className="font-bold">{`${holder.userAddress.slice(
-                    0,
-                    6
-                  )}...${holder.userAddress.slice(-4)}`}</div>
+                  <div className="font-bold">
+                    <a
+                      href={`${CORE_SCAN_URL}/address/${holder.userAddress}`}
+                      title={holder.userAddress}
+                      target="_blank"
+                      className="font-bold"
+                    >{`${holder.userAddress.slice(
+                      0,
+                      6
+                    )}...${holder.userAddress.slice(-4)}`}</a>
+                  </div>
                   <div className="text-secondary font-bold">
                     {holder.totalAmount} $CORE
                   </div>
