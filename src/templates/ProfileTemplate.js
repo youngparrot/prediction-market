@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaUserSecret } from "react-icons/fa";
