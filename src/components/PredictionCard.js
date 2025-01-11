@@ -38,7 +38,6 @@ const PredictionCard = ({ prediction, onClick }) => {
             <a
               href={`/profile/${prediction.createdBy}`}
               title="Creator Address"
-              target="_blank"
             >{`${prediction.createdBy.slice(
               0,
               6

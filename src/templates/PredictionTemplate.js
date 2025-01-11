@@ -352,7 +352,6 @@ const PredictionTemplate = () => {
                 <a
                   href={`/profile/${prediction.prediction.createdBy}`}
                   title="Creator Address"
-                  target="_blank"
                   className="font-bold"
                 >{`${prediction.prediction.createdBy.slice(
                   0,

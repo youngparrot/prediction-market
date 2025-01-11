@@ -63,7 +63,6 @@ const Activity = ({ id, answers }) => {
                 <a
                   href={`/profile/${transaction.userAddress}`}
                   title={transaction.userAddress}
-                  target="_blank"
                   className="font-bold"
                 >
                   {`${transaction.userAddress.slice(
@@ -143,7 +142,6 @@ const TopHolders = ({ id, answers }) => {
                     <a
                       href={`/profile/${holder.userAddress}`}
                       title={holder.userAddress}
-                      target="_blank"
                       className="font-bold"
                     >{`${holder.userAddress.slice(
                       0,

@@ -108,8 +108,6 @@ export default function LeaderboardTemplate() {
                             transition={{ type: "spring", stiffness: 300 }}
                             href={`/profile/${entry._id}`}
                             title={entry._id}
-                            target="_blank"
-                            rel="noopener noreferrer"
                           >
                             {formatTokenAddress(entry._id)}
                           </motion.a>{" "}
@@ -143,8 +141,6 @@ export default function LeaderboardTemplate() {
                               transition={{ type: "spring", stiffness: 300 }}
                               href={`/profile/${leaderboard.user_address}`}
                               title={leaderboard.user_address}
-                              target="_blank"
-                              rel="noopener noreferrer"
                             >
                               {formatTokenAddress(leaderboard.user_address)}
                             </motion.a>{" "}
