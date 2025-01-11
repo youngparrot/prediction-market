@@ -102,7 +102,7 @@ export async function postUser(userAddress, volume) {
 export async function fetchLeaderboard(userAddress = null) {
   let url = `${PREDICTION_MARKET_API}/api/leaderboard`;
   if (userAddress) {
-    url += `?user_address=${userAddress}`;
+    url += `?userAddress=${userAddress}`;
   }
 
   try {

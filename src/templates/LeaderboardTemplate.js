@@ -126,7 +126,7 @@ export default function LeaderboardTemplate() {
                         </td>
                       </tr>
                     ))}
-                    {leaderboard?.user_address && leaderboard.rank > 100 && (
+                    {leaderboard?.userAddress && leaderboard.rank > 100 && (
                       <>
                         <tr className="border-b border-gray-300">
                           <td colSpan="3" className="h-4 py-4 text-center">
@@ -139,16 +139,16 @@ export default function LeaderboardTemplate() {
                             <motion.a
                               whileHover={{ scale: 1.05 }}
                               transition={{ type: "spring", stiffness: 300 }}
-                              href={`/profile/${leaderboard.user_address}`}
-                              title={leaderboard.user_address}
+                              href={`/profile/${leaderboard.userAddress}`}
+                              title={leaderboard.userAddress}
                             >
-                              {formatTokenAddress(leaderboard.user_address)}
+                              {formatTokenAddress(leaderboard.userAddress)}
                             </motion.a>{" "}
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               transition={{ type: "spring", stiffness: 300 }}
                               onClick={() =>
-                                handleCopy(leaderboard.user_address)
+                                handleCopy(leaderboard.userAddress)
                               }
                               className={`text-blue-500 ml-2`}
                               title="Copy Address"
