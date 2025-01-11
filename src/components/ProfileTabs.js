@@ -240,7 +240,7 @@ const ProfileTabs = ({ userAddress }) => {
               borderBottom: activeTab === tab ? "2px solid #00539C" : "none",
               color: "#00539C",
             }}
-            className="px-4 md:px-6 py-2 font-bold"
+            className="px-4 md:px-6 py-2 font-bold text-base md:text-lg"
           >
             {tab}
           </motion.div>

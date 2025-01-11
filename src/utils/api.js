@@ -89,7 +89,7 @@ export async function postUser(userAddress, volume) {
   const url = `${PREDICTION_MARKET_API}/api/user`;
   try {
     const response = await axios.post(url, {
-      user_address: userAddress,
+      userAddress,
       volume: parseFloat(volume),
     });
     return response.data;

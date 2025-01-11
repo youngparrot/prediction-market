@@ -71,12 +71,12 @@ export default function ProfileTemplate() {
               {leaderboard.totalUserVolume} $CORE
             </p>
           </div>
-          <div>
+          {/* <div>
             <p className="text-gray-400">Profit/Loss</p>
             <p className="text-xl font-bold text-green-500">
               N/A $CORE (+XX.XX%)
             </p>
-          </div>
+          </div> */}
         </div>
 
         <ProfileTabs userAddress={userAddress} />
