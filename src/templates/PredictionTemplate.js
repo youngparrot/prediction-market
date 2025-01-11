@@ -350,7 +350,7 @@ const PredictionTemplate = () => {
               <p className="flex gap-1 items-center">
                 Asked By:{" "}
                 <a
-                  href={`${CORE_SCAN_URL}/address/${prediction.prediction.createdBy}`}
+                  href={`/profile/${prediction.prediction.createdBy}`}
                   title="Creator Address"
                   target="_blank"
                   className="font-bold"

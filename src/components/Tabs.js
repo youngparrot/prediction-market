@@ -61,7 +61,7 @@ const Activity = ({ id, answers }) => {
             <div key={transaction._id} className="flex justify-between">
               <div>
                 <a
-                  href={`${CORE_SCAN_URL}/address/${transaction.userAddress}`}
+                  href={`/profile/${transaction.userAddress}`}
                   title={transaction.userAddress}
                   target="_blank"
                   className="font-bold"
@@ -141,7 +141,7 @@ const TopHolders = ({ id, answers }) => {
                 <div key={holder.userAddress} className="flex justify-between">
                   <div className="font-bold">
                     <a
-                      href={`${CORE_SCAN_URL}/address/${holder.userAddress}`}
+                      href={`/profile/${holder.userAddress}`}
                       title={holder.userAddress}
                       target="_blank"
                       className="font-bold"

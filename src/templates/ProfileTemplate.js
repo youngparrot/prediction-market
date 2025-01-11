@@ -1,6 +1,7 @@
 "use client";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { fetchLeaderboard, fetchUserPredictions } from "@/utils/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaUserSecret } from "react-icons/fa";
@@ -15,25 +16,26 @@ export default function ProfileTemplate() {
   const { userAddress } = useParams();
 
   const [isFetching, setIsFetching] = useState(false);
+  const [userPredictions, setUserPredictions] = useState();
+  const [leaderboard, setLeaderboard] = useState([]);
 
-  const activityData = [
-    {
-      market: "Will $CORE price exceed $3 in January 2025?",
-      bet: "Yes",
-      betValue: 0,
-      poolTVL: 26,
-    },
-  ];
-
-  const getUserPredictions = async (address) => {
+  const fetchData = async () => {
     try {
+      setIsFetching(true);
+      const response = await fetchLeaderboard(userAddress);
+      setLeaderboard(response);
+
+      const userPredictionsData = await fetchUserPredictions(userAddress);
+      setUserPredictions(userPredictionsData.data);
     } catch (error) {
-      conCOREe.log("Get user prediction failed", error);
+      console.error("Error fetching leaderboard:", error);
+    } finally {
+      setIsFetching(false);
     }
   };
 
   useEffect(() => {
-    getUserPredictions(userAddress);
+    fetchData();
   }, []);
 
   if (isFetching) {
@@ -45,7 +47,7 @@ export default function ProfileTemplate() {
   }
 
   return (
-    <div className="bg-white min-h-screen px-6 py-8 rounded-md">
+    <div className="bg-white min-h-screen px-2 md:px-6 py-8 rounded-md">
       <div className="mx-auto">
         {/* Profile Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -53,11 +55,10 @@ export default function ProfileTemplate() {
             <FaUserSecret size={40} />
           </div>
           <div>
-            <h1 className="text-primary text-2xl font-bold">@Degen</h1>
-            <p className="text-gray-400">{`${userAddress.slice(
+            <h1 className="text-primary text-2xl font-bold">{`${userAddress.slice(
               0,
               6
-            )}...${userAddress.slice(-4)}`}</p>
+            )}...${userAddress.slice(-4)}`}</h1>
           </div>
         </div>
 
@@ -65,7 +66,13 @@ export default function ProfileTemplate() {
         <div className="flex justify-between bg-gray-800 p-4 rounded-lg mb-8">
           <div>
             <p className="text-gray-400">Rank #</p>
-            <p className="text-xl font-bold">N/A</p>
+            <p className="text-xl font-bold">{leaderboard.rank}</p>
+          </div>
+          <div>
+            <p className="text-gray-400">Total Volume</p>
+            <p className="text-xl font-bold">
+              {leaderboard.totalUserVolume} $CORE
+            </p>
           </div>
           <div>
             <p className="text-gray-400">Profit/Loss</p>
@@ -73,55 +80,46 @@ export default function ProfileTemplate() {
               N/A $CORE (+XX.XX%)
             </p>
           </div>
-          <div>
-            <p className="text-gray-400">Total Volume</p>
-            <p className="text-xl font-bold">N/A $CORE</p>
-          </div>
         </div>
 
         {/* Predicted Section */}
         <h2 className="text-primary text-xl font-bold mb-4">Predicted</h2>
         <div className="space-y-4">
-          {activityData.map((activity, index) => (
-            <ActivityCard key={index} {...activity} />
-          ))}
+          {userPredictions
+            ? userPredictions.map((prediction) => (
+                <ActivityCard
+                  key={prediction.predictionId}
+                  prediction={prediction}
+                />
+              ))
+            : null}
         </div>
 
         {/* WatchListed Section */}
-        <h2 className="text-primary text-xl font-bold mb-4 mt-8">
-          WatchListed
+        {/* <h2 className="text-primary text-xl font-bold mb-4 mt-8">
+          Your WatchListed
         </h2>
         <div className="space-y-4">
           {activityData.map((activity, index) => (
             <ActivityCard key={index} {...activity} />
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
 }
 
 // Activity Card Component
-function ActivityCard({ market, bet, betValue, optionTVL, poolTVL }) {
+function ActivityCard({ prediction }) {
   return (
     <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
       <div>
-        <p className="font-bold">{market}</p>
-      </div>
-      <div className="flex gap-6">
-        <div>
-          <p className="text-gray-400 text-sm">Your (CORE)</p>
-          <p className="font-bold">{betValue}</p>
-        </div>
-      </div>
-      <div className="flex gap-6">
-        <div>
-          <p className="text-gray-400 text-sm">Total TVL (CORE)</p>
-          <p className="font-bold">{poolTVL}</p>
-        </div>
+        <a href={`/prediction/${prediction.predictionId}`}>
+          <p className="font-bold">{prediction.predictionDetails.question}</p>
+        </a>
       </div>
       <a
-        href="/prediction/677c3868376b7eaf45722730"
+        href={`/prediction/${prediction.predictionId}`}
         className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
       >
         View

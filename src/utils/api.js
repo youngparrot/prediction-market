@@ -133,3 +133,15 @@ export async function fetchTransactions(
     return null;
   }
 }
+
+export async function fetchUserPredictions(userAddress) {
+  let url = `${PREDICTION_MARKET_API}/api/getUserPredictions?userAddress=${userAddress}`;
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user predictions:", error);
+    return null;
+  }
+}

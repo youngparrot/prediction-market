@@ -106,7 +106,7 @@ export default function LeaderboardTemplate() {
                           <motion.a
                             whileHover={{ scale: 1.05 }}
                             transition={{ type: "spring", stiffness: 300 }}
-                            href={`${CORE_SCAN_URL}/address/${entry._id}`}
+                            href={`/profile/${entry._id}`}
                             title={entry._id}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -141,7 +141,7 @@ export default function LeaderboardTemplate() {
                             <motion.a
                               whileHover={{ scale: 1.05 }}
                               transition={{ type: "spring", stiffness: 300 }}
-                              href={`${CORE_SCAN_URL}/address/${leaderboard.user_address}`}
+                              href={`/profile/${leaderboard.user_address}`}
                               title={leaderboard.user_address}
                               target="_blank"
                               rel="noopener noreferrer"

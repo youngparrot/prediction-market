@@ -36,7 +36,7 @@ const PredictionCard = ({ prediction, onClick }) => {
           <p className="flex gap-1 items-center text-sm text-gray-600">
             Asked By:{" "}
             <a
-              href={`${CORE_SCAN_URL}/address/${prediction.createdBy}`}
+              href={`/profile/${prediction.createdBy}`}
               title="Creator Address"
               target="_blank"
             >{`${prediction.createdBy.slice(
