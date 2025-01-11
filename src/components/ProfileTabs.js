@@ -86,7 +86,7 @@ const Predicted = ({ userAddress }) => {
     return (
       <div className="text-gray-700 mt-4 flex gap-1 items-center">
         <p>
-          No predicted predictions. Let's choose any predictions{" "}
+          No predicted predictions. Let&apos;s choose any predictions{" "}
           <a href="/" title="Home" className="text-primary font-bold">
             HERE
           </a>{" "}
