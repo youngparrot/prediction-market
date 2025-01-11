@@ -2,7 +2,7 @@
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ProfileTabs from "@/components/ProfileTabs";
-import { fetchLeaderboard, fetchUserPredictions } from "@/utils/api";
+import { fetchLeaderboard, fetchUser, fetchUserPredictions } from "@/utils/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GiPlagueDoctorProfile } from "react-icons/gi";
@@ -18,12 +18,16 @@ export default function ProfileTemplate() {
 
   const [isFetching, setIsFetching] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
+  const [user, setUser] = useState();
 
   const fetchData = async () => {
     try {
       setIsFetching(true);
       const response = await fetchLeaderboard(userAddress);
       setLeaderboard(response);
+
+      const user = await fetchUser(userAddress);
+      setUser(user);
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
     } finally {
@@ -56,6 +60,12 @@ export default function ProfileTemplate() {
               0,
               6
             )}...${userAddress.slice(-4)}`}</h1>
+            <p className="text-gray-500">
+              Created At{" "}
+              {user?.data.createdAt
+                ? new Date(user?.data.createdAt).toLocaleString()
+                : null}
+            </p>
           </div>
         </div>
 
