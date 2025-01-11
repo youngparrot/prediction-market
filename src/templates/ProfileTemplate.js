@@ -61,9 +61,10 @@ export default function ProfileTemplate() {
               6
             )}...${userAddress.slice(-4)}`}</h1>
             <p className="text-gray-500">
-              Created At{" "}
               {user?.data.createdAt
-                ? new Date(user?.data.createdAt).toLocaleString()
+                ? `Created At ${new Date(
+                    user?.data.createdAt
+                  ).toLocaleString()}`
                 : null}
             </p>
           </div>
