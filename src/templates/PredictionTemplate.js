@@ -19,7 +19,7 @@ import Image from "next/image";
 import { FaCheck, FaSpinner, FaTwitter } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import dayjs from "dayjs";
-import Tabs from "@/components/Tabs";
+import PredictionTabs from "@/components/PredictionTabs";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -503,7 +503,7 @@ const PredictionTemplate = () => {
               )}
             </div>
           </div>
-          <Tabs id={id} answers={prediction?.prediction.answers} />
+          <PredictionTabs id={id} answers={prediction?.prediction.answers} />
         </>
       ) : (
         <div className="text-white">Prediction is not found</div>

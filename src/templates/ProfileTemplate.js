@@ -1,10 +1,11 @@
 "use client";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ProfileTabs from "@/components/ProfileTabs";
 import { fetchLeaderboard, fetchUserPredictions } from "@/utils/api";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaUserSecret } from "react-icons/fa";
+import { GiPlagueDoctorProfile } from "react-icons/gi";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 export default function ProfileTemplate() {
@@ -16,7 +17,6 @@ export default function ProfileTemplate() {
   const { userAddress } = useParams();
 
   const [isFetching, setIsFetching] = useState(false);
-  const [userPredictions, setUserPredictions] = useState();
   const [leaderboard, setLeaderboard] = useState([]);
 
   const fetchData = async () => {
@@ -24,9 +24,6 @@ export default function ProfileTemplate() {
       setIsFetching(true);
       const response = await fetchLeaderboard(userAddress);
       setLeaderboard(response);
-
-      const userPredictionsData = await fetchUserPredictions(userAddress);
-      setUserPredictions(userPredictionsData.data);
     } catch (error) {
       console.error("Error fetching leaderboard:", error);
     } finally {
@@ -52,7 +49,7 @@ export default function ProfileTemplate() {
         {/* Profile Header */}
         <div className="flex items-center gap-4 mb-8">
           <div className="bg-gray-700 p-4 rounded-full">
-            <FaUserSecret size={40} />
+            <GiPlagueDoctorProfile size={40} />
           </div>
           <div>
             <h1 className="text-primary text-2xl font-bold">{`${userAddress.slice(
@@ -82,8 +79,9 @@ export default function ProfileTemplate() {
           </div>
         </div>
 
+        <ProfileTabs userAddress={userAddress} />
         {/* Predicted Section */}
-        <h2 className="text-primary text-xl font-bold mb-4">Predicted</h2>
+        {/* <h2 className="text-primary text-xl font-bold mb-4">Predicted</h2>
         <div className="space-y-4">
           {userPredictions
             ? userPredictions.map((prediction) => (
@@ -93,7 +91,7 @@ export default function ProfileTemplate() {
                 />
               ))
             : null}
-        </div>
+        </div> */}
 
         {/* WatchListed Section */}
         {/* <h2 className="text-primary text-xl font-bold mb-4 mt-8">
@@ -105,25 +103,6 @@ export default function ProfileTemplate() {
           ))}
         </div> */}
       </div>
-    </div>
-  );
-}
-
-// Activity Card Component
-function ActivityCard({ prediction }) {
-  return (
-    <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
-      <div>
-        <a href={`/prediction/${prediction.predictionId}`}>
-          <p className="font-bold">{prediction.predictionDetails.question}</p>
-        </a>
-      </div>
-      <a
-        href={`/prediction/${prediction.predictionId}`}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
-      >
-        View
-      </a>
     </div>
   );
 }

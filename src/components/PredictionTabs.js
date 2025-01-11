@@ -162,7 +162,7 @@ const TopHolders = ({ id, answers }) => {
   );
 };
 
-const Tabs = ({ id, answers }) => {
+const PredictionTabs = ({ id, answers }) => {
   const [activeTab, setActiveTab] = useState("Comments");
 
   // Function to render the component based on the active tab
@@ -208,4 +208,4 @@ const Tabs = ({ id, answers }) => {
   );
 };
 
-export default Tabs;
+export default PredictionTabs;

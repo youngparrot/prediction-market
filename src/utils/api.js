@@ -145,3 +145,15 @@ export async function fetchUserPredictions(userAddress) {
     return null;
   }
 }
+
+export async function fetchUserCreatedPredictions(userAddress) {
+  let url = `${PREDICTION_MARKET_API}/api/getUserCreatedPredictions?userAddress=${userAddress}`;
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching user predictions:", error);
+    return null;
+  }
+}
