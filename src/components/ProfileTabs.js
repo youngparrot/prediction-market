@@ -13,6 +13,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { FaMoneyBillAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -229,7 +230,9 @@ const ProfileTabs = ({ userAddress }) => {
         className="gap-1 md:gap-4"
       >
         {["Predicted", "Created", "WatchListed"].map((tab) => (
-          <div
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300 }}
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
@@ -240,7 +243,7 @@ const ProfileTabs = ({ userAddress }) => {
             className="px-4 md:px-6 py-2 font-bold"
           >
             {tab}
-          </div>
+          </motion.div>
         ))}
       </div>
 

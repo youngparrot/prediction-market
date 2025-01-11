@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
+import { motion } from "framer-motion";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -185,7 +186,9 @@ const PredictionTabs = ({ id, answers }) => {
         className="gap-1 md:gap-4"
       >
         {["Comments", "Activity", "Top Holders"].map((tab) => (
-          <div
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 300 }}
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
@@ -196,7 +199,7 @@ const PredictionTabs = ({ id, answers }) => {
             className="px-4 md:px-6 py-2 font-bold"
           >
             {tab}
-          </div>
+          </motion.div>
         ))}
       </div>
 

@@ -9,6 +9,7 @@ import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { getContract } from "viem";
 import { fetchPredictions } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { motion } from "framer-motion";
 
 const HomeTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -106,13 +107,15 @@ const HomeTemplate = () => {
         activePredictions.predictions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {activePredictions.predictions.map((prediction) => (
-              <a
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
                 href={`/prediction/${prediction._id}`}
                 title={prediction.question}
                 key={prediction._id}
               >
                 <PredictionCard prediction={prediction} />
-              </a>
+              </motion.a>
             ))}
           </div>
         ) : (
@@ -127,13 +130,15 @@ const HomeTemplate = () => {
         completedPredictions.predictions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {completedPredictions.predictions.map((prediction) => (
-              <a
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
                 href={`/prediction/${prediction._id}`}
                 title={prediction.question}
                 key={prediction._id}
               >
                 <PredictionCard prediction={prediction} />
-              </a>
+              </motion.a>
             ))}
           </div>
         ) : (

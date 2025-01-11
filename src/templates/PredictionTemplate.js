@@ -20,6 +20,7 @@ import { FaCheck, FaSpinner, FaTwitter } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import dayjs from "dayjs";
 import PredictionTabs from "@/components/PredictionTabs";
+import { motion } from "framer-motion";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -467,13 +468,15 @@ const PredictionTemplate = () => {
                     </div>
                   ) : null}
                   <div className="flex gap-4 items-center mb-4">
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ type: "spring", stiffness: 300 }}
                       id="predict-button"
                       onClick={handlePredictButtonClick}
                       className="bg-blue-500 text-white py-2 px-4 rounded"
                     >
                       Predict
-                    </button>
+                    </motion.button>
                     {isDone && predictionContract ? (
                       <>
                         {predictionContract[0].ended ? (
