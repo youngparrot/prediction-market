@@ -3,6 +3,7 @@ import Image from "next/image";
 import React from "react";
 import { FaCheck, FaTwitter } from "react-icons/fa";
 import { formatEther } from "viem";
+import WatchlistIcon from "./WatchlistIcon";
 
 const PredictionCard = ({ prediction, onClick }) => {
   const isDone = prediction.endDate
@@ -55,9 +56,12 @@ const PredictionCard = ({ prediction, onClick }) => {
             Ended At: {new Date(prediction.endDate).toLocaleString()}
           </p>
         </div>
-        <div className="pt-4">
+        <div className="pt-4 flex items-center justify-between">
           <p className="font-bold text-secondary-light">
             Total: {formatEther(prediction.total)} $CORE
+          </p>
+          <p>
+            <WatchlistIcon predictionId={prediction._id} />
           </p>
         </div>
       </div>

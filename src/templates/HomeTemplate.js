@@ -88,7 +88,7 @@ const Predictions = ({ status }) => {
     <div>
       {predictions.predictions && predictions.predictions.length > 0 ? (
         <>
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end mb-4 text-white">
             <span>Total: {predictions.total}</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

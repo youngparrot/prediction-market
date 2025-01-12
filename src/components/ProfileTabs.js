@@ -2,6 +2,7 @@ import {
   fetchTransactions,
   fetchUserCreatedPredictions,
   fetchUserPredictions,
+  fetchWatchlist,
 } from "@/utils/api";
 import {
   CORE_SCAN_URL,
@@ -172,23 +173,25 @@ const Created = ({ userAddress }) => {
   );
 };
 
-const WatchListed = ({ id, answers }) => {
-  const [holdersList, setHoldersList] = useState(null);
+const WatchListed = ({ userAddress }) => {
+  const [watchlists, setWatchlists] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
-  const getTopHolders = async (type, id) => {
+  const getWatchlists = async (userAddress) => {
     try {
       setIsFetching(true);
-      const transactionsData = await fetchTransactions(type, id);
-      setHoldersList(transactionsData.data);
+      const response = await fetchWatchlist(userAddress);
+      setWatchlists(response.watchlist);
     } catch (error) {
-      console.log("Fetch top holders failed", error);
+      console.log("Fetch watchlists failed", error);
     } finally {
       setIsFetching(false);
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getWatchlists(userAddress);
+  }, []);
 
   if (isFetching) {
     return (
@@ -199,8 +202,12 @@ const WatchListed = ({ id, answers }) => {
   }
 
   return (
-    <div className="bg-white text-gray-600 p-4 rounded-md grid grid-cols-1 md:grid-cols-2 gap-6">
-      Incoming
+    <div className="space-y-4">
+      {watchlists
+        ? watchlists.map((prediction) => (
+            <CreatedCard key={prediction._id} prediction={prediction} />
+          ))
+        : null}
     </div>
   );
 };
