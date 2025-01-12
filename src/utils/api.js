@@ -167,3 +167,33 @@ export async function fetchUser(userAddress) {
     return null;
   }
 }
+
+// Function to add to watchlist
+async function addToWatchlist(userAddress, predictionId) {
+  let url = `${PREDICTION_MARKET_API}/api/watchlist`;
+
+  try {
+    const response = await axios.post(url, {
+      userAddress,
+      predictionId,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error posting watchlist:", error);
+    return null;
+  }
+}
+
+// Function to fetch user's watchlist
+async function fetchWatchlist(userAddress) {
+  let url = `${PREDICTION_MARKET_API}/api/watchlist?userAddress=${userAddress}`;
+
+  try {
+    const response = await axios.get(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching watchlist:", error);
+    return null;
+  }
+}

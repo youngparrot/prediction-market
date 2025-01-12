@@ -87,19 +87,24 @@ const Predictions = ({ status }) => {
   return (
     <div>
       {predictions.predictions && predictions.predictions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {predictions.predictions.map((prediction) => (
-            <motion.a
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              href={`/prediction/${prediction._id}`}
-              title={prediction.question}
-              key={prediction._id}
-            >
-              <PredictionCard prediction={prediction} />
-            </motion.a>
-          ))}
-        </div>
+        <>
+          <div className="flex justify-end mb-4">
+            <span>Total: {predictions.total}</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {predictions.predictions.map((prediction) => (
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                href={`/prediction/${prediction._id}`}
+                title={prediction.question}
+                key={prediction._id}
+              >
+                <PredictionCard prediction={prediction} />
+              </motion.a>
+            ))}
+          </div>
+        </>
       ) : (
         <p className="text-white">No predictions</p>
       )}
