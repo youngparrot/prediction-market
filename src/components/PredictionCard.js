@@ -35,13 +35,10 @@ const PredictionCard = ({ prediction, onClick }) => {
         <div>
           <p className="flex gap-1 items-center text-sm text-gray-600">
             Asked By:{" "}
-            <a
-              href={`/profile/${prediction.createdBy}`}
-              title="Creator Address"
-            >{`${prediction.createdBy.slice(
+            {`${prediction.createdBy.slice(
               0,
               6
-            )}...${prediction.createdBy.slice(-4)}`}</a>
+            )}...${prediction.createdBy.slice(-4)}`}
             {/* <a
               href={prediction.twitter}
               title="Creator Twitter/X"

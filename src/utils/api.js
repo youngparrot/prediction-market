@@ -65,15 +65,13 @@ export async function updatePrediction(predictionId, status) {
   }
 }
 
-export async function fetchPredictions({
-  page = 1,
-  limit = 20,
-  id,
-  status = "active",
-}) {
-  let url = `${PREDICTION_MARKET_API}/api/fetchPredictions?page=${page}&limit=${limit}&status=${status}`;
+export async function fetchPredictions({ page = 1, limit = 20, id, status }) {
+  let url = `${PREDICTION_MARKET_API}/api/fetchPredictions?page=${page}&limit=${limit}`;
   if (id) {
     url += `&id=${id}`;
+  }
+  if (status) {
+    url += `&status=${status}`;
   }
 
   try {
