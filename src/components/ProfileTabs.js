@@ -173,7 +173,7 @@ const Created = ({ userAddress }) => {
   );
 };
 
-const WatchListed = ({ userAddress }) => {
+const Watchlisted = ({ userAddress }) => {
   const [watchlists, setWatchlists] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
@@ -222,8 +222,8 @@ const ProfileTabs = ({ userAddress }) => {
         return <Predicted userAddress={userAddress} />;
       case "Created":
         return <Created userAddress={userAddress} />;
-      case "WatchListed":
-        return <WatchListed userAddress={userAddress} />;
+      case "Watchlisted":
+        return <Watchlisted userAddress={userAddress} />;
       default:
         return null;
     }
@@ -236,7 +236,7 @@ const ProfileTabs = ({ userAddress }) => {
         style={{ display: "flex", borderBottom: "1px solid #00539C" }}
         className="gap-1 md:gap-4"
       >
-        {["Predicted", "Created", "WatchListed"].map((tab) => (
+        {["Predicted", "Created", "Watchlisted"].map((tab) => (
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
