@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { addToWatchlist, unWatchlist } from "@/utils/api";
 import { useAccount } from "wagmi";
 import { toast } from "react-toastify";
 
-export default function WatchlistIcon({ predictionId }) {
+export default function WatchlistIcon({ prediction }) {
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const { address, isConnected } = useAccount();
@@ -15,14 +15,15 @@ export default function WatchlistIcon({ predictionId }) {
     e.stopPropagation();
     e.preventDefault();
 
-    if (!predictionId) {
-      toast.info("User address and prediction ID are required!");
+    if (!prediction._id) {
+      toast.info("prediction ID is required!");
       return;
     }
 
-    setLoading(true);
+    const predictionId = prediction._id;
 
     try {
+      setLoading(true);
       if (isInWatchlist) {
         await unWatchlist(address, predictionId);
         setIsInWatchlist(false); // Update the icon state
@@ -47,6 +48,14 @@ export default function WatchlistIcon({ predictionId }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!prediction) {
+      return;
+    }
+
+    setIsInWatchlist(prediction.isInWatchlist);
+  }, [prediction]);
 
   return (
     <button

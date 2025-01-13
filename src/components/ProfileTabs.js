@@ -58,7 +58,9 @@ const CreatedCard = ({ prediction }) => {
   );
 };
 
-const WatchlistCard = ({ prediction, deleteWatchlist }) => {
+const WatchlistCard = ({ prediction, deleteWatchlist, userAddress }) => {
+  const { address, isConnected } = useAccount();
+
   return (
     <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
       <div>
@@ -67,12 +69,14 @@ const WatchlistCard = ({ prediction, deleteWatchlist }) => {
         </a>
       </div>
       <div className="flex gap-2">
-        <button
-          onClick={() => deleteWatchlist(prediction._id)}
-          className="bg-secondary hover:bg-secondary-light px-4 py-2 rounded text-sm font-bold"
-        >
-          Remove Watchlist
-        </button>
+        {isConnected && userAddress === address ? (
+          <button
+            onClick={() => deleteWatchlist(prediction._id)}
+            className="bg-secondary hover:bg-secondary-dark px-4 py-2 rounded text-sm font-bold"
+          >
+            Remove Watchlist
+          </button>
+        ) : null}
         <a
           href={`/prediction/${prediction._id}`}
           className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
@@ -129,7 +133,7 @@ const Predicted = ({ userAddress }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {userPredictions
         ? userPredictions.map((prediction) => {
             return (
@@ -192,7 +196,7 @@ const Created = ({ userAddress }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {userCreatedPredictions
         ? userCreatedPredictions.map((prediction) => (
             <CreatedCard key={prediction._id} prediction={prediction} />
@@ -246,13 +250,14 @@ const Watchlisted = ({ userAddress }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {watchlists
         ? watchlists.map((prediction) => (
             <WatchlistCard
               key={prediction._id}
               prediction={prediction}
               deleteWatchlist={deleteWatchlist}
+              userAddress={userAddress}
             />
           ))
         : null}

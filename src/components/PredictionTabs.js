@@ -76,7 +76,7 @@ const Activity = ({ id, answers }) => {
                   {answers[transaction.outcomeIndex]}
                 </span>
                 {" with "}
-                <span className="text-secondary font-bold">
+                <span className="text-secondary">
                   {transaction.amount} $CORE
                 </span>
               </div>
@@ -86,7 +86,6 @@ const Activity = ({ id, answers }) => {
                     href={`${CORE_SCAN_URL}/tx/${transaction.transactionId}`}
                     title="Transaction Link"
                     target="_blank"
-                    className="font-bold"
                   >
                     {dayjs(transaction.createdAt).fromNow()}
                   </a>
@@ -139,17 +138,16 @@ const TopHolders = ({ id, answers }) => {
               </div>
               {holders.holders.map((holder) => (
                 <div key={holder.userAddress} className="flex justify-between">
-                  <div className="font-bold">
+                  <div>
                     <a
                       href={`/profile/${holder.userAddress}`}
                       title={holder.userAddress}
-                      className="font-bold"
                     >{`${holder.userAddress.slice(
                       0,
                       6
                     )}...${holder.userAddress.slice(-4)}`}</a>
                   </div>
-                  <div className="text-secondary font-bold">
+                  <div className="text-secondary">
                     {holder.totalAmount} $CORE
                   </div>
                 </div>

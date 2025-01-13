@@ -7,7 +7,7 @@ import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { getContract } from "viem";
-import { fetchPredictions } from "@/utils/api";
+import { fetchPredictions, fetchWatchlist } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
 import StatusFilter from "@/components/StatusFilter";
@@ -38,6 +38,7 @@ const Predictions = ({ status }) => {
   const { address, isConnected } = useAccount();
   const [isFetching, setIsFetching] = useState(false);
   const [predictions, setPredictions] = useState([]);
+  const [watchlists, setWatchlists] = useState(null);
 
   const getPredictions = async () => {
     try {
@@ -61,6 +62,12 @@ const Predictions = ({ status }) => {
         predictionsData.predictions[i].winningAnswerIndex =
           predictionContractData[i].winningAnswerIndex;
         predictionsData.predictions[i].ended = predictionContractData[i].ended;
+
+        if (watchlists && watchlists[predictionsData.predictions[i]._id]) {
+          predictionsData.predictions[i].isInWatchlist = true;
+        } else {
+          predictionsData.predictions[i].isInWatchlist = false;
+        }
       }
 
       setPredictions(predictionsData);
@@ -71,10 +78,34 @@ const Predictions = ({ status }) => {
     }
   };
 
+  const getWatchlists = async () => {
+    try {
+      setIsFetching(true);
+      const response = await fetchWatchlist(address);
+      const watchlistMap = {};
+      for (let i = 0; i < response.watchlist.length; i++) {
+        watchlistMap[response.watchlist[i]._id] = true;
+      }
+      setWatchlists(watchlistMap);
+    } catch (error) {
+      console.log("Fetch watchlists failed", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+
+    getWatchlists();
+  }, [address]);
+
   useEffect(() => {
     getPredictions();
     // getCompletedPredictions();
-  }, [status]);
+  }, [status, watchlists]);
 
   if (isFetching) {
     return (

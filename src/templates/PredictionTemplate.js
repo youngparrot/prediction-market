@@ -12,7 +12,12 @@ import {
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { formatEther, getContract, parseEther } from "viem";
 import { toast } from "react-toastify";
-import { createTransaction, fetchPredictions, postUser } from "@/utils/api";
+import {
+  createTransaction,
+  fetchPredictions,
+  fetchWatchlist,
+  postUser,
+} from "@/utils/api";
 import { useParams } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Image from "next/image";
@@ -21,6 +26,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import dayjs from "dayjs";
 import PredictionTabs from "@/components/PredictionTabs";
 import { motion } from "framer-motion";
+import WatchlistIcon from "@/components/WatchlistIcon";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -43,6 +49,7 @@ const PredictionTemplate = () => {
   const { id } = useParams();
 
   const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
+  const [watchlists, setWatchlists] = useState(null);
 
   useEffect(() => {
     if (!prediction?.prediction.predictionCutoffDate) {
@@ -60,6 +67,13 @@ const PredictionTemplate = () => {
     try {
       setIsFetching(true);
       const predictionData = await fetchPredictions({ id });
+
+      if (watchlists && watchlists[predictionData.prediction._id]) {
+        predictionData.prediction.isInWatchlist = true;
+      } else {
+        predictionData.prediction.isInWatchlist = false;
+      }
+
       setPrediction(predictionData);
     } catch (error) {
       console.log("Fetching predictions failed", error);
@@ -67,6 +81,30 @@ const PredictionTemplate = () => {
       setIsFetching(false);
     }
   };
+
+  const getWatchlists = async () => {
+    try {
+      setIsFetching(true);
+      const response = await fetchWatchlist(address);
+      const watchlistMap = {};
+      for (let i = 0; i < response.watchlist.length; i++) {
+        watchlistMap[response.watchlist[i]._id] = true;
+      }
+      setWatchlists(watchlistMap);
+    } catch (error) {
+      console.log("Fetch watchlists failed", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!address) {
+      return;
+    }
+
+    getWatchlists();
+  }, [address]);
 
   const getPredictionContract = async () => {
     try {
@@ -105,7 +143,7 @@ const PredictionTemplate = () => {
 
   useEffect(() => {
     getPrediction();
-  }, []);
+  }, [watchlists]);
 
   const fetchUserContract = async () => {
     try {
@@ -333,19 +371,26 @@ const PredictionTemplate = () => {
       {prediction && prediction.prediction ? (
         <>
           <div className="bg-white mb-8 p-2 md:p-4 rounded-md">
-            <div className="flex gap-4 items-center mb-4">
-              <Image
-                src={
-                  prediction.prediction.image ??
-                  "/images/prediction-no-image.png"
-                }
-                width={60}
-                height={60}
-                alt={`${prediction.prediction.question} logo`}
-              />
-              <h1 className="text-primary text-xl font-bold">
-                {prediction.prediction.question}
-              </h1>
+            <div className="flex justify-between">
+              <div className="flex gap-4 items-center mb-4">
+                <Image
+                  src={
+                    prediction.prediction.image ??
+                    "/images/prediction-no-image.png"
+                  }
+                  width={60}
+                  height={60}
+                  alt={`${prediction.prediction.question} logo`}
+                />
+                <h1 className="text-primary text-xl font-bold">
+                  {prediction.prediction.question}
+                </h1>
+              </div>
+              {isConnected ? (
+                <p>
+                  <WatchlistIcon prediction={prediction.prediction} />
+                </p>
+              ) : null}
             </div>
             <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
               <p className="flex gap-1 items-center">

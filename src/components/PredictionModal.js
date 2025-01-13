@@ -5,11 +5,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import QuantitySlider from "./QuantitySlider";
 
-const amounts = [1, 2, 4, 8, 10, 14, 18, 20, 30, 40, 50, 80, 100];
-
 const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [amount, setAmount] = useState(amounts[0]);
+  const [amount, setAmount] = useState(1);
   const { address, isConnected } = useAccount();
   const [answerError, setAnswerError] = useState();
 
