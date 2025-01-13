@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
-import { addToWatchlist } from "@/utils/api";
+import { addToWatchlist, unWatchlist } from "@/utils/api";
 import { useAccount } from "wagmi";
 import { toast } from "react-toastify";
 
@@ -23,9 +23,15 @@ export default function WatchlistIcon({ predictionId }) {
     setLoading(true);
 
     try {
-      await addToWatchlist(address, predictionId);
-      setIsInWatchlist(true); // Update the icon state
-      toast.success("Watchlist is added");
+      if (isInWatchlist) {
+        await unWatchlist(address, predictionId);
+        setIsInWatchlist(false); // Update the icon state
+        toast.success("Watchlist is removed");
+      } else {
+        await addToWatchlist(address, predictionId);
+        setIsInWatchlist(true); // Update the icon state
+        toast.success("Watchlist is added");
+      }
     } catch (error) {
       console.log(
         "Error adding to watchlist:",
