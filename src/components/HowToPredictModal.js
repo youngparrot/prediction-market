@@ -32,16 +32,16 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
                 </h3>
                 <p className="text-gray-500 pb-4">
                   Click on a prediction to view its details, such as the
-                  question, outcomes, rules, and closing time. Choose your
-                  prediction from the available options (e.g., &quot;Yes&quot;
-                  or &quot;No&quot;). Enter the amount you want to predict and
-                  confirm your prediction.
+                  question, outcomes, rules, cutoff time and closing time.
+                  Choose your prediction from the available options (e.g.,
+                  &quot;Yes&quot; or &quot;No&quot;). Enter the amount you want
+                  to predict and confirm your prediction.
                 </p>
                 <h3 className="text-primary font-bold">
                   Step 4: Monitor Your Predictions
                 </h3>
                 <p className="text-gray-500 pb-4">
-                  After placing a prediction, it will appear in your dashboard.
+                  After placing a prediction, it will appear in your profile.
                   Track the market&lsquo;s progress and stay updated with live
                   data.
                 </p>
