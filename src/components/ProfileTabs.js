@@ -3,6 +3,7 @@ import {
   fetchUserCreatedPredictions,
   fetchUserPredictions,
   fetchWatchlist,
+  unWatchlist,
 } from "@/utils/api";
 import {
   CORE_SCAN_URL,
@@ -15,6 +16,8 @@ import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { FaMoneyBillAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { useAccount } from "wagmi";
+import { toast } from "react-toastify";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -51,6 +54,32 @@ const CreatedCard = ({ prediction }) => {
       >
         View
       </a>
+    </div>
+  );
+};
+
+const WatchlistCard = ({ prediction, deleteWatchlist }) => {
+  return (
+    <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
+      <div>
+        <a href={`/prediction/${prediction._id}`}>
+          <p className="font-bold">{prediction.question}</p>
+        </a>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => deleteWatchlist(prediction._id)}
+          className="bg-secondary hover:bg-secondary-light px-4 py-2 rounded text-sm font-bold"
+        >
+          Remove Watchlist
+        </button>
+        <a
+          href={`/prediction/${prediction._id}`}
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
+        >
+          View
+        </a>
+      </div>
     </div>
   );
 };
@@ -177,7 +206,7 @@ const Watchlisted = ({ userAddress }) => {
   const [watchlists, setWatchlists] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
 
-  const getWatchlists = async (userAddress) => {
+  const getWatchlists = async () => {
     try {
       setIsFetching(true);
       const response = await fetchWatchlist(userAddress);
@@ -189,8 +218,19 @@ const Watchlisted = ({ userAddress }) => {
     }
   };
 
+  const deleteWatchlist = async (predictionId) => {
+    try {
+      await unWatchlist(userAddress, predictionId);
+      toast.success("Watchlist is removed");
+      getWatchlists();
+    } catch (error) {
+      console.log("Delete watchlist failed", error);
+      toast.error("Remove watchlist is failed");
+    }
+  };
+
   useEffect(() => {
-    getWatchlists(userAddress);
+    getWatchlists();
   }, []);
 
   if (isFetching) {
@@ -201,11 +241,19 @@ const Watchlisted = ({ userAddress }) => {
     );
   }
 
+  if (watchlists && watchlists.length === 0) {
+    return <div className="text-gray-700 mt-4">There is no watchlists.</div>;
+  }
+
   return (
     <div className="space-y-4">
       {watchlists
         ? watchlists.map((prediction) => (
-            <CreatedCard key={prediction._id} prediction={prediction} />
+            <WatchlistCard
+              key={prediction._id}
+              prediction={prediction}
+              deleteWatchlist={deleteWatchlist}
+            />
           ))
         : null}
     </div>

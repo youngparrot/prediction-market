@@ -25,7 +25,7 @@ export default function WatchlistIcon({ predictionId }) {
     try {
       await addToWatchlist(address, predictionId);
       setIsInWatchlist(true); // Update the icon state
-      toast.success("Added to watchlist");
+      toast.success("Watchlist is added");
     } catch (error) {
       console.log(
         "Error adding to watchlist:",

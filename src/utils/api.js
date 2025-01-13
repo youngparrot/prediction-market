@@ -187,3 +187,16 @@ export async function fetchWatchlist(userAddress) {
   const response = await axios.get(url);
   return response.data;
 }
+
+// Function to fetch user's watchlist
+export async function unWatchlist(userAddress, predictionId) {
+  let url = `${PREDICTION_MARKET_API}/api/watchlist`;
+
+  const response = await axios.delete(url, {
+    data: {
+      userAddress,
+      predictionId,
+    },
+  });
+  return response.data;
+}
