@@ -133,7 +133,10 @@ const TopHolders = ({ id, answers }) => {
         ? holdersList.map((holders) => (
             <div key={holders.outcomeIndex}>
               <div className="flex justify-between font-bold text-primary">
-                <p>{answers[holders.outcomeIndex]} Holders</p>
+                <p>
+                  {answers[holders.outcomeIndex]} Holders (Total:{" "}
+                  {holders.holders.length})
+                </p>
                 <p>Amount</p>
               </div>
               {holders.holders.map((holder) => (
