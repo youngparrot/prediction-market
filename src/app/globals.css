@@ -19,3 +19,35 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.purple-dot {
+  width: 8px;
+  height: 8px;
+  background-color: purple;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 purple;
+}
+
+.green-dot {
+  width: 8px;
+  height: 8px;
+  background-color: rgb(12, 175, 96);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgb(12, 175, 96);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: rgb(12, 175, 96) 0px 0px 0px 0px;
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: rgba(84, 214, 44, 0) 0px 0px 0px 10px;
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: rgba(84, 214, 44, 0) 0px 0px 0px 0px;
+  }
+}

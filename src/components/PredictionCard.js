@@ -14,7 +14,14 @@ const PredictionCard = ({ prediction }) => {
     : false;
 
   return (
-    <div className="relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl h-full">
+    <div className="card relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl h-full">
+      <div className="flex justify-between">
+        <div></div>
+        <div className="flex gap-2 items-center text-gray-500 text-sm">
+          {isDone ? "Completed" : "Active"}
+          <div className={`${isDone ? "purple-dot" : "green-dot"}`}></div>
+        </div>
+      </div>
       <div className="flex gap-4 items-start justify-start mb-4">
         <Image
           src={prediction.image ?? "/images/prediction-no-image.png"}
