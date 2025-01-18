@@ -21,6 +21,7 @@ export default function StatusFilter({ onFilterChange }) {
       >
         <option value="">All Statuses</option>
         <option value="active">Active</option>
+        <option value="requested">Review</option>
         <option value="completed">Completed</option>
       </select>
     </div>
