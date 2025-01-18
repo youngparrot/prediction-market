@@ -28,6 +28,14 @@ body {
   box-shadow: 0 0 0 0 purple;
 }
 
+.orange-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #f7c942;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 #f7c942;
+}
+
 .green-dot {
   width: 8px;
   height: 8px;

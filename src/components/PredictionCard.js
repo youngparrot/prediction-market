@@ -18,8 +18,20 @@ const PredictionCard = ({ prediction }) => {
       <div className="flex justify-between">
         <div></div>
         <div className="flex gap-2 items-center text-gray-500 text-sm">
-          {isDone ? "Completed" : "Active"}
-          <div className={`${isDone ? "purple-dot" : "green-dot"}`}></div>
+          {isDone
+            ? "Completed"
+            : prediction.status === "active"
+            ? "Active"
+            : "Review"}
+          <div
+            className={`${
+              isDone
+                ? "purple-dot"
+                : prediction.status === "active"
+                ? "green-dot"
+                : "orange-dot"
+            }`}
+          ></div>
         </div>
       </div>
       <div className="flex gap-4 items-start justify-start mb-4">
