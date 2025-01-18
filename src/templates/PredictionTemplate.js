@@ -372,6 +372,13 @@ const PredictionTemplate = () => {
         <>
           <div className="bg-white mb-8 p-2 md:p-4 rounded-md">
             <div className="flex justify-between">
+              <div></div>
+              <div className="flex gap-2 items-center text-gray-500 text-sm mb-2">
+                {isDone ? "Completed" : "Active"}
+                <div className={`${isDone ? "purple-dot" : "green-dot"}`}></div>
+              </div>
+            </div>
+            <div className="flex justify-between">
               <div className="flex gap-4 items-center mb-4">
                 <Image
                   src={
@@ -486,6 +493,16 @@ const PredictionTemplate = () => {
                 className="text-gray-600"
               ></p>
             </div>
+            {isDone && predictionContract ? (
+              <div className="text-green-500 my-4 font-bold">
+                <span className="text-primary">Answer:</span>{" "}
+                {
+                  prediction.prediction.answers[
+                    parseInt(predictionContract[0].winningAnswerIndex)
+                  ]
+                }
+              </div>
+            ) : null}
             <div className="mt-4">
               {isConnected ? (
                 <>
