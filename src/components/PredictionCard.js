@@ -267,6 +267,13 @@ const PredictionCard = ({ prediction }) => {
           </p>
         </div>
         <div className="mt-4 flex items-center justify-between">
+          {isConnected ? (
+            <p>
+              <WatchlistIcon prediction={prediction} />
+            </p>
+          ) : (
+            <span></span>
+          )}
           <div className="flex gap-4 items-center mt-2">
             {isDone && prediction ? (
               <>
@@ -300,11 +307,6 @@ const PredictionCard = ({ prediction }) => {
               </motion.button>
             )}
           </div>
-          {isConnected ? (
-            <p>
-              <WatchlistIcon prediction={prediction} />
-            </p>
-          ) : null}
         </div>
       </div>
     </div>
