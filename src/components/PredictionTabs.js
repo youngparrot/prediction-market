@@ -197,7 +197,7 @@ const PredictionTabs = ({ id, answers }) => {
               borderBottom: activeTab === tab ? "2px solid #F7C942" : "none",
               color: "#F7C942",
             }}
-            className="px-4 md:px-6 py-2 font-bold"
+            className="px-2 md:px-6 py-2 font-bold"
           >
             {tab}
           </motion.div>
