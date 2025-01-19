@@ -304,7 +304,6 @@ const PredictionCard = ({ prediction }) => {
                 id="predict-button"
                 // onClick={handlePredictButtonClick}
                 className="bg-blue-500 text-white py-2 px-4 rounded"
-                disabled={prediction.status === "requested"}
               >
                 Predict
               </motion.button>
