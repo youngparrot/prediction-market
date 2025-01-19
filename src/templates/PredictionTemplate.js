@@ -202,6 +202,11 @@ const PredictionTemplate = () => {
       return;
     }
 
+    if (prediction.prediction.status === "requested") {
+      toast.info("This prediction is in review right now, please wait");
+      return;
+    }
+
     setSelectedPrediction(prediction.prediction);
   };
 
@@ -374,8 +379,20 @@ const PredictionTemplate = () => {
             <div className="flex justify-between">
               <div></div>
               <div className="flex gap-2 items-center text-gray-500 text-sm mb-2">
-                {isDone ? "Completed" : "Active"}
-                <div className={`${isDone ? "purple-dot" : "green-dot"}`}></div>
+                {isDone
+                  ? "Completed"
+                  : prediction.prediction.status === "active"
+                  ? "Active"
+                  : "Review"}
+                <div
+                  className={`${
+                    isDone
+                      ? "purple-dot"
+                      : prediction.prediction.status === "active"
+                      ? "green-dot"
+                      : "orange-dot"
+                  }`}
+                ></div>
               </div>
             </div>
             <div className="flex justify-between">
@@ -418,14 +435,16 @@ const PredictionTemplate = () => {
                   <FaTwitter />
                 </a> */}
               </p>
-              <p>
-                Cutoff At:{" "}
-                <span className="font-bold">
-                  {new Date(
-                    prediction.prediction.predictionCutoffDate
-                  ).toLocaleString()}
-                </span>
-              </p>
+              {prediction.prediction.predictionCutoffDate ? (
+                <p>
+                  Cutoff At:{" "}
+                  <span className="font-bold">
+                    {new Date(
+                      prediction.prediction.predictionCutoffDate
+                    ).toLocaleString()}
+                  </span>
+                </p>
+              ) : null}
               <p>
                 Ended At:{" "}
                 <span className="font-bold">
@@ -459,14 +478,17 @@ const PredictionTemplate = () => {
                     <div className="flex gap-4 ml-4">
                       <span className="text-gray-500 font-bold">
                         Total:{" "}
-                        {predictionContract
+                        {predictionContract &&
+                        predictionContract[0]?.stakes[index]
                           ? formatEther(predictionContract[0].stakes[index])
                           : null}{" "}
                         $CORE
                       </span>
                       <span className="text-gray-500">
                         Your:{" "}
-                        {userStaked ? formatEther(userStaked[index]) : null}{" "}
+                        {userStaked && userStaked[index]
+                          ? formatEther(userStaked[index])
+                          : null}{" "}
                         $CORE
                       </span>
                     </div>

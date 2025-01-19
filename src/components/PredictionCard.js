@@ -258,10 +258,12 @@ const PredictionCard = ({ prediction }) => {
               <FaTwitter />
             </a> */}
           </p>
-          <p className="text-sm text-gray-600">
-            Cutoff At:{" "}
-            {new Date(prediction.predictionCutoffDate).toLocaleString()}
-          </p>
+          {prediction.predictionCutoffDate ? (
+            <p className="text-sm text-gray-600">
+              Cutoff At:{" "}
+              {new Date(prediction.predictionCutoffDate).toLocaleString()}
+            </p>
+          ) : null}
           <p className="text-sm text-gray-600">
             Ended At: {new Date(prediction.endDate).toLocaleString()}
           </p>
@@ -302,6 +304,7 @@ const PredictionCard = ({ prediction }) => {
                 id="predict-button"
                 // onClick={handlePredictButtonClick}
                 className="bg-blue-500 text-white py-2 px-4 rounded"
+                disabled={prediction.status === "requested"}
               >
                 Predict
               </motion.button>
