@@ -25,7 +25,6 @@ const categories = [
   { label: "Global Elections", path: "global-elections" },
   { label: "Elon Tweets", path: "elon-tweets" },
   { label: "Mentions", path: "mentions" },
-  { label: "Creators", path: "creators" },
   { label: "Pop Culture", path: "pop-culture" },
   { label: "Business", path: "business" },
 ];
