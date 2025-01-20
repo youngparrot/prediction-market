@@ -415,12 +415,15 @@ const PredictionTemplate = () => {
                     </p>
                   ) : null}
                 </div>
-                <div className="flex justify-between">
-                  <div className="flex gap-4 items-center mb-4">
-                    <h1 className="text-primary text-xl font-bold">
-                      {prediction.prediction.question}
-                    </h1>
-                  </div>
+                <div className="flex gap-4 items-center mb-2">
+                  <h1 className="text-primary text-xl font-bold">
+                    {prediction.prediction.question}
+                  </h1>
+                </div>
+                <div className="mb-2">
+                  <span className="px-2 py-1 rounded text-white bg-gray-700">
+                    {prediction.prediction.category}
+                  </span>
                 </div>
                 <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
                   <p className="flex gap-1 items-center">
