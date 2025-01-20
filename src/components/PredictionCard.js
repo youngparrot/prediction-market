@@ -229,7 +229,7 @@ const PredictionCard = ({ prediction }) => {
           height={60}
           alt={`${prediction.question} logo`}
         />
-        <h3 className="text-primary text-lg font-semibold">
+        <h3 className="text-primary text-sm font-semibold">
           {prediction.question}
         </h3>
       </div>
