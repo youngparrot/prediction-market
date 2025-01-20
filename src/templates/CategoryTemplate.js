@@ -20,7 +20,7 @@ const CategoryTemplate = () => {
   const { category } = useParams();
 
   return (
-    <div className="container mx-auto w-full p-2 md:p-4">
+    <div className="container mx-auto w-full p-2">
       <div className="mb-8">
         <Categories categoryPath={category} />
         <div className="flex justify-between mb-4">

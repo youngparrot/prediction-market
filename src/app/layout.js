@@ -65,7 +65,7 @@ function RootLayout({ children }) {
         <I18nextProvider i18n={i18n}>
           <Providers>
             <Nav setShowHowToPredict={setShowHowToPredict} />
-            <main className="flex flex-col px-2 py-2 md:px-16 md:py-4 relative z-10">
+            <main className="flex flex-col px-2 py-2 md:px-16 relative z-10">
               {children}
               <ToastProvider />
             </main>
