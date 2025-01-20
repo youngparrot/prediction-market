@@ -23,7 +23,7 @@ export default function Categories({ categoryPath }) {
   };
 
   return (
-    <div className="sticky top-14 z-10 flex gap-4 px-4 py-2 bg-gray-900 text-white overflow-x-auto mb-4">
+    <div className="md:sticky md:top-14 md:z-10 flex gap-4 px-4 py-2 bg-gray-900 text-white overflow-x-auto mb-4">
       {categories.map((category) => (
         <button
           key={category.path}
