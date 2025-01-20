@@ -334,7 +334,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary font-bold block mb-1">
+            <label className="text-gray-700 font-bold block mb-1">
               Twitter/X:
               <RequiredField />
             </label>
