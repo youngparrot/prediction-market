@@ -191,7 +191,7 @@ const CreatePredictionTemplate = () => {
           {/* Category Selection */}
           <div className="mb-4">
             <label htmlFor="category" className="block font-bold text-gray-700">
-              Select Category
+              Select Category:
               <RequiredField />
             </label>
             <select
