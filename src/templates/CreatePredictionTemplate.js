@@ -190,11 +190,9 @@ const CreatePredictionTemplate = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Category Selection */}
           <div className="mb-4">
-            <label
-              htmlFor="category"
-              className="block font-medium text-gray-700"
-            >
+            <label htmlFor="category" className="block font-bold text-gray-700">
               Select Category
+              <RequiredField />
             </label>
             <select
               id="category"
@@ -205,19 +203,19 @@ const CreatePredictionTemplate = () => {
             >
               <option value="">-- Choose a category --</option>
               {categories.map((category) => (
-                <option key={category.value} value={category.value}>
+                <option key={category.path} value={category.path}>
                   {category.label}
                 </option>
               ))}
             </select>
-            {errors.topic && (
+            {errors.category && (
               <p className="mt-1 text-sm text-red-500">
-                {errors.topic.message}
+                {errors.category.message}
               </p>
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary font-bold block mb-1">
+            <label className="text-gray-700 font-bold block mb-1">
               Question:
               <RequiredField />
             </label>
@@ -240,7 +238,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary font-bold block mb-1">
+            <label className="text-gray-700 font-bold block mb-1">
               Outcomes:
               <RequiredField />
             </label>
@@ -278,7 +276,7 @@ const CreatePredictionTemplate = () => {
             </button>
           </div>
           <div className="mb-4">
-            <label className="text-primary font-bold block mb-1">
+            <label className="text-gray-700 font-bold block mb-1">
               Cutoff Time (UTC):
               {/* <RequiredField /> */}
             </label>
@@ -298,7 +296,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary font-bold block mb-1">
+            <label className="text-gray-700 font-bold block mb-1">
               End Time (UTC):
               <RequiredField />
             </label>
@@ -314,7 +312,7 @@ const CreatePredictionTemplate = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="text-primary font-bold block mb-1">
+            <label className="text-gray-700 font-bold block mb-1">
               Rules:
               <RequiredField />
             </label>
