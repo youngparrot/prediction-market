@@ -72,7 +72,7 @@ export async function fetchPredictions({
   limit = 20,
   id,
   status,
-  topic,
+  category,
 }) {
   let url = `${PREDICTION_MARKET_API}/api/fetchPredictions?page=${page}&limit=${limit}`;
   if (id) {
@@ -81,8 +81,8 @@ export async function fetchPredictions({
   if (status) {
     url += `&status=${status}`;
   }
-  if (topic) {
-    url += `&topic=${topic}`;
+  if (category) {
+    url += `&category=${category}`;
   }
 
   try {
