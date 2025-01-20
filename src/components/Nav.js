@@ -43,7 +43,7 @@ export default function Nav({ setShowHowToPredict }) {
   }, [isOpen]);
 
   return (
-    <nav className="mb-2 px-2 md:px-16 md:sticky top-0 z-50 bg-black bg-opacity-50">
+    <nav className="mb-2 px-2 md:px-16 md:sticky top-0 z-50 bg-gray-900">
       <div className="relative mx-auto flex justify-between gap-4">
         <div className="flex md:gap-8 gap-4 items-center">
           <a href="/" title="Home">

@@ -18,6 +18,18 @@ import { createPrediction, updatePrediction } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { RequiredField, RequiredLabel } from "@/components/RequiredLabel";
 
+const topics = [
+  { label: "Politics", path: "politics" },
+  { label: "Sports", path: "sports" },
+  { label: "Crypto", path: "crypto" },
+  { label: "Global Elections", path: "global-elections" },
+  { label: "Elon Tweets", path: "elon-tweets" },
+  { label: "Mentions", path: "mentions" },
+  { label: "Creators", path: "creators" },
+  { label: "Pop Culture", path: "pop-culture" },
+  { label: "Business", path: "business" },
+];
+
 const CreatePredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
@@ -72,7 +84,14 @@ const CreatePredictionTemplate = () => {
       return; // Prevent submission if answers are invalid
     }
 
-    const { question, predictionCutoffDate, endTime, rules, twitter } = data;
+    const {
+      question,
+      predictionCutoffDate,
+      endTime,
+      rules,
+      twitter,
+      category,
+    } = data;
 
     if (predictionCutoffDate && dayjs(predictionCutoffDate) > dayjs(endTime)) {
       toast.info("Cutoff Time should not be after the End Time");
@@ -87,7 +106,8 @@ const CreatePredictionTemplate = () => {
         endTime,
         address,
         rules,
-        twitter
+        twitter,
+        category
       );
       const metadataId = String(predictionRes.prediction._id);
 
@@ -168,6 +188,34 @@ const CreatePredictionTemplate = () => {
           prediction.
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Category Selection */}
+          <div className="mb-4">
+            <label
+              htmlFor="category"
+              className="block font-medium text-gray-700"
+            >
+              Select Category
+            </label>
+            <select
+              id="category"
+              {...register("category", { required: "Category is required" })}
+              className={`text-primary-light bg-gray-100 w-full p-2 border rounded ${
+                errors.category ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">-- Choose a category --</option>
+              {categorys.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+            {errors.topic && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.topic.message}
+              </p>
+            )}
+          </div>
           <div className="mb-4">
             <label className="text-primary font-bold block mb-1">
               Question:

@@ -11,29 +11,34 @@ import { fetchPredictions, fetchWatchlist } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
 import StatusFilter from "@/components/StatusFilter";
+import { useParams } from "next/navigation";
 import Categories from "@/components/Categories";
 
-const HomeTemplate = () => {
+const CategoryTemplate = () => {
   const [status, setStatus] = useState("");
+
+  const { category } = useParams();
 
   return (
     <div className="container mx-auto w-full p-2 md:p-4">
       <div className="mb-8">
-        <Categories categoryPath="all" />
+        <Categories categoryPath={category} />
         <div className="flex justify-between mb-4">
-          <h1 className="text-accent text-xl font-bold">All Predictions</h1>
+          <h1 className="text-accent text-xl font-bold">
+            {category.charAt(0).toUpperCase() + category.slice(1)} Predictions
+          </h1>
           <StatusFilter onFilterChange={(status) => setStatus(status)} />
         </div>
 
-        <Predictions status={status} />
+        <Predictions status={status} category={category} />
       </div>
     </div>
   );
 };
 
-export default HomeTemplate;
+export default CategoryTemplate;
 
-const Predictions = ({ status }) => {
+const Predictions = ({ status, category }) => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
 
@@ -45,7 +50,7 @@ const Predictions = ({ status }) => {
   const getPredictions = async () => {
     try {
       setIsFetching(true);
-      const predictionsData = await fetchPredictions({ status });
+      const predictionsData = await fetchPredictions({ status, category });
       const metadataIds = predictionsData.predictions.map(
         (prediction) => prediction._id
       );

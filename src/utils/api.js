@@ -8,7 +8,8 @@ export async function createPrediction(
   endDate,
   createdBy,
   rules,
-  twitter
+  twitter,
+  category
 ) {
   const url = `${PREDICTION_MARKET_API}/api/createPrediction`;
   try {
@@ -20,6 +21,7 @@ export async function createPrediction(
       createdBy,
       rules,
       twitter,
+      category,
     });
     return response.data;
   } catch (error) {
@@ -65,13 +67,22 @@ export async function updatePrediction(predictionId, status) {
   }
 }
 
-export async function fetchPredictions({ page = 1, limit = 20, id, status }) {
+export async function fetchPredictions({
+  page = 1,
+  limit = 20,
+  id,
+  status,
+  topic,
+}) {
   let url = `${PREDICTION_MARKET_API}/api/fetchPredictions?page=${page}&limit=${limit}`;
   if (id) {
     url += `&id=${id}`;
   }
   if (status) {
     url += `&status=${status}`;
+  }
+  if (topic) {
+    url += `&topic=${topic}`;
   }
 
   try {
