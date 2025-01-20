@@ -376,7 +376,7 @@ const PredictionTemplate = () => {
       {prediction && prediction.prediction ? (
         <>
           <div className="bg-white mb-8 p-2 md:p-4 rounded-md">
-            <div className="flex justify-between">
+            <div className="flex justify-between mb-1">
               <div></div>
               <div className="flex gap-2 items-center text-gray-500 text-sm mb-2">
                 {isDone
@@ -395,198 +395,209 @@ const PredictionTemplate = () => {
                 ></div>
               </div>
             </div>
-            <div className="flex justify-between">
-              <div className="flex gap-4 items-center mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="col-span-1 md:col-span-2 flex justify-center">
                 <Image
                   src={
                     prediction.prediction.image ??
                     "/images/prediction-no-image.png"
                   }
-                  width={60}
-                  height={60}
+                  width={500}
+                  height={500}
                   alt={`${prediction.prediction.question} logo`}
                 />
-                <h1 className="text-primary text-xl font-bold">
-                  {prediction.prediction.question}
-                </h1>
               </div>
-              {isConnected ? (
-                <p>
-                  <WatchlistIcon prediction={prediction.prediction} />
-                </p>
-              ) : null}
-            </div>
-            <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
-              <p className="flex gap-1 items-center">
-                Asked By:{" "}
-                <a
-                  href={`/profile/${prediction.prediction.createdBy}`}
-                  title="Creator Address"
-                  className="font-bold"
-                >{`${prediction.prediction.createdBy.slice(
-                  0,
-                  6
-                )}...${prediction.prediction.createdBy.slice(-4)}`}</a>
-                {/* <a
+              <div className="col-span-1 md:col-span-3">
+                <div className="mb-2 flex justify-end">
+                  {isConnected ? (
+                    <p>
+                      <WatchlistIcon prediction={prediction.prediction} />
+                    </p>
+                  ) : null}
+                </div>
+                <div className="flex justify-between">
+                  <div className="flex gap-4 items-center mb-4">
+                    <h1 className="text-primary text-xl font-bold">
+                      {prediction.prediction.question}
+                    </h1>
+                  </div>
+                </div>
+                <div className="flex flex-col md:flex-row gap-2 md:gap-8 mb-2 text-gray-600">
+                  <p className="flex gap-1 items-center">
+                    Asked By:{" "}
+                    <a
+                      href={`/profile/${prediction.prediction.createdBy}`}
+                      title="Creator Address"
+                      className="font-bold"
+                    >{`${prediction.prediction.createdBy.slice(
+                      0,
+                      6
+                    )}...${prediction.prediction.createdBy.slice(-4)}`}</a>
+                    {/* <a
                   href={prediction.prediction.twitter}
                   title="Creator Twitter/X"
                   target="_blank"
                 >
                   <FaTwitter />
                 </a> */}
-              </p>
-              {prediction.prediction.predictionCutoffDate ? (
-                <p>
-                  Cutoff At:{" "}
-                  <span className="font-bold">
-                    {new Date(
-                      prediction.prediction.predictionCutoffDate
-                    ).toLocaleString()}
-                  </span>
-                </p>
-              ) : null}
-              <p>
-                Ended At:{" "}
-                <span className="font-bold">
-                  {new Date(prediction.prediction.endDate).toLocaleString()}
-                </span>
-              </p>
-            </div>
-            <div className="mb-2">
-              <p className="text-secondary font-bold">
-                Total:{" "}
-                {predictionContract
-                  ? formatEther(predictionContract[0].totalStaked)
-                  : 0}{" "}
-                $CORE
-              </p>
-            </div>
-            <div className="text-primary font-bold mb-2">Outcomes:</div>
-            <div className="flex flex-col">
-              {prediction.prediction.answers.map((answer, index) => (
-                <div
-                  key={index}
-                  className={`flex flex-row items-center gap-4 w-full text-left text-primary-light rounded mb-2`}
-                >
-                  <div className="flex flex-col md:flex-row">
-                    <div>
-                      <span className="text-gray-500 font-bold mr-2">
-                        {index + 1}.
+                  </p>
+                  {prediction.prediction.predictionCutoffDate ? (
+                    <p>
+                      Cutoff At:{" "}
+                      <span className="font-bold">
+                        {new Date(
+                          prediction.prediction.predictionCutoffDate
+                        ).toLocaleString()}
                       </span>
-                      {answer}{" "}
-                    </div>
-                    <div className="flex gap-4 ml-4">
-                      <span className="text-gray-500 font-bold">
-                        Total:{" "}
-                        {predictionContract &&
-                        predictionContract[0]?.stakes[index]
-                          ? formatEther(predictionContract[0].stakes[index])
-                          : null}{" "}
-                        $CORE
-                      </span>
-                      <span className="text-gray-500">
-                        Your:{" "}
-                        {userStaked && userStaked[index]
-                          ? formatEther(userStaked[index])
-                          : null}{" "}
-                        $CORE
-                      </span>
-                    </div>
-                  </div>
-                  {isDone &&
-                  predictionContract &&
-                  predictionContract[0].ended ? (
-                    parseInt(predictionContract[0].winningAnswerIndex) ==
-                    index ? (
-                      <FaCheck className="text-green-500" />
-                    ) : (
-                      ""
-                    )
+                    </p>
                   ) : null}
+                  <p>
+                    Ended At:{" "}
+                    <span className="font-bold">
+                      {new Date(prediction.prediction.endDate).toLocaleString()}
+                    </span>
+                  </p>
                 </div>
-              ))}
-            </div>
-            <div className="mt-2">
-              <h1 className="text-gray-600 font-bold mb-2">Rules:</h1>
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: prediction.prediction.rules,
-                }}
-                className="text-gray-600"
-              ></p>
-            </div>
-            {isDone && predictionContract ? (
-              <div className="text-green-500 my-4 font-bold">
-                <span className="text-primary">Answer:</span>{" "}
-                {
-                  prediction.prediction.answers[
-                    parseInt(predictionContract[0].winningAnswerIndex)
-                  ]
-                }
-              </div>
-            ) : null}
-            <div className="mt-4">
-              {isConnected ? (
-                <>
-                  {isDone ? (
-                    <div className="mb-2">
-                      <p className="text-primary">
-                        Your rewards: {formatEther(claimAmount.toString())}{" "}
-                        $CORE
-                      </p>
-                    </div>
-                  ) : null}
-                  {isDone && prediction?.prediction.createdBy === address ? (
-                    <div className="mb-2">
-                      <p className="text-primary font-bold">
-                        Your creator rewards:{" "}
-                        {predictionContract
-                          ? (((formatEther(predictionContract[0].totalStaked) *
-                              PLATFORM_FEE_PERCENT) /
-                              100) *
-                              CREATION_SHARE_FEE_PERCENT) /
-                            100
-                          : 0}{" "}
-                        $CORE
-                      </p>
-                    </div>
-                  ) : null}
-                  <div className="flex gap-4 items-center mb-4">
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                      id="predict-button"
-                      onClick={handlePredictButtonClick}
-                      className="bg-blue-500 text-white py-2 px-4 rounded"
+                <div className="mb-2">
+                  <p className="text-secondary font-bold">
+                    Total:{" "}
+                    {predictionContract
+                      ? formatEther(predictionContract[0].totalStaked)
+                      : 0}{" "}
+                    $CORE
+                  </p>
+                </div>
+                <div className="text-primary font-bold mb-2">Outcomes:</div>
+                <div className="flex flex-col">
+                  {prediction.prediction.answers.map((answer, index) => (
+                    <div
+                      key={index}
+                      className={`flex flex-row items-center gap-4 w-full text-left text-primary-light rounded mb-2`}
                     >
-                      Predict
-                    </motion.button>
-                    {isDone && predictionContract ? (
-                      <>
-                        {predictionContract[0].ended ? (
-                          <button
-                            id="claim-rewards"
-                            onClick={handleClaimRewards}
-                            className="flex items-center bg-secondary text-white py-2 px-4 rounded"
-                          >
-                            Claim Rewards
-                            {isClaiming && (
-                              <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
-                            )}
-                          </button>
-                        ) : (
-                          <span className="text-green-500">
-                            The prediction has concluded, and we are now
-                            determining the correct outcome.
+                      <div className="flex flex-col md:flex-row">
+                        <div>
+                          <span className="text-gray-500 font-bold mr-2">
+                            {index + 1}.
                           </span>
-                        )}
-                      </>
-                    ) : null}
+                          {answer}{" "}
+                        </div>
+                        <div className="flex gap-4 ml-4">
+                          <span className="text-gray-500 font-bold">
+                            Total:{" "}
+                            {predictionContract &&
+                            predictionContract[0]?.stakes[index]
+                              ? formatEther(predictionContract[0].stakes[index])
+                              : null}{" "}
+                            $CORE
+                          </span>
+                          <span className="text-gray-500">
+                            Your:{" "}
+                            {userStaked && userStaked[index]
+                              ? formatEther(userStaked[index])
+                              : null}{" "}
+                            $CORE
+                          </span>
+                        </div>
+                      </div>
+                      {isDone &&
+                      predictionContract &&
+                      predictionContract[0].ended ? (
+                        parseInt(predictionContract[0].winningAnswerIndex) ==
+                        index ? (
+                          <FaCheck className="text-green-500" />
+                        ) : (
+                          ""
+                        )
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2">
+                  <h1 className="text-gray-600 font-bold mb-2">Rules:</h1>
+                  <p
+                    dangerouslySetInnerHTML={{
+                      __html: prediction.prediction.rules,
+                    }}
+                    className="text-gray-600"
+                  ></p>
+                </div>
+                {isDone && predictionContract ? (
+                  <div className="text-green-500 my-4 font-bold">
+                    <span className="text-primary">Answer:</span>{" "}
+                    {
+                      prediction.prediction.answers[
+                        parseInt(predictionContract[0].winningAnswerIndex)
+                      ]
+                    }
                   </div>
-                </>
-              ) : (
-                <ConnectButton />
-              )}
+                ) : null}
+                <div className="mt-4">
+                  {isConnected ? (
+                    <>
+                      {isDone ? (
+                        <div className="mb-2">
+                          <p className="text-primary">
+                            Your rewards: {formatEther(claimAmount.toString())}{" "}
+                            $CORE
+                          </p>
+                        </div>
+                      ) : null}
+                      {isDone &&
+                      prediction?.prediction.createdBy === address ? (
+                        <div className="mb-2">
+                          <p className="text-primary font-bold">
+                            Your creator rewards:{" "}
+                            {predictionContract
+                              ? (((formatEther(
+                                  predictionContract[0].totalStaked
+                                ) *
+                                  PLATFORM_FEE_PERCENT) /
+                                  100) *
+                                  CREATION_SHARE_FEE_PERCENT) /
+                                100
+                              : 0}{" "}
+                            $CORE
+                          </p>
+                        </div>
+                      ) : null}
+                      <div className="flex gap-4 items-center mb-4">
+                        <motion.button
+                          whileHover={{ scale: 1.03 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                          id="predict-button"
+                          onClick={handlePredictButtonClick}
+                          className="bg-blue-500 text-white py-2 px-4 rounded"
+                        >
+                          Predict
+                        </motion.button>
+                        {isDone && predictionContract ? (
+                          <>
+                            {predictionContract[0].ended ? (
+                              <button
+                                id="claim-rewards"
+                                onClick={handleClaimRewards}
+                                className="flex items-center bg-secondary text-white py-2 px-4 rounded"
+                              >
+                                Claim Rewards
+                                {isClaiming && (
+                                  <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
+                                )}
+                              </button>
+                            ) : (
+                              <span className="text-green-500">
+                                The prediction has concluded, and we are now
+                                determining the correct outcome.
+                              </span>
+                            )}
+                          </>
+                        ) : null}
+                      </div>
+                    </>
+                  ) : (
+                    <ConnectButton />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
           <PredictionTabs id={id} answers={prediction?.prediction.answers} />
