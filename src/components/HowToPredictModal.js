@@ -24,8 +24,8 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
                 </h3>
                 <p className="text-gray-500 pb-4">
                   Navigate to the Prediction Market homepage. Browse the list of
-                  active predictions to find topics that interest you (e.g.,
-                  sports, finance, crypto, or global events).
+                  active predictions to find categories that interest you (e.g.,
+                  politics, sports, crypto, or global elections).
                 </p>
                 <h3 className="text-primary font-bold">
                   Step 3: Place Your Prediction
