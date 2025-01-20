@@ -222,7 +222,7 @@ const PredictionCard = ({ prediction }) => {
           ></div>
         </div>
       </div>
-      <div className="flex gap-4 items-start justify-start mb-4">
+      <div className="flex gap-4 items-start justify-start mb-2">
         <Image
           src={prediction.image ?? "/images/prediction-no-image.png"}
           width={60}
@@ -268,7 +268,7 @@ const PredictionCard = ({ prediction }) => {
             Ended At: {new Date(prediction.endDate).toLocaleString()}
           </p>
         </div>
-        <div className="mt-4 flex items-center justify-between">
+        <div className="mt-2 flex items-center justify-between">
           {isConnected ? (
             <p>
               <WatchlistIcon prediction={prediction} />
