@@ -18,7 +18,7 @@ import { createPrediction, updatePrediction } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { RequiredField, RequiredLabel } from "@/components/RequiredLabel";
 
-const topics = [
+const categories = [
   { label: "Politics", path: "politics" },
   { label: "Sports", path: "sports" },
   { label: "Crypto", path: "crypto" },
@@ -204,7 +204,7 @@ const CreatePredictionTemplate = () => {
               }`}
             >
               <option value="">-- Choose a category --</option>
-              {categorys.map((category) => (
+              {categories.map((category) => (
                 <option key={category.value} value={category.value}>
                   {category.label}
                 </option>
