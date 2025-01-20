@@ -81,7 +81,7 @@ export async function fetchPredictions({
   if (status) {
     url += `&status=${status}`;
   }
-  if (category) {
+  if (category && category !== "all") {
     url += `&category=${category}`;
   }
 
