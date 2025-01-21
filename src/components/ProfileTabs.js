@@ -146,10 +146,15 @@ const Predicted = ({ userAddress }) => {
       {userPredictions
         ? userPredictions.map((prediction) => {
             return (
-              <PredictedCard
+              <div
                 key={prediction.predictionId}
-                prediction={prediction}
-              />
+                className="even:bg-gray-100 rounded-md p-2"
+              >
+                <PredictedCard
+                  key={prediction.predictionId}
+                  prediction={prediction}
+                />
+              </div>
             );
           })
         : null}
@@ -208,7 +213,12 @@ const Created = ({ userAddress }) => {
     <div className="space-y-2">
       {userCreatedPredictions
         ? userCreatedPredictions.map((prediction) => (
-            <CreatedCard key={prediction._id} prediction={prediction} />
+            <div
+              key={prediction._id}
+              className="even:bg-gray-100 rounded-md p-2"
+            >
+              <CreatedCard key={prediction._id} prediction={prediction} />
+            </div>
           ))
         : null}
     </div>
@@ -262,12 +272,17 @@ const Watchlisted = ({ userAddress }) => {
     <div className="space-y-2">
       {watchlists
         ? watchlists.map((prediction) => (
-            <WatchlistCard
+            <div
               key={prediction._id}
-              prediction={prediction}
-              deleteWatchlist={deleteWatchlist}
-              userAddress={userAddress}
-            />
+              className="even:bg-gray-100 rounded-md p-2"
+            >
+              <WatchlistCard
+                key={prediction._id}
+                prediction={prediction}
+                deleteWatchlist={deleteWatchlist}
+                userAddress={userAddress}
+              />
+            </div>
           ))
         : null}
     </div>
