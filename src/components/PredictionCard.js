@@ -205,7 +205,12 @@ const PredictionCard = ({ prediction }) => {
     <div className="card relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl h-full">
       <div className="flex justify-between">
         <div></div>
-        <div className="flex gap-2 items-center text-gray-500 text-sm">
+        <div className="flex gap-2 items-center text-gray-500 text-sm mb-2">
+          <div>
+            <span className="px-2 py-1 rounded text-white bg-gray-700">
+              {prediction.category}
+            </span>
+          </div>
           {isDone
             ? "Completed"
             : prediction.status === "active"
