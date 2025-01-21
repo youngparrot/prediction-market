@@ -206,11 +206,6 @@ const PredictionCard = ({ prediction }) => {
       <div className="flex justify-between">
         <div></div>
         <div className="flex gap-2 items-center text-gray-500 text-sm mb-2">
-          <div>
-            <span className="px-2 py-1 rounded text-white bg-gray-700">
-              {prediction.category}
-            </span>
-          </div>
           {isDone
             ? "Completed"
             : prediction.status === "active"
@@ -234,9 +229,16 @@ const PredictionCard = ({ prediction }) => {
           height={60}
           alt={`${prediction.question} logo`}
         />
-        <h3 className="text-primary text-sm font-semibold">
-          {prediction.question}
-        </h3>
+        <div>
+          <h3 className="text-primary text-sm font-semibold">
+            {prediction.question}
+          </h3>
+          <div className="mt-2">
+            <span className="px-2 py-1 rounded text-white bg-gray-700">
+              {prediction.category}
+            </span>
+          </div>
+        </div>
       </div>
       <div className="mt-auto">
         {isDone && prediction.ended ? (

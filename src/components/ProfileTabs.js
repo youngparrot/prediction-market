@@ -24,15 +24,18 @@ dayjs.extend(relativeTime);
 
 const PredictedCard = ({ prediction }) => {
   return (
-    <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
-      <div>
+    <div className="flex justify-between items-center text-gray-500 rounded-md">
+      <div className="flex gap-2 items-center">
         <a href={`/prediction/${prediction.predictionId}`}>
           <p className="font-bold">{prediction.predictionDetails.question}</p>
         </a>
+        <span className="px-2 py-1 rounded text-white bg-gray-700">
+          {prediction.predictionDetails.category}
+        </span>
       </div>
       <a
         href={`/prediction/${prediction.predictionId}`}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
+        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm font-bold"
       >
         View
       </a>
@@ -42,15 +45,18 @@ const PredictedCard = ({ prediction }) => {
 
 const CreatedCard = ({ prediction }) => {
   return (
-    <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
-      <div>
+    <div className="flex justify-between items-center text-gray-500 rounded-md">
+      <div className="flex gap-2 items-center">
         <a href={`/prediction/${prediction._id}`}>
           <p className="font-bold">{prediction.question}</p>
         </a>
+        <span className="px-2 py-1 rounded text-white bg-gray-700">
+          {prediction.category}
+        </span>
       </div>
       <a
         href={`/prediction/${prediction._id}`}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
+        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm font-bold"
       >
         View
       </a>
@@ -62,24 +68,27 @@ const WatchlistCard = ({ prediction, deleteWatchlist, userAddress }) => {
   const { address, isConnected } = useAccount();
 
   return (
-    <div className="flex justify-between items-center bg-gray-800 p-4 rounded-md">
-      <div>
+    <div className="flex justify-between items-center text-gray-500 rounded-md">
+      <div className="flex gap-2 items-center">
         <a href={`/prediction/${prediction._id}`}>
           <p className="font-bold">{prediction.question}</p>
         </a>
+        <span className="px-2 py-1 rounded text-white bg-gray-700">
+          {prediction.category}
+        </span>
       </div>
       <div className="flex gap-2">
         {isConnected && userAddress === address ? (
           <button
             onClick={() => deleteWatchlist(prediction._id)}
-            className="bg-secondary hover:bg-secondary-dark px-4 py-2 rounded text-sm font-bold"
+            className="bg-secondary hover:bg-secondary-dark px-4 py-2 rounded text-white text-sm font-bold"
           >
             Remove Watchlist
           </button>
         ) : null}
         <a
           href={`/prediction/${prediction._id}`}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-bold"
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm font-bold"
         >
           View
         </a>
