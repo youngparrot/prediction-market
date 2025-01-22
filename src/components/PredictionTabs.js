@@ -59,7 +59,10 @@ const Activity = ({ id, answers }) => {
     <div className="bg-white text-gray-600 p-4 rounded-md">
       {transactions
         ? transactions.map((transaction) => (
-            <div key={transaction._id} className="flex justify-between">
+            <div
+              key={transaction._id}
+              className="flex justify-between even:bg-gray-100 py-1"
+            >
               <div>
                 <a
                   href={`/profile/${transaction.userAddress}`}
@@ -140,7 +143,10 @@ const TopHolders = ({ id, answers }) => {
                 <p>Amount</p>
               </div>
               {holders.holders.map((holder) => (
-                <div key={holder.userAddress} className="flex justify-between">
+                <div
+                  key={holder.userAddress}
+                  className="flex justify-between even:bg-gray-100 py-1"
+                >
                   <div>
                     <a
                       href={`/profile/${holder.userAddress}`}
