@@ -65,7 +65,7 @@ export default function LeaderboardTemplate() {
             </p>
             <table className="w-full table-auto mt-8">
               <thead
-                className="text-white bg-gray-700"
+                className="text-white bg-gray-800"
                 style={{
                   borderBottom: "2px solid white",
                 }}
