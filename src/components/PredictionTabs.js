@@ -1,11 +1,12 @@
 import { fetchTransactions } from "@/utils/api";
-import { CORE_SCAN_URL } from "@/utils/environment";
 import Giscus from "@giscus/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { motion } from "framer-motion";
+import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
+import { useWalletClient } from "wagmi";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -30,6 +31,19 @@ const Comments = ({ id }) => (
 const Activity = ({ id, answers }) => {
   const [transactions, setTransactions] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const { data: walletClient } = useWalletClient();
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const getTransactions = async (type, id) => {
     try {
@@ -45,7 +59,7 @@ const Activity = ({ id, answers }) => {
 
   useEffect(() => {
     getTransactions("transactions", id);
-  }, []);
+  }, [chainId]);
 
   if (isFetching) {
     return (
@@ -83,7 +97,7 @@ const Activity = ({ id, answers }) => {
               <div>
                 {transaction.transactionId ? (
                   <a
-                    href={`${CORE_SCAN_URL}/tx/${transaction.transactionId}`}
+                    href={`${environments[chainId]["SCAN_URL"]}/tx/${transaction.transactionId}`}
                     title="Transaction Link"
                     target="_blank"
                   >

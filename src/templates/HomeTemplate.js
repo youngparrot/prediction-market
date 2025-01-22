@@ -4,7 +4,11 @@ import React, { useEffect, useState } from "react";
 import PredictionCard from "@/components/PredictionCard";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
+import {
+  DEFAULT_CHAIN_ID,
+  PREDICTION_MARKET_ADDRESS,
+  environments,
+} from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { getContract } from "viem";
 import { fetchPredictions, fetchWatchlist } from "@/utils/api";
@@ -42,16 +46,34 @@ const Predictions = ({ status }) => {
   const [predictions, setPredictions] = useState([]);
   const [watchlists, setWatchlists] = useState(null);
 
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
+
   const getPredictions = async () => {
     try {
       setIsFetching(true);
-      const predictionsData = await fetchPredictions({ status });
+      const predictionsData = await fetchPredictions({ status, chainId });
       const metadataIds = predictionsData.predictions.map(
         (prediction) => prediction._id
       );
+      console.log({ metadataIds });
+      console.log({
+        environments,
+        chainId,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
+      });
 
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: publicClient,
       });
@@ -83,7 +105,7 @@ const Predictions = ({ status }) => {
   const getWatchlists = async () => {
     try {
       setIsFetching(true);
-      const response = await fetchWatchlist(address);
+      const response = await fetchWatchlist(address, chainId);
       const watchlistMap = {};
       for (let i = 0; i < response.watchlist.length; i++) {
         watchlistMap[response.watchlist[i]._id] = true;
@@ -102,12 +124,11 @@ const Predictions = ({ status }) => {
     }
 
     getWatchlists();
-  }, [address]);
+  }, [address, chainId]);
 
   useEffect(() => {
     getPredictions();
-    // getCompletedPredictions();
-  }, [status, watchlists]);
+  }, [status, watchlists, chainId]);
 
   if (isFetching) {
     return (

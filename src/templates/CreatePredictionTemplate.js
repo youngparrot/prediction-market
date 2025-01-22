@@ -3,9 +3,11 @@
 import {
   CREATION_FEE,
   CREATION_SHARE_FEE_PERCENT,
+  DEFAULT_CHAIN_ID,
   PREDICTION_MARKET_ADDRESS,
+  environments,
 } from "@/utils/environment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
@@ -53,6 +55,20 @@ const CreatePredictionTemplate = () => {
 
   const [answers, setAnswers] = useState(["", ""]);
   const [answersError, setAnswersError] = useState(""); // Error message for answers
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+
+  useEffect(() => {
+    if (!walletClient) {
+      return;
+    }
+
+    const fetchChainId = async () => {
+      const id = await walletClient.getChainId(); // Fetch the connected chain ID
+      setChainId(id);
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const handleAnswerChange = (index, value) => {
     const updatedAnswers = [...answers];
@@ -106,12 +122,13 @@ const CreatePredictionTemplate = () => {
         address,
         rules,
         twitter,
-        category
+        category,
+        chainId
       );
       const metadataId = String(predictionRes.prediction._id);
 
       const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: walletClient,
       });
@@ -119,7 +136,7 @@ const CreatePredictionTemplate = () => {
       const tx = await writeContract.write.createPrediction(
         [metadataId, answers.length, BigInt(dayjs(endTime).unix())],
         {
-          value: parseEther(CREATION_FEE),
+          value: parseEther(environments[chainId]["CREATION_FEE"]),
         }
       );
 
@@ -182,9 +199,10 @@ const CreatePredictionTemplate = () => {
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <p className="py-2 px-2 md:px-4 text-white bg-gray-700 mb-6">
           Create your own prediction and earn fees with the prediction market
-          platform. Creation fee is {CREATION_FEE} CORE. Creator would earn{" "}
-          {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
-          prediction.
+          platform. Creation fee is {environments[chainId]["CREATION_FEE"]}{" "}
+          CORE. Creator would earn{" "}
+          {environments[chainId]["CREATION_SHARE_FEE_PERCENT"]}% of our platform
+          fee for your own prediction.
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Category Selection */}

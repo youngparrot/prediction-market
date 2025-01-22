@@ -14,7 +14,7 @@ import {
   trustWallet,
   coin98Wallet,
 } from "@rainbow-me/rainbowkit/wallets";
-// import { mainnet, base } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 import "@rainbow-me/rainbowkit/styles.css";
 import { WALLET_CONNECT_PROJECT_ID } from "@/utils/environment";
 
@@ -51,7 +51,7 @@ const coreChain = {
 };
 
 // Define chains
-const chains = [coreChain];
+const chains = [coreChain, mainnet];
 
 const config = getDefaultConfig({
   appName: "YoungParrot Prediction Market",

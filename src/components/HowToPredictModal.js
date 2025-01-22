@@ -1,7 +1,27 @@
-import { PLATFORM_FEE_PERCENT } from "@/utils/environment";
+import {
+  DEFAULT_CHAIN_ID,
+  PLATFORM_FEE_PERCENT,
+  environments,
+} from "@/utils/environment";
 import Modal from "./Modal";
+import { useEffect, useState } from "react";
+import { useWalletClient } from "wagmi";
 
 const HowToPredictModal = ({ isOpen, onClose }) => {
+  const { data: walletClient } = useWalletClient();
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
+
   return (
     <>
       {isOpen ? (
@@ -52,8 +72,10 @@ const HowToPredictModal = ({ isOpen, onClose }) => {
                   If your prediction is correct, you will earn the rewards as
                   (total amount of you predicted)/(total amount of all users
                   predicted for correct outcome) * (total amount of all users
-                  predicted for whole prediction) * {100 - PLATFORM_FEE_PERCENT}
-                  %. Platform fee is {PLATFORM_FEE_PERCENT}%.
+                  predicted for whole prediction) *{" "}
+                  {100 - environments[chainId]["PLATFORM_FEE_PERCENT"]}
+                  %. Platform fee is{" "}
+                  {environments[chainId]["PLATFORM_FEE_PERCENT"]}%.
                 </p>
                 <p className="text-gray-500 pb-4">
                   You have to claim your rewards by going to the prediction that

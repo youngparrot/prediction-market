@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
-  CORE_SCAN_URL,
   CREATION_SHARE_FEE_PERCENT,
+  DEFAULT_CHAIN_ID,
   PLATFORM_FEE_PERCENT,
   PREDICTION_MARKET_ADDRESS,
+  environments,
 } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { formatEther, getContract, parseEther } from "viem";
@@ -50,6 +51,18 @@ const PredictionTemplate = () => {
 
   const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
   const [watchlists, setWatchlists] = useState(null);
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   useEffect(() => {
     if (!prediction?.prediction.predictionCutoffDate) {
@@ -109,7 +122,7 @@ const PredictionTemplate = () => {
   const getPredictionContract = async () => {
     try {
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: publicClient,
       });
@@ -127,7 +140,7 @@ const PredictionTemplate = () => {
   const fetchHasClaimed = async () => {
     try {
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: publicClient,
       });
@@ -148,7 +161,7 @@ const PredictionTemplate = () => {
   const fetchUserContract = async () => {
     try {
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: publicClient,
       });
@@ -215,7 +228,7 @@ const PredictionTemplate = () => {
       setIsPredicting(true);
 
       const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: walletClient,
       });
@@ -311,7 +324,7 @@ const PredictionTemplate = () => {
       }
 
       const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
+        address: environments[chainId]["PREDICTION_MARKET_ADDRESS"],
         abi: PredictionMarketABI,
         client: walletClient,
       });
@@ -554,9 +567,13 @@ const PredictionTemplate = () => {
                               ? (((formatEther(
                                   predictionContract[0].totalStaked
                                 ) *
-                                  PLATFORM_FEE_PERCENT) /
+                                  environments[chainId][
+                                    "PLATFORM_FEE_PERCENT"
+                                  ]) /
                                   100) *
-                                  CREATION_SHARE_FEE_PERCENT) /
+                                  environments[chainId][
+                                    "CREATION_SHARE_FEE_PERCENT"
+                                  ]) /
                                 100
                               : 0}{" "}
                             $CORE

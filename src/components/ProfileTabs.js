@@ -6,9 +6,9 @@ import {
   unWatchlist,
 } from "@/utils/api";
 import {
-  CORE_SCAN_URL,
-  CREATION_FEE,
   CREATION_SHARE_FEE_PERCENT,
+  DEFAULT_CHAIN_ID,
+  environments,
 } from "@/utils/environment";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -16,7 +16,7 @@ import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { FaMoneyBillAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { toast } from "react-toastify";
 
 // Extend dayjs with the relativeTime plugin
@@ -165,12 +165,26 @@ const Predicted = ({ userAddress }) => {
 const Created = ({ userAddress }) => {
   const [userCreatedPredictions, setUserCreatedPredictions] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const { data: walletClient } = useWalletClient();
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const getUserCreatedPredictions = async (userAddress) => {
     try {
       setIsFetching(true);
       const userCreatedPredictionsData = await fetchUserCreatedPredictions(
-        userAddress
+        userAddress,
+        chainId
       );
       setUserCreatedPredictions(userCreatedPredictionsData.data);
     } catch (error) {
@@ -182,7 +196,7 @@ const Created = ({ userAddress }) => {
 
   useEffect(() => {
     getUserCreatedPredictions(userAddress);
-  }, []);
+  }, [chainId]);
 
   if (isFetching) {
     return (
@@ -203,8 +217,8 @@ const Created = ({ userAddress }) => {
         >
           HERE
         </a>{" "}
-        and earn {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
-        prediction.
+        and earn {environments[chainId]["CREATION_SHARE_FEE_PERCENT"]}% of our
+        platform fee for your own prediction.
       </div>
     );
   }
