@@ -25,20 +25,14 @@ dayjs.extend(relativeTime);
 const PredictedCard = ({ prediction }) => {
   return (
     <div className="flex justify-between items-center text-gray-500 rounded-md">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-1 items-start">
         <a href={`/prediction/${prediction.predictionId}`}>
           <p className="font-bold">{prediction.predictionDetails.question}</p>
         </a>
-        <span className="px-2 py-1 rounded text-white bg-gray-700">
+        <span className="px-2 py-1 rounded text-white text-xs bg-gray-700">
           {prediction.predictionDetails.category}
         </span>
       </div>
-      <a
-        href={`/prediction/${prediction.predictionId}`}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm font-bold"
-      >
-        View
-      </a>
     </div>
   );
 };
@@ -46,20 +40,14 @@ const PredictedCard = ({ prediction }) => {
 const CreatedCard = ({ prediction }) => {
   return (
     <div className="flex justify-between items-center text-gray-500 rounded-md">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-1 items-start">
         <a href={`/prediction/${prediction._id}`}>
           <p className="font-bold">{prediction.question}</p>
         </a>
-        <span className="px-2 py-1 rounded text-white bg-gray-700">
+        <span className="px-2 py-1 rounded text-white text-xs bg-gray-700">
           {prediction.category}
         </span>
       </div>
-      <a
-        href={`/prediction/${prediction._id}`}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm font-bold"
-      >
-        View
-      </a>
     </div>
   );
 };
@@ -69,11 +57,11 @@ const WatchlistCard = ({ prediction, deleteWatchlist, userAddress }) => {
 
   return (
     <div className="flex justify-between items-center text-gray-500 rounded-md">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-1 items-start">
         <a href={`/prediction/${prediction._id}`}>
           <p className="font-bold">{prediction.question}</p>
         </a>
-        <span className="px-2 py-1 rounded text-white bg-gray-700">
+        <span className="px-2 py-1 rounded text-white text-xs bg-gray-700">
           {prediction.category}
         </span>
       </div>
@@ -83,15 +71,9 @@ const WatchlistCard = ({ prediction, deleteWatchlist, userAddress }) => {
             onClick={() => deleteWatchlist(prediction._id)}
             className="bg-secondary hover:bg-secondary-dark px-4 py-2 rounded text-white text-sm font-bold"
           >
-            Remove Watchlist
+            Remove
           </button>
         ) : null}
-        <a
-          href={`/prediction/${prediction._id}`}
-          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white text-sm font-bold"
-        >
-          View
-        </a>
       </div>
     </div>
   );

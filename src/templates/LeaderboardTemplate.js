@@ -57,7 +57,7 @@ export default function LeaderboardTemplate() {
               totalVolume={leaderboard?.totalVolume}
               totalUsers={leaderboard?.totalUser}
             />
-            <p className="py-2 px-2 md:px-4 text-white bg-gray-700">
+            <p className="py-2 px-2 md:px-4 text-gray-700">
               This feature aims to gamify the trading experience by displaying
               real-time rankings of 100 top traders based on their trade volume.
               The leaderboard will incentivize competition by offering rewards

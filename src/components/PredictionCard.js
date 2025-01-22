@@ -233,8 +233,8 @@ const PredictionCard = ({ prediction }) => {
           <h3 className="text-primary text-sm font-semibold">
             {prediction.question}
           </h3>
-          <div className="mt-2">
-            <span className="px-2 py-1 rounded text-white bg-gray-700">
+          <div>
+            <span className="px-2 py-1 rounded text-white text-xs bg-gray-700">
               {prediction.category}
             </span>
           </div>
