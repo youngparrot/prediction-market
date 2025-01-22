@@ -63,9 +63,9 @@ export default function LeaderboardTemplate() {
               The leaderboard will incentivize competition by offering rewards
               like exclusive NFTs, token bonuses, or access to premium features.
             </p>
-            <table className="w-full table-auto mt-8 bg-gray-700">
+            <table className="w-full table-auto mt-8">
               <thead
-                className="text-white"
+                className="text-white bg-gray-700"
                 style={{
                   borderBottom: "2px solid white",
                 }}
@@ -73,7 +73,7 @@ export default function LeaderboardTemplate() {
                 <tr>
                   <th className="px-2 py-2 text-left">Rank</th>
                   <th className="px-2 py-2">User Address</th>
-                  <th className="px-2 py-2 text-right">Total Volume</th>
+                  <th className="px-2 py-2 text-right">Total Points</th>
                 </tr>
               </thead>
               <tbody className="text-white">
@@ -90,16 +90,15 @@ export default function LeaderboardTemplate() {
                         key={entry._id}
                         style={{
                           backgroundColor:
-                            index % 2 === 0
-                              ? entry._id.toLowerCase() ===
-                                address?.toLowerCase()
-                                ? "purple"
-                                : "#5d5d5d"
-                              : entry._id.toLowerCase() ===
-                                address?.toLowerCase()
+                            entry._id.toLowerCase() === address?.toLowerCase()
                               ? "purple"
                               : "",
+                          color:
+                            entry._id.toLowerCase() === address?.toLowerCase()
+                              ? "white"
+                              : "",
                         }}
+                        className="even:bg-gray-100 text-gray-500"
                       >
                         <td className="px-2 py-2">{index + 1}</td>
                         <td className="px-2 py-2 flex items-center justify-center">
@@ -118,11 +117,11 @@ export default function LeaderboardTemplate() {
                             className={`text-blue-500 ml-2`}
                             title="Copy Address"
                           >
-                            <FaRegCopy color="white" />
+                            <FaRegCopy color="gray" />
                           </motion.button>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          {entry.totalVolume.toLocaleString()} CORE
+                          {entry.totalVolume.toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -157,7 +156,7 @@ export default function LeaderboardTemplate() {
                             </motion.button>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            {leaderboard.totalUserVolume.toLocaleString()} CORE
+                            {leaderboard.totalUserVolume.toLocaleString()}
                           </td>
                         </tr>
                       </>
