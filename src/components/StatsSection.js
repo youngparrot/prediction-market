@@ -1,6 +1,6 @@
 const StatsSection = ({ totalVolume, totalUsers }) => {
   return (
-    <div className="bg-gray-700 text-white py-8 mb-4 rounded-md">
+    <div className="bg-gray-800 text-white py-8 mb-4 rounded-md">
       <div className="container mx-auto grid grid-cols-2 gap-4 md:grid-cols-2 text-center">
         {/* Total Volume */}
         <div className="flex flex-col items-center space-y-2">
