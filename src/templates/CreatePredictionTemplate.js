@@ -3,6 +3,7 @@
 import {
   CREATION_FEE,
   CREATION_SHARE_FEE_PERCENT,
+  PLATFORM_FEE_PERCENT,
   PREDICTION_MARKET_ADDRESS,
 } from "@/utils/environment";
 import React, { useState } from "react";
@@ -180,11 +181,11 @@ const CreatePredictionTemplate = () => {
       <h2 className="text-accent text-xl font-bold mb-4">Create Prediction</h2>
 
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <p className="py-2 px-2 md:px-4 text-white bg-gray-700 mb-6">
+        <p className="py-2 px-2 md:px-4 text-white bg-gray-800 mb-6">
           Create your own prediction and earn fees with the prediction market
           platform. Creation fee is {CREATION_FEE} CORE. Creator would earn{" "}
           {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
-          prediction.
+          prediction. Our platform fee is {PLATFORM_FEE_PERCENT}%.
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Category Selection */}
