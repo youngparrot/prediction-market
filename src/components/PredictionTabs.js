@@ -55,6 +55,14 @@ const Activity = ({ id, answers }) => {
     );
   }
 
+  if (transactions && transactions?.length === 0) {
+    return (
+      <div className="bg-white text-gray-700 p-4 flex gap-1 items-center">
+        <p>No transactions</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white text-gray-600 p-4 rounded-md">
       {transactions
@@ -102,6 +110,7 @@ const Activity = ({ id, answers }) => {
     </div>
   );
 };
+
 const TopHolders = ({ id, answers }) => {
   const [holdersList, setHoldersList] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
@@ -126,6 +135,14 @@ const TopHolders = ({ id, answers }) => {
     return (
       <div className="flex justify-center items-center">
         <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (holdersList && holdersList?.length === 0) {
+    return (
+      <div className="bg-white text-gray-700 p-4 flex gap-1 items-center">
+        <p>No holders</p>
       </div>
     );
   }
