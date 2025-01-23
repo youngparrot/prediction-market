@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import PredictionCard from "@/components/PredictionCard";
-import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
