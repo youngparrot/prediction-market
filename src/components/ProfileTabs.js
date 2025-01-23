@@ -25,7 +25,7 @@ dayjs.extend(relativeTime);
 const PredictedCard = ({ prediction }) => {
   return (
     <div className="flex justify-between items-center text-gray-500 rounded-md">
-      <div className="flex flex-col gap-1 items-start">
+      <div className="flex flex-col items-start">
         <a href={`/prediction/${prediction.predictionId}`}>
           <p className="font-bold">{prediction.predictionDetails.question}</p>
         </a>
@@ -40,7 +40,7 @@ const PredictedCard = ({ prediction }) => {
 const CreatedCard = ({ prediction }) => {
   return (
     <div className="flex justify-between items-center text-gray-500 rounded-md">
-      <div className="flex flex-col gap-1 items-start">
+      <div className="flex flex-col items-start">
         <a href={`/prediction/${prediction._id}`}>
           <p className="font-bold">{prediction.question}</p>
         </a>
@@ -57,7 +57,7 @@ const WatchlistCard = ({ prediction, deleteWatchlist, userAddress }) => {
 
   return (
     <div className="flex justify-between items-center text-gray-500 rounded-md">
-      <div className="flex flex-col gap-1 items-start">
+      <div className="flex flex-col items-start">
         <a href={`/prediction/${prediction._id}`}>
           <p className="font-bold">{prediction.question}</p>
         </a>
