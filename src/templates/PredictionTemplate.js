@@ -27,6 +27,7 @@ import dayjs from "dayjs";
 import PredictionTabs from "@/components/PredictionTabs";
 import { motion } from "framer-motion";
 import WatchlistIcon from "@/components/WatchlistIcon";
+import Share from "@/components/Share";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -408,12 +409,13 @@ const PredictionTemplate = () => {
                 />
               </div>
               <div className="col-span-1 md:col-span-3">
-                <div className="mb-2 flex justify-end">
+                <div className="mb-2 flex gap-2 justify-end">
                   {isConnected ? (
                     <p>
                       <WatchlistIcon prediction={prediction.prediction} />
                     </p>
                   ) : null}
+                  <Share prediction={prediction.prediction} />
                 </div>
                 <div className="flex gap-4 items-center">
                   <h1 className="text-primary text-xl font-bold">

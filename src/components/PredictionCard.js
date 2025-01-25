@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import PredictionModal from "./PredictionModal";
+import Share from "./Share";
 
 const PredictionCard = ({ prediction }) => {
   const { address, isConnected } = useAccount();
@@ -276,13 +277,16 @@ const PredictionCard = ({ prediction }) => {
           </p>
         </div>
         <div className="mt-2 flex items-center justify-between">
-          {isConnected ? (
-            <p>
-              <WatchlistIcon prediction={prediction} />
-            </p>
-          ) : (
-            <span></span>
-          )}
+          <div className="flex gap-2">
+            {isConnected ? (
+              <p>
+                <WatchlistIcon prediction={prediction} />
+              </p>
+            ) : (
+              <span></span>
+            )}
+            <Share prediction={prediction} />
+          </div>
           <div className="flex gap-4 items-center mt-2">
             {isDone && prediction ? (
               <>
