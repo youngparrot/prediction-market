@@ -18,7 +18,7 @@ const Share = ({ prediction }) => {
 
   return (
     <button onClick={handleShare} title="Share on X">
-      <FaShareAlt size={20} className="text-blue-500 hover:text-blue-400" />
+      <FaShareAlt size={20} className="text-gray-300 hover:text-blue-400" />
     </button>
   );
 };
