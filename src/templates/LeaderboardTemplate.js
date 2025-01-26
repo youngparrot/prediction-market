@@ -73,7 +73,7 @@ export default function LeaderboardTemplate() {
                 <tr>
                   <th className="px-2 py-2 text-left">Rank</th>
                   <th className="px-2 py-2">User Address</th>
-                  <th className="px-2 py-2 text-right">Total Points</th>
+                  <th className="px-2 py-2 text-right">Total Volume</th>
                 </tr>
               </thead>
               <tbody className="text-white">
@@ -121,7 +121,7 @@ export default function LeaderboardTemplate() {
                           </motion.button>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          {entry.totalVolume.toLocaleString()}
+                          {entry.totalVolume.toLocaleString()} $CORE
                         </td>
                       </tr>
                     ))}
@@ -156,7 +156,7 @@ export default function LeaderboardTemplate() {
                             </motion.button>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            {leaderboard.totalUserVolume.toLocaleString()}
+                            {leaderboard.totalUserVolume.toLocaleString()} $CORE
                           </td>
                         </tr>
                       </>
