@@ -526,7 +526,7 @@ const PredictionTemplate = () => {
                     className="text-gray-600"
                   ></p>
                 </div>
-                {isDone && predictionContract ? (
+                {isDone && predictionContract && predictionContract[0].ended ? (
                   <div className="text-green-500 my-4 font-bold">
                     <span className="text-primary">Answer:</span>{" "}
                     {
