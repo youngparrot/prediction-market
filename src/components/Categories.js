@@ -9,7 +9,7 @@ export const categories = [
   { label: "Crypto", path: "crypto" },
   { label: "Global Elections", path: "global-elections" },
   { label: "Elon Tweets", path: "elon-tweets" },
-  { label: "Mentions", path: "mentions" },
+  { label: "Global Events", path: "global-events" },
   { label: "Pop Culture", path: "pop-culture" },
   { label: "Business", path: "business" },
 ];
