@@ -492,14 +492,14 @@ const PredictionTemplate = () => {
                             {predictionContract &&
                             predictionContract[0]?.stakes[index]
                               ? formatEther(predictionContract[0].stakes[index])
-                              : null}{" "}
+                              : 0}{" "}
                             $CORE
                           </span>
                           <span className="text-gray-500">
                             Your:{" "}
                             {userStaked && userStaked[index]
                               ? formatEther(userStaked[index])
-                              : null}{" "}
+                              : 0}{" "}
                             $CORE
                           </span>
                         </div>
