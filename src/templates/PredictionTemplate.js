@@ -537,6 +537,14 @@ const PredictionTemplate = () => {
                   </div>
                 ) : null}
                 <div className="mt-4">
+                  {isDone &&
+                  predictionContract &&
+                  !predictionContract[0].ended ? (
+                    <div className="text-green-500 mb-2">
+                      The prediction has concluded, and we are now determining
+                      the correct outcome.
+                    </div>
+                  ) : null}
                   {isConnected ? (
                     <>
                       {isDone ? (
@@ -566,15 +574,6 @@ const PredictionTemplate = () => {
                         </div>
                       ) : null}
                       <div className="flex gap-4 items-center mb-4">
-                        <motion.button
-                          whileHover={{ scale: 1.03 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                          id="predict-button"
-                          onClick={handlePredictButtonClick}
-                          className="bg-blue-500 text-white py-2 px-4 rounded"
-                        >
-                          Predict
-                        </motion.button>
                         {isDone && predictionContract ? (
                           <>
                             {predictionContract[0].ended ? (
@@ -588,14 +587,19 @@ const PredictionTemplate = () => {
                                   <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
                                 )}
                               </button>
-                            ) : (
-                              <span className="text-green-500">
-                                The prediction has concluded, and we are now
-                                determining the correct outcome.
-                              </span>
-                            )}
+                            ) : null}
                           </>
-                        ) : null}
+                        ) : (
+                          <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            id="predict-button"
+                            onClick={handlePredictButtonClick}
+                            className="bg-blue-500 text-white py-2 px-4 rounded"
+                          >
+                            Predict
+                          </motion.button>
+                        )}
                       </div>
                     </>
                   ) : (
