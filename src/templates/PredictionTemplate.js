@@ -547,7 +547,9 @@ const PredictionTemplate = () => {
                   ) : null}
                   {isConnected ? (
                     <>
-                      {isDone ? (
+                      {isDone &&
+                      predictionContract &&
+                      predictionContract[0].ended ? (
                         <div className="mb-2">
                           <p className="text-primary">
                             Your rewards: {formatEther(claimAmount.toString())}{" "}
@@ -556,6 +558,8 @@ const PredictionTemplate = () => {
                         </div>
                       ) : null}
                       {isDone &&
+                      predictionContract &&
+                      predictionContract[0].ended &&
                       prediction?.prediction.createdBy === address ? (
                         <div className="mb-2">
                           <p className="text-primary font-bold">
