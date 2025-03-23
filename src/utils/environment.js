@@ -15,15 +15,17 @@ export const NATIVE_TOKEN_ADDRESS =
   "0x0000000000000000000000000000000000000000";
 
 export const environments = {
-  DEFAULT_CHAIN_ID: {
+  [DEFAULT_CHAIN_ID]: {
     SCAN_URL: process.env.NEXT_PUBLIC_CORE_SCAN_URL,
     RPC: process.env.NEXT_PUBLIC_CORE_RPC_URL,
     NATIVE_TOKEN_SYMBOL: process.env.NEXT_PUBLIC_CORE_NATIVE_TOKEN_SYMBOL,
-    NATIVE_TOKEN_IMAGE: "/images/CORE.svg",
+    NATIVE_TOKEN_IMAGE:
+      "https://ypfile.myfilebase.com/ipfs/QmV9XWPiFf8HG4xwn6WbWxdjRRTcqCy1Gqhb3Wrqk9c62R",
     PREDICTION_MARKET_ADDRESS: {
       CORE: {
         tokenAddress: NATIVE_TOKEN_ADDRESS,
-        image: "/images/CORE.svg",
+        image:
+          "https://ypfile.myfilebase.com/ipfs/QmV9XWPiFf8HG4xwn6WbWxdjRRTcqCy1Gqhb3Wrqk9c62R",
         contract: process.env.NEXT_PUBLIC_CORE_PREDICTION_MARKET_ADDRESS,
       },
     },
