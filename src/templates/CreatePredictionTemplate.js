@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
+import PredictionMarketTokenPaymentABI from "@/lib/abi/PredictionMarketTokenPayment.json";
 import { getContract, parseEther } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
