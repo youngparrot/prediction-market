@@ -1,11 +1,8 @@
 "use client";
 
 import {
-  CREATION_FEE,
-  CREATION_SHARE_FEE_PERCENT,
   DEFAULT_CHAIN_ID,
   NATIVE_TOKEN_ADDRESS,
-  PLATFORM_FEE_PERCENT,
   environments,
 } from "@/utils/environment";
 import React, { useEffect, useState } from "react";
@@ -220,9 +217,11 @@ const CreatePredictionTemplate = () => {
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <p className="py-2 px-2 md:px-4 text-white bg-gray-800 mb-6">
           Create your own prediction and earn fees with the prediction market
-          platform. Creation fee is {CREATION_FEE} CORE. Creator would earn{" "}
-          {CREATION_SHARE_FEE_PERCENT}% of our platform fee for your own
-          prediction. Our platform fee is {PLATFORM_FEE_PERCENT}%.
+          platform. Creation fee is {environments[chainId]["CREATION_FEE"]}{" "}
+          {environments[chainId]["NATIVE_TOKEN_SYMBOL"]}. Creator would earn{" "}
+          {environments[chainId]["CREATION_SHARE_FEE_PERCENT"]}% of our platform
+          fee for your own prediction. Our platform fee is{" "}
+          {environments[chainId]["PLATFORM_FEE_PERCENT"]}%.
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Category Selection */}
