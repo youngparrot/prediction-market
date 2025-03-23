@@ -120,7 +120,7 @@ const Activity = ({ id, answers }) => {
               <div>
                 {transaction.transactionId ? (
                   <a
-                    href={`${CORE_SCAN_URL}/tx/${transaction.transactionId}`}
+                    href={`${environments[chainId]["SCAN_URL"]}/tx/${transaction.transactionId}`}
                     title="Transaction Link"
                     target="_blank"
                   >
