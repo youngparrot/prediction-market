@@ -2,15 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import PredictionCard from "@/components/PredictionCard";
-import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
   DEFAULT_CHAIN_ID,
   NATIVE_TOKEN_ADDRESS,
-  PREDICTION_MARKET_ADDRESS,
   environments,
 } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
+import PredictionMarketTokenPaymentABI from "@/lib/abi/PredictionMarketTokenPayment.json";
 import { getContract } from "viem";
 import { fetchPredictions, fetchWatchlist } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner";
