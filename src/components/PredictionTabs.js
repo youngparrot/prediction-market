@@ -102,7 +102,7 @@ const Activity = ({ id, answers }) => {
                   {answers[transaction.outcomeIndex]}
                 </span>
                 {" with "}
-                <span className="text-secondary">
+                <span className="flex gap-1 text-secondary">
                   {transaction.amount} {transaction.paymentToken}
                   <Image
                     src={
@@ -212,7 +212,7 @@ const TopHolders = ({ id, answers }) => {
                       6
                     )}...${holder.userAddress.slice(-4)}`}</a>
                   </div>
-                  <div className="text-secondary">
+                  <div className="flex gap-1 text-secondary">
                     {holder.totalAmount} {holder.paymentToken}
                     <Image
                       src={
