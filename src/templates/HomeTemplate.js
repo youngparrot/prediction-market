@@ -21,7 +21,7 @@ const HomeTemplate = () => {
   const [status, setStatus] = useState("");
 
   return (
-    <div className="container mx-auto w-full p-2 md:p-4">
+    <div>
       <div className="mb-8">
         <Categories categoryPath="all" />
         <div className="flex justify-between mb-4">
