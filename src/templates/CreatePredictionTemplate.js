@@ -6,7 +6,6 @@ import {
   DEFAULT_CHAIN_ID,
   NATIVE_TOKEN_ADDRESS,
   PLATFORM_FEE_PERCENT,
-  PREDICTION_MARKET_ADDRESS,
   environments,
 } from "@/utils/environment";
 import React, { useEffect, useState } from "react";
@@ -21,6 +20,7 @@ import { FaSpinner } from "react-icons/fa";
 import { createPrediction, updatePrediction } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { RequiredField, RequiredLabel } from "@/components/RequiredLabel";
+import { generateUUID } from "@/utils/uuid";
 
 const categories = [
   { label: "Politics", path: "politics" },
@@ -55,7 +55,10 @@ const CreatePredictionTemplate = () => {
     },
   });
 
-  const [answers, setAnswers] = useState(["", ""]);
+  const [answers, setAnswers] = useState([
+    { id: generateUUID(), text: "" },
+    { id: generateUUID(), text: "" },
+  ]);
   const [answersError, setAnswersError] = useState(""); // Error message for answers
 
   const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
@@ -73,23 +76,27 @@ const CreatePredictionTemplate = () => {
     fetchChainId();
   }, [walletClient]);
 
-  const handleAnswerChange = (index, value) => {
-    const updatedAnswers = [...answers];
-    updatedAnswers[index] = value;
-    setAnswers(updatedAnswers);
+  const handleAnswerChange = (id, newValue) => {
+    setAnswers((prev) =>
+      prev.map((answer) =>
+        answer.id === id ? { ...answer, text: newValue } : answer
+      )
+    );
   };
 
   const addAnswer = () => {
-    setAnswers([...answers, ""]);
+    setAnswers((prev) => [
+      ...prev,
+      { id: generateUUID(), text: "" }, // Add a new answer with a unique ID
+    ]);
   };
 
-  const removeAnswer = (index) => {
-    const updatedAnswers = answers.filter((_, i) => i !== index);
-    setAnswers(updatedAnswers);
+  const removeAnswer = (id) => {
+    setAnswers((prev) => prev.filter((answer) => answer.id !== id));
   };
 
   const validateAnswers = () => {
-    if (answers.some((answer) => answer.trim() === "")) {
+    if (answers.some((answer) => answer.text.trim() === "")) {
       setAnswersError("All answers must be non-empty.");
       return false;
     }
@@ -120,13 +127,14 @@ const CreatePredictionTemplate = () => {
     try {
       const predictionRes = await createPrediction(
         question,
-        answers,
+        answers.map((answer) => answer.text),
         predictionCutoffDate,
         endTime,
         address,
         rules,
         twitter,
         category,
+        chainId,
         paymentToken
       );
       const metadataId = String(predictionRes.prediction._id);
@@ -272,19 +280,21 @@ const CreatePredictionTemplate = () => {
               <RequiredField />
             </label>
             {answers.map((answer, index) => (
-              <div key={index} className="flex gap-4 mb-2">
+              <div key={answer.id} className="flex gap-4 mb-2">
                 <input
                   type="text"
-                  value={answer}
+                  value={answer.text}
                   maxLength={100}
-                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleAnswerChange(answer.id, e.target.value)
+                  }
                   placeholder={`Outcome ${index + 1} (max 100 characters)`}
                   className="text-primary-light bg-gray-100 w-full p-2 border rounded"
                 />
                 {answers.length > 2 ? (
                   <button
                     type="button"
-                    onClick={() => removeAnswer(index)}
+                    onClick={() => removeAnswer(answer.id)}
                     className="text-blue-500 underline"
                   >
                     Remove
@@ -293,12 +303,14 @@ const CreatePredictionTemplate = () => {
               </div>
             ))}
             {answersError && <p style={{ color: "red" }}>{answersError}</p>}
+
             {answers.length <= 1 && (
-              <p style={{ color: "red" }}>At least two outcomes is required</p>
+              <p style={{ color: "red" }}>At least two outcomes are required</p>
             )}
+
             <button
               type="button"
-              onClick={addAnswer} // Add a new empty string to the answers array
+              onClick={addAnswer}
               className="text-primary font-bold underline"
             >
               Add Outcome
@@ -386,7 +398,7 @@ const CreatePredictionTemplate = () => {
                 environments[chainId]["PREDICTION_MARKET_ADDRESS"]
               ).map((paymentToken) => (
                 <option
-                  key={paymentToken.path}
+                  key={paymentToken.tokenAddress}
                   value={paymentToken}
                   className="flex gap-1"
                 >
