@@ -5,7 +5,7 @@ const StatsSection = ({ totalUsers, totalPoints }) => {
         {/* Total Volume */}
         <div className="flex flex-col items-center space-y-2">
           <div className="flex items-center text-2xl md:text-4xl font-bold">
-            {totalPoints?.toLocaleString()} <span className="ml-2">CORE</span>
+            {totalPoints?.toLocaleString()}
           </div>
           <span className="text-gray-400 text-sm uppercase">Total Points</span>
         </div>
