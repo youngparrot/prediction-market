@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PREDICTION_MARKET_API } from "./environment";
+import { DEFAULT_CHAIN_ID, PREDICTION_MARKET_API } from "./environment";
 
 export async function createPrediction(
   question,
@@ -9,25 +9,24 @@ export async function createPrediction(
   createdBy,
   rules,
   twitter,
-  category
+  category,
+  chainId,
+  paymentToken
 ) {
   const url = `${PREDICTION_MARKET_API}/api/createPrediction`;
-  try {
-    const response = await axios.post(url, {
-      question,
-      answers: answers,
-      predictionCutoffDate,
-      endDate,
-      createdBy,
-      rules,
-      twitter,
-      category,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error create prediction:", error);
-    return null;
-  }
+  const response = await axios.post(url, {
+    question,
+    answers: answers,
+    predictionCutoffDate,
+    endDate,
+    createdBy,
+    rules,
+    twitter,
+    category,
+    chainId,
+    paymentToken,
+  });
+  return response.data;
 }
 
 export async function createTransaction(
@@ -35,36 +34,30 @@ export async function createTransaction(
   outcomeIndex,
   userAddress,
   amount,
-  transactionId
+  transactionId,
+  chainId,
+  paymentToken
 ) {
   const url = `${PREDICTION_MARKET_API}/api/transaction`;
-  try {
-    const response = await axios.post(url, {
-      predictionId,
-      outcomeIndex,
-      userAddress,
-      amount,
-      transactionId,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error create prediction:", error);
-    return null;
-  }
+  const response = await axios.post(url, {
+    predictionId,
+    outcomeIndex,
+    userAddress,
+    amount,
+    transactionId,
+    chainId,
+    paymentToken,
+  });
+  return response.data;
 }
 
 export async function updatePrediction(predictionId, status) {
   const url = `${PREDICTION_MARKET_API}/api/updatePrediction`;
-  try {
-    const response = await axios.put(url, {
-      predictionId,
-      status,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error update prediction:", error);
-    return null;
-  }
+  const response = await axios.put(url, {
+    predictionId,
+    status,
+  });
+  return response.data;
 }
 
 export async function fetchPredictions({
@@ -85,42 +78,31 @@ export async function fetchPredictions({
     url += `&category=${category}`;
   }
 
-  try {
-    const response = await axios.get(url, {});
-    return response.data;
-  } catch (error) {
-    console.error("Error posting user:", error);
-    return null;
-  }
+  const response = await axios.get(url, {});
+  return response.data;
 }
 
-export async function postUser(userAddress, volume) {
+export async function postUser(userAddress, point, chainId) {
   const url = `${PREDICTION_MARKET_API}/api/user`;
-  try {
-    const response = await axios.post(url, {
-      userAddress,
-      volume: parseFloat(volume),
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error posting user:", error);
-    return null;
-  }
+  const response = await axios.post(url, {
+    userAddress,
+    point,
+    chainId,
+  });
+  return response.data;
 }
 
-export async function fetchLeaderboard(userAddress = null) {
-  let url = `${PREDICTION_MARKET_API}/api/leaderboard`;
+export async function fetchLeaderboard(
+  userAddress = null,
+  chainId = DEFAULT_CHAIN_ID
+) {
+  let url = `${PREDICTION_MARKET_API}/api/leaderboard?chainId=${chainId}`;
   if (userAddress) {
-    url += `?userAddress=${userAddress}`;
+    url += `&userAddress=${userAddress}`;
   }
 
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching leaderboard:", error);
-    return null;
-  }
+  const response = await axios.get(url);
+  return response.data;
 }
 
 export async function fetchTransactions(
@@ -134,79 +116,61 @@ export async function fetchTransactions(
     url += `&predictionId=${predictionId}`;
   }
 
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching transaction:", error);
-    return null;
-  }
+  const response = await axios.get(url);
+  return response.data;
 }
 
-export async function fetchUserPredictions(userAddress) {
-  let url = `${PREDICTION_MARKET_API}/api/getUserPredictions?userAddress=${userAddress}`;
+export async function fetchUserPredictions(userAddress, chainId) {
+  let url = `${PREDICTION_MARKET_API}/api/getUserPredictions?userAddress=${userAddress}&chainId=${chainId}`;
 
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user predictions:", error);
-    return null;
-  }
+  const response = await axios.get(url);
+  return response.data;
 }
 
-export async function fetchUserCreatedPredictions(userAddress) {
-  let url = `${PREDICTION_MARKET_API}/api/getUserCreatedPredictions?userAddress=${userAddress}`;
+export async function fetchUserCreatedPredictions(userAddress, chainId) {
+  let url = `${PREDICTION_MARKET_API}/api/getUserCreatedPredictions?chainId=${chainId}&userAddress=${userAddress}`;
 
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user predictions:", error);
-    return null;
-  }
+  const response = await axios.get(url);
+  return response.data;
 }
 
-export async function fetchUser(userAddress) {
-  let url = `${PREDICTION_MARKET_API}/api/user?userAddress=${userAddress}`;
+export async function fetchUser(userAddress, chainId = DEFAULT_CHAIN_ID) {
+  let url = `${PREDICTION_MARKET_API}/api/user?chainId=${chainId}&userAddress=${userAddress}`;
 
-  try {
-    const response = await axios.get(url);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
+  const response = await axios.get(url);
+  return response.data;
 }
 
 // Function to add to watchlist
-export async function addToWatchlist(userAddress, predictionId) {
+export async function addToWatchlist(userAddress, predictionId, chainId) {
   let url = `${PREDICTION_MARKET_API}/api/watchlist`;
 
   const response = await axios.post(url, {
     userAddress,
     predictionId,
+    chainId,
   });
 
   return response.data;
 }
 
 // Function to fetch user's watchlist
-export async function fetchWatchlist(userAddress) {
-  let url = `${PREDICTION_MARKET_API}/api/watchlist?userAddress=${userAddress}`;
+export async function fetchWatchlist(userAddress, chainId) {
+  let url = `${PREDICTION_MARKET_API}/api/watchlist?chainId=${chainId}&userAddress=${userAddress}`;
 
   const response = await axios.get(url);
   return response.data;
 }
 
 // Function to fetch user's watchlist
-export async function unWatchlist(userAddress, predictionId) {
+export async function unWatchlist(userAddress, predictionId, chainId) {
   let url = `${PREDICTION_MARKET_API}/api/watchlist`;
 
   const response = await axios.delete(url, {
     data: {
       userAddress,
       predictionId,
+      chainId,
     },
   });
   return response.data;

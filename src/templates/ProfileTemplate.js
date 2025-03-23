@@ -3,6 +3,7 @@
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ProfileTabs from "@/components/ProfileTabs";
 import { fetchLeaderboard, fetchUser, fetchUserPredictions } from "@/utils/api";
+import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GiPlagueDoctorProfile } from "react-icons/gi";
@@ -20,10 +21,22 @@ export default function ProfileTemplate() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [user, setUser] = useState();
 
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
+
   const fetchData = async () => {
     try {
       setIsFetching(true);
-      const response = await fetchLeaderboard(userAddress);
+      const response = await fetchLeaderboard(userAddress, chainId);
       setLeaderboard(response);
 
       const user = await fetchUser(userAddress);
@@ -77,9 +90,9 @@ export default function ProfileTemplate() {
             <p className="text-xl font-bold">{leaderboard.rank}</p>
           </div>
           <div>
-            <p className="text-gray-400">Total Volume</p>
-            <p className="text-xl font-bold">
-              {leaderboard.totalUserVolume} $CORE
+            <p className="text-gray-400">Total Point</p>
+            <p className="text-xl font-bold text-right">
+              {leaderboard.totalUserPoints}
             </p>
           </div>
           {/* <div>

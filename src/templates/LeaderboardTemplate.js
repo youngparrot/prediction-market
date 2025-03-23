@@ -6,22 +6,38 @@ import { formatTokenAddress } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { FaRegCopy } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { toast } from "react-toastify";
-import { CORE_SCAN_URL } from "@/utils/environment";
+import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
 import StatsSection from "@/components/StatsSection";
 
 export default function LeaderboardTemplate() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { address, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   // Fetch leaderboard data
   useEffect(() => {
     const fetchLeaderboardData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetchLeaderboard(isConnected ? address : null);
+        const response = await fetchLeaderboard(
+          isConnected ? address : null,
+          chainId
+        );
         setLeaderboard(response);
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
@@ -31,7 +47,7 @@ export default function LeaderboardTemplate() {
     };
 
     fetchLeaderboardData();
-  }, [isConnected]);
+  }, [isConnected, chainId]);
 
   const handleCopy = (address) => {
     navigator.clipboard.writeText(address);
@@ -54,8 +70,9 @@ export default function LeaderboardTemplate() {
           </h1>
           <div className="p-2 md:p-6 bg-white min-h-screen rounded-md">
             <StatsSection
-              totalVolume={leaderboard?.totalVolume}
+              totalPoints={leaderboard?.totalPoints}
               totalUsers={leaderboard?.totalUser}
+              chainId={chainId}
             />
             <p className="py-2 px-2 md:px-4 text-gray-700">
               This feature aims to gamify the trading experience by displaying
@@ -73,7 +90,7 @@ export default function LeaderboardTemplate() {
                 <tr>
                   <th className="px-2 py-2 text-left">Rank</th>
                   <th className="px-2 py-2">User Address</th>
-                  <th className="px-2 py-2 text-right">Total Volume</th>
+                  <th className="px-2 py-2 text-right">Total Points</th>
                 </tr>
               </thead>
               <tbody className="text-white">
@@ -100,7 +117,7 @@ export default function LeaderboardTemplate() {
                         }}
                         className="even:bg-gray-100 text-gray-500"
                       >
-                        <td className="px-2 py-2">{index + 1}</td>
+                        <td className="px-2 py-2">#{index + 1}</td>
                         <td className="px-2 py-2 flex items-center justify-center">
                           <motion.a
                             whileHover={{ scale: 1.05 }}
@@ -121,7 +138,7 @@ export default function LeaderboardTemplate() {
                           </motion.button>
                         </td>
                         <td className="px-2 py-2 text-right">
-                          {entry.totalVolume.toLocaleString()} $CORE
+                          {`${entry.totalPoints.toLocaleString()}`}
                         </td>
                       </tr>
                     ))}
@@ -156,7 +173,8 @@ export default function LeaderboardTemplate() {
                             </motion.button>
                           </td>
                           <td className="px-2 py-2 text-right">
-                            {leaderboard.totalUserVolume.toLocaleString()} $CORE
+                            {`${leaderboard.totalUserPoints.toLocaleString()}
+                            }`}
                           </td>
                         </tr>
                       </>

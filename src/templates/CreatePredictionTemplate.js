@@ -3,8 +3,11 @@
 import {
   CREATION_FEE,
   CREATION_SHARE_FEE_PERCENT,
+  DEFAULT_CHAIN_ID,
+  NATIVE_TOKEN_ADDRESS,
   PLATFORM_FEE_PERCENT,
   PREDICTION_MARKET_ADDRESS,
+  environments,
 } from "@/utils/environment";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -55,6 +58,21 @@ const CreatePredictionTemplate = () => {
   const [answers, setAnswers] = useState(["", ""]);
   const [answersError, setAnswersError] = useState(""); // Error message for answers
 
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+
+  useEffect(() => {
+    if (!walletClient) {
+      return;
+    }
+
+    const fetchChainId = async () => {
+      const id = await walletClient.getChainId(); // Fetch the connected chain ID
+      setChainId(id);
+    };
+
+    fetchChainId();
+  }, [walletClient]);
+
   const handleAnswerChange = (index, value) => {
     const updatedAnswers = [...answers];
     updatedAnswers[index] = value;
@@ -91,6 +109,7 @@ const CreatePredictionTemplate = () => {
       rules,
       twitter,
       category,
+      paymentToken,
     } = data;
 
     if (predictionCutoffDate && dayjs(predictionCutoffDate) > dayjs(endTime)) {
@@ -107,25 +126,35 @@ const CreatePredictionTemplate = () => {
         address,
         rules,
         twitter,
-        category
+        category,
+        paymentToken
       );
       const metadataId = String(predictionRes.prediction._id);
 
       const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
+        address:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            predictionRes.prediction.paymentToken
+          ].contract,
+        abi:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            predictionRes.prediction.paymentToken
+          ].tokenAddress === NATIVE_TOKEN_ADDRESS
+            ? PredictionMarketABI
+            : PredictionMarketTokenPaymentABI,
         client: walletClient,
       });
 
       const tx = await writeContract.write.createPrediction(
         [metadataId, answers.length, BigInt(dayjs(endTime).unix())],
         {
-          value: parseEther(CREATION_FEE),
+          value: parseEther(environments[chainId]["CREATION_FEE"]),
         }
       );
 
       const transactionReceipt = await publicClient.waitForTransactionReceipt({
         hash: tx,
+        timeout: 180_000,
       });
 
       if (transactionReceipt.status === "success") {
@@ -332,6 +361,43 @@ const CreatePredictionTemplate = () => {
             ></textarea>
             {errors.rules && (
               <p className="text-red-500 text-sm">{errors.rules.message}</p>
+            )}
+          </div>
+          {/* Payment Token Selection */}
+          <div className="mb-4">
+            <label
+              htmlFor="paymentToken"
+              className="block font-bold text-gray-700"
+            >
+              Select Payment Token:
+              <RequiredField />
+            </label>
+            <select
+              id="paymentToken"
+              {...register("paymentToken", {
+                required: "Payment token is required",
+              })}
+              className={`text-primary-light bg-gray-100 w-full p-2 border rounded ${
+                errors.paymentToken ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">-- Choose a payment token --</option>
+              {Object.keys(
+                environments[chainId]["PREDICTION_MARKET_ADDRESS"]
+              ).map((paymentToken) => (
+                <option
+                  key={paymentToken.path}
+                  value={paymentToken}
+                  className="flex gap-1"
+                >
+                  {paymentToken}
+                </option>
+              ))}
+            </select>
+            {errors.paymentToken && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.paymentToken.message}
+              </p>
             )}
           </div>
           <div className="mb-4">

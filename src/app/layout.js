@@ -12,6 +12,7 @@ import i18n from "./i18n";
 import Script from "next/script";
 import HowToPredictModal from "@/components/HowToPredictModal";
 import { useState } from "react";
+import { GTM } from "@/utils/environment";
 
 const I18nextProvider = dynamic(
   () => import("react-i18next").then((mod) => mod.I18nextProvider),
@@ -19,8 +20,6 @@ const I18nextProvider = dynamic(
 );
 
 const inter = Inter({ subsets: ["latin"] });
-
-const GTM_ID = "GTM-NPT5D8DZ";
 
 function RootLayout({ children }) {
   const [showHowToPredict, setShowHowToPredict] = useState(false);
@@ -48,7 +47,7 @@ function RootLayout({ children }) {
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
               j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','${GTM_ID}');
+              })(window,document,'script','dataLayer','${GTM}');
             `,
           }}
         />
@@ -56,7 +55,7 @@ function RootLayout({ children }) {
         {/* Google Tag Manager <noscript> Fallback */}
         <noscript>
           <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM}`}
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}

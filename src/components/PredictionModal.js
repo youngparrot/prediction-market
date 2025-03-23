@@ -65,7 +65,11 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
                 </option>
               ))}
             </select> */}
-            <QuantitySlider max={100} onChange={setAmount} />
+            <QuantitySlider
+              max={100}
+              onChange={setAmount}
+              prediction={prediction}
+            />
           </div>
           <div className="flex justify-end space-x-4">
             <button className="text-gray-500" onClick={onClose}>

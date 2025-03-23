@@ -2,7 +2,7 @@ import CreatePredictionTemplate from "@/templates/CreatePredictionTemplate";
 
 export const metadata = {
   title: "Create Prediction",
-  description: "YP Prediction Market on Core blockchain",
+  description: "YoungParrot | #1 Prediction Market on Core blockchain",
 };
 
 function CreatePredictionPage() {

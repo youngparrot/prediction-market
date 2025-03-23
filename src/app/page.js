@@ -1,8 +1,8 @@
 import HomeTemplate from "@/templates/HomeTemplate";
 
 export const metadata = {
-  title: "Prediction Homepage",
-  description: "YP Prediction Market on Core blockchain",
+  title: "YoungParrot's Prediction Market",
+  description: "YoungParrot | #1 Prediction Market on Core blockchain",
 };
 
 function HomePage() {

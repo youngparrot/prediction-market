@@ -4,7 +4,10 @@ import React, { useEffect, useState } from "react";
 import PredictionCard from "@/components/PredictionCard";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { PREDICTION_MARKET_ADDRESS } from "@/utils/environment";
+import {
+  DEFAULT_CHAIN_ID,
+  PREDICTION_MARKET_ADDRESS,
+} from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { getContract } from "viem";
 import { fetchPredictions, fetchWatchlist } from "@/utils/api";
@@ -44,26 +47,52 @@ const Predictions = ({ status, category }) => {
 
   const { address, isConnected } = useAccount();
   const [isFetching, setIsFetching] = useState(false);
+  const [isFetchingWatchlists, setIsFetchingWatchlists] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [watchlists, setWatchlists] = useState(null);
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_IDs);
+
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const getPredictions = async () => {
     try {
       setIsFetching(true);
-      const predictionsData = await fetchPredictions({ status, category });
+      const predictionsData = await fetchPredictions({
+        status,
+        category,
+        chainId,
+      });
       const metadataIds = predictionsData.predictions.map(
         (prediction) => prediction._id
       );
 
-      const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
-        client: publicClient,
-      });
-      const predictionContractData =
-        await readContract.read.getPredictionsByIds([metadataIds]);
-
       for (let i = 0; i < predictionsData.predictions.length; i++) {
+        const readContract = getContract({
+          address:
+            environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+              predictionsData.predictions[i].paymentToken
+            ].contract,
+          abi:
+            environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+              predictionsData.predictions[i].paymentToken
+            ].tokenAddress === NATIVE_TOKEN_ADDRESS
+              ? PredictionMarketABI
+              : PredictionMarketTokenPaymentABI,
+          client: publicClient,
+        });
+        const predictionContractData =
+          await readContract.read.getPredictionsByIds([metadataIds]);
+
         predictionsData.predictions[i].total =
           predictionContractData[i].totalStaked;
         predictionsData.predictions[i].winningAnswerIndex =
@@ -87,8 +116,8 @@ const Predictions = ({ status, category }) => {
 
   const getWatchlists = async () => {
     try {
-      setIsFetching(true);
-      const response = await fetchWatchlist(address);
+      setIsFetchingWatchlists(true);
+      const response = await fetchWatchlist(address, chainId);
       const watchlistMap = {};
       for (let i = 0; i < response.watchlist.length; i++) {
         watchlistMap[response.watchlist[i]._id] = true;
@@ -97,24 +126,27 @@ const Predictions = ({ status, category }) => {
     } catch (error) {
       console.log("Fetch watchlists failed", error);
     } finally {
-      setIsFetching(false);
+      setIsFetchingWatchlists(false);
     }
   };
 
   useEffect(() => {
-    if (!address) {
+    if (!address || !chainId) {
       return;
     }
 
     getWatchlists();
-  }, [address]);
+  }, [address, chainId]);
 
   useEffect(() => {
-    getPredictions();
-    // getCompletedPredictions();
-  }, [status, watchlists]);
+    if (!chainId) {
+      return;
+    }
 
-  if (isFetching) {
+    getPredictions();
+  }, [status, watchlists, chainId]);
+
+  if (isFetching || isFetchingWatchlists) {
     return (
       <div className="flex justify-center items-center">
         <LoadingSpinner />

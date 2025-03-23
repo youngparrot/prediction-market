@@ -1,11 +1,13 @@
 import { fetchTransactions } from "@/utils/api";
-import { CORE_SCAN_URL } from "@/utils/environment";
 import Giscus from "@giscus/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useEffect, useState } from "react";
 import LoadingSpinner from "./LoadingSpinner";
 import { motion } from "framer-motion";
+import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
+import { useWalletClient } from "wagmi";
+import Image from "next/image";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -30,6 +32,19 @@ const Comments = ({ id }) => (
 const Activity = ({ id, answers }) => {
   const [transactions, setTransactions] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const { data: walletClient } = useWalletClient();
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const getTransactions = async (type, id) => {
     try {
@@ -45,7 +60,7 @@ const Activity = ({ id, answers }) => {
 
   useEffect(() => {
     getTransactions("transactions", id);
-  }, []);
+  }, [chainId]);
 
   if (isFetching) {
     return (
@@ -88,7 +103,18 @@ const Activity = ({ id, answers }) => {
                 </span>
                 {" with "}
                 <span className="text-secondary">
-                  {transaction.amount} $CORE
+                  {transaction.amount} {transaction.paymentToken}
+                  <Image
+                    src={
+                      environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+                        transaction.paymentToken
+                      ].image
+                    }
+                    width={20}
+                    height={20}
+                    className="w-[24px] h-[24px]"
+                    alt="Symbol"
+                  />
                 </span>
               </div>
               <div>
@@ -114,6 +140,19 @@ const Activity = ({ id, answers }) => {
 const TopHolders = ({ id, answers }) => {
   const [holdersList, setHoldersList] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
+  const { data: walletClient } = useWalletClient();
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const getTopHolders = async (type, id) => {
     try {
@@ -174,7 +213,18 @@ const TopHolders = ({ id, answers }) => {
                     )}...${holder.userAddress.slice(-4)}`}</a>
                   </div>
                   <div className="text-secondary">
-                    {holder.totalAmount} $CORE
+                    {holder.totalAmount} {holder.paymentToken}
+                    <Image
+                      src={
+                        environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+                          holder.paymentToken
+                        ].image
+                      }
+                      width={20}
+                      height={20}
+                      className="w-[24px] h-[24px]"
+                      alt="Symbol"
+                    />
                   </div>
                 </div>
               ))}

@@ -4,13 +4,19 @@ import React, { useEffect, useState } from "react";
 import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
-  CORE_SCAN_URL,
-  CREATION_SHARE_FEE_PERCENT,
-  PLATFORM_FEE_PERCENT,
-  PREDICTION_MARKET_ADDRESS,
+  DEFAULT_CHAIN_ID,
+  NATIVE_TOKEN_ADDRESS,
+  environments,
 } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
-import { formatEther, getContract, parseEther } from "viem";
+import PredictionMarketTokenPaymentABI from "@/lib/abi/PredictionMarketTokenPayment.json";
+import {
+  formatEther,
+  formatUnits,
+  getContract,
+  parseEther,
+  parseUnits,
+} from "viem";
 import { toast } from "react-toastify";
 import {
   createTransaction,
@@ -27,7 +33,9 @@ import dayjs from "dayjs";
 import PredictionTabs from "@/components/PredictionTabs";
 import { motion } from "framer-motion";
 import WatchlistIcon from "@/components/WatchlistIcon";
+import Head from "next/head";
 import Share from "@/components/Share";
+import ERC20ABI from "@/lib/abi/ERC20.json";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -51,6 +59,18 @@ const PredictionTemplate = () => {
 
   const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
   const [watchlists, setWatchlists] = useState(null);
+
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   useEffect(() => {
     if (!prediction?.prediction.predictionCutoffDate) {
@@ -86,7 +106,7 @@ const PredictionTemplate = () => {
   const getWatchlists = async () => {
     try {
       setIsFetching(true);
-      const response = await fetchWatchlist(address);
+      const response = await fetchWatchlist(address, chainId);
       const watchlistMap = {};
       for (let i = 0; i < response.watchlist.length; i++) {
         watchlistMap[response.watchlist[i]._id] = true;
@@ -105,13 +125,21 @@ const PredictionTemplate = () => {
     }
 
     getWatchlists();
-  }, [address]);
+  }, [address, chainId]);
 
   const getPredictionContract = async () => {
     try {
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
+        address:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].contract,
+        abi:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].tokenAddress === NATIVE_TOKEN_ADDRESS
+            ? PredictionMarketABI
+            : PredictionMarketTokenPaymentABI,
         client: publicClient,
       });
       const predictionContractData =
@@ -128,8 +156,16 @@ const PredictionTemplate = () => {
   const fetchHasClaimed = async () => {
     try {
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
+        address:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].contract,
+        abi:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].tokenAddress === NATIVE_TOKEN_ADDRESS
+            ? PredictionMarketABI
+            : PredictionMarketTokenPaymentABI,
         client: publicClient,
       });
       const hasClaimed = await readContract.read.hasUserClaimed([
@@ -144,13 +180,21 @@ const PredictionTemplate = () => {
 
   useEffect(() => {
     getPrediction();
-  }, [watchlists]);
+  }, [watchlists, chainId]);
 
   const fetchUserContract = async () => {
     try {
       const readContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
+        address:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].contract,
+        abi:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].tokenAddress === NATIVE_TOKEN_ADDRESS
+            ? PredictionMarketABI
+            : PredictionMarketTokenPaymentABI,
         client: publicClient,
       });
 
@@ -182,7 +226,7 @@ const PredictionTemplate = () => {
     }
 
     fetchUserContract();
-  }, [address, prediction]);
+  }, [address, prediction, chainId]);
 
   useEffect(() => {
     if (!prediction?.prediction?._id) {
@@ -190,7 +234,7 @@ const PredictionTemplate = () => {
     }
 
     getPredictionContract();
-  }, [prediction?.prediction?._id]);
+  }, [prediction?.prediction?._id, chainId]);
 
   const handlePredictButtonClick = () => {
     if (isDone) {
@@ -214,25 +258,94 @@ const PredictionTemplate = () => {
   const handlePredict = async (answerIndex, amount) => {
     try {
       setIsPredicting(true);
+      const paymentToken = prediction.prediction.paymentToken;
+
+      if (
+        environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
+          .tokenAddress !== NATIVE_TOKEN_ADDRESS
+      ) {
+        const tokenReadContract = getContract({
+          address:
+            environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
+              .tokenAddress,
+          abi: ERC20ABI,
+          client: publicClient,
+        });
+        const allowance = await tokenReadContract.read.allowance([
+          address,
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
+            .contract,
+        ]);
+
+        // Format the allowance based on token decimals
+        const formattedAllowance = parseFloat(formatUnits(allowance, 18));
+
+        if (formattedAllowance < amount) {
+          const writeTokenContract = getContract({
+            address:
+              environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
+                .tokenAddress,
+            abi: ERC20ABI,
+            client: walletClient,
+          });
+
+          const approveHash = await writeTokenContract.write.approve([
+            environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
+              .contract,
+            parseUnits(amount.toString(), 18),
+          ]);
+          await publicClient.waitForTransactionReceipt({
+            hash: approveHash,
+          });
+        }
+      }
 
       const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
+        address:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].contract,
+        abi:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].tokenAddress === NATIVE_TOKEN_ADDRESS
+            ? PredictionMarketABI
+            : PredictionMarketTokenPaymentABI,
         client: walletClient,
       });
-      const tx = await writeContract.write.predict(
-        [prediction.prediction._id, answerIndex],
-        {
-          value: parseEther(amount.toString()),
-        }
-      );
+
+      let tx;
+      if (
+        environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
+          .tokenAddress !== NATIVE_TOKEN_ADDRESS
+      ) {
+        tx = await writeContract.write.predict(
+          [
+            prediction.prediction._id,
+            answerIndex,
+            parseEther(amount.toString()),
+          ],
+          {
+            value: 0,
+          }
+        );
+      } else {
+        tx = await writeContract.write.predict(
+          [prediction.prediction._id, answerIndex],
+          {
+            value: parseEther(amount.toString()),
+          }
+        );
+      }
+
       const transactionReceipt = await publicClient.waitForTransactionReceipt({
         hash: tx,
+        timeout: 180_000,
       });
 
       if (transactionReceipt.status === "success") {
         try {
-          await postUser(address, parseInt(amount));
+          await postUser(address, parseInt(amount), chainId);
         } catch (error) {
           console.log("Post user failed ", error);
         }
@@ -243,7 +356,9 @@ const PredictionTemplate = () => {
             answerIndex,
             address,
             parseInt(amount),
-            transactionReceipt.transactionHash
+            transactionReceipt.transactionHash,
+            chainId,
+            prediction.prediction.paymentToken
           );
         } catch (error) {
           console.log("Create transaction failed ", error);
@@ -312,8 +427,16 @@ const PredictionTemplate = () => {
       }
 
       const writeContract = getContract({
-        address: PREDICTION_MARKET_ADDRESS,
-        abi: PredictionMarketABI,
+        address:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].contract,
+        abi:
+          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+            prediction.prediction.paymentToken
+          ].tokenAddress === NATIVE_TOKEN_ADDRESS
+            ? PredictionMarketABI
+            : PredictionMarketTokenPaymentABI,
         client: walletClient,
       });
       const tx = await writeContract.write.claimRewards(
@@ -324,6 +447,7 @@ const PredictionTemplate = () => {
       );
       const transactionReceipt = await publicClient.waitForTransactionReceipt({
         hash: tx,
+        timeout: 180_000,
       });
       if (transactionReceipt.status === "success") {
         toast.success("Claim rewards successful");
@@ -464,12 +588,23 @@ const PredictionTemplate = () => {
                   </p>
                 </div>
                 <div className="mb-2">
-                  <p className="text-secondary font-bold">
+                  <p className="flex gap-1 text-secondary font-bold">
                     Total:{" "}
                     {predictionContract
                       ? formatEther(predictionContract[0].totalStaked)
                       : 0}{" "}
-                    $CORE
+                    {prediction.prediction.paymentToken}
+                    <Image
+                      src={
+                        environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+                          prediction.prediction.paymentToken
+                        ].image
+                      }
+                      width={20}
+                      height={20}
+                      className="w-[24px] h-[24px]"
+                      alt="Symbol"
+                    />
                   </p>
                 </div>
                 <div className="text-primary font-bold mb-2">Outcomes:</div>
@@ -487,21 +622,42 @@ const PredictionTemplate = () => {
                           {answer}{" "}
                         </div>
                         <div className="flex gap-4 ml-4">
-                          <span className="text-gray-500 font-bold">
+                          <span className="flex gap-1 text-gray-500 font-bold">
                             Total:{" "}
                             {predictionContract &&
                             predictionContract[0]?.stakes[index]
                               ? formatEther(predictionContract[0].stakes[index])
                               : 0}{" "}
-                            $CORE
+                            {prediction.prediction.paymentToken}
+                            <Image
+                              src={
+                                environments[chainId][
+                                  "PREDICTION_MARKET_ADDRESS"
+                                ][prediction.prediction.paymentToken].image
+                              }
+                              width={20}
+                              height={20}
+                              className="w-[24px] h-[24px]"
+                              alt="Symbol"
+                            />
                           </span>
-                          <span className="text-gray-500">
-                            Your:{" "}
-                            {userStaked && userStaked[index]
-                              ? formatEther(userStaked[index])
-                              : 0}{" "}
-                            $CORE
-                          </span>
+                          {userStaked && userStaked[index] ? (
+                            <span className="flex gap-1 text-gray-500">
+                              Your: {formatEther(userStaked[index])}{" "}
+                              {prediction.prediction.paymentToken}
+                              <Image
+                                src={
+                                  environments[chainId][
+                                    "PREDICTION_MARKET_ADDRESS"
+                                  ][prediction.prediction.paymentToken].image
+                                }
+                                width={20}
+                                height={20}
+                                className="w-[24px] h-[24px]"
+                                alt="Symbol"
+                              />
+                            </span>
+                          ) : null}
                         </div>
                       </div>
                       {isDone &&
@@ -551,9 +707,20 @@ const PredictionTemplate = () => {
                       predictionContract &&
                       predictionContract[0].ended ? (
                         <div className="mb-2">
-                          <p className="text-primary">
+                          <p className="flex gap-1 text-primary">
                             Your rewards: {formatEther(claimAmount.toString())}{" "}
-                            $CORE
+                            {prediction.prediction.paymentToken}
+                            <Image
+                              src={
+                                environments[chainId][
+                                  "PREDICTION_MARKET_ADDRESS"
+                                ][prediction.prediction.paymentToken].image
+                              }
+                              width={20}
+                              height={20}
+                              className="w-[24px] h-[24px]"
+                              alt="Symbol"
+                            />
                           </p>
                         </div>
                       ) : null}
@@ -568,12 +735,16 @@ const PredictionTemplate = () => {
                               ? (((formatEther(
                                   predictionContract[0].totalStaked
                                 ) *
-                                  PLATFORM_FEE_PERCENT) /
+                                  environments[chainId][
+                                    "PLATFORM_FEE_PERCENT"
+                                  ]) /
                                   100) *
-                                  CREATION_SHARE_FEE_PERCENT) /
+                                  environments[chainId][
+                                    "CREATION_SHARE_FEE_PERCENT"
+                                  ]) /
                                 100
                               : 0}{" "}
-                            $CORE
+                            {prediction.prediction.paymentToken}
                           </p>
                         </div>
                       ) : null}
