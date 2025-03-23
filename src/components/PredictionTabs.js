@@ -86,7 +86,7 @@ const Activity = ({ id, answers }) => {
               key={transaction._id}
               className="flex justify-between even:bg-gray-100 py-1"
             >
-              <div>
+              <div className="flex gap-1">
                 <a
                   href={`/profile/${transaction.userAddress}`}
                   title={transaction.userAddress}
