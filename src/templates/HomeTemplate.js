@@ -152,7 +152,7 @@ const Predictions = ({ status }) => {
           <div className="flex justify-end mb-4 text-white">
             <span>Total: {predictions.total}</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             {predictions.predictions.map((prediction) => (
               <motion.a
                 whileHover={{ scale: 1.02 }}

@@ -6,7 +6,9 @@ import PredictionModal from "@/components/PredictionModal";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
   DEFAULT_CHAIN_ID,
+  NATIVE_TOKEN_ADDRESS,
   PREDICTION_MARKET_ADDRESS,
+  environments,
 } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import { getContract } from "viem";
@@ -51,7 +53,7 @@ const Predictions = ({ status, category }) => {
   const [predictions, setPredictions] = useState([]);
   const [watchlists, setWatchlists] = useState(null);
 
-  const [chainId, setChainId] = useState(DEFAULT_CHAIN_IDs);
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
 
   useEffect(() => {
     const fetchChainId = async () => {

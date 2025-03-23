@@ -9,7 +9,7 @@ import {
   PREDICTION_MARKET_ADDRESS,
   environments,
 } from "@/utils/environment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";

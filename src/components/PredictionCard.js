@@ -128,11 +128,11 @@ const PredictionCard = ({ prediction }) => {
         </div>
         <hr
           className="w-full mt-2 mb-2"
-          style={{ borderTop: "1px solid #d56144" }}
+          style={{ borderTop: "1px solid #F7C942" }}
         />
         <div className="mt-2 flex items-center justify-between">
           <div className="flex gap-2">
-            <p className="font-bold text-secondary-light mb-2">
+            <p className="flex gap-1 font-bold text-secondary-light mb-2">
               Total: {formatEther(prediction.total)} {prediction.paymentToken}{" "}
               <Image
                 src={
@@ -156,7 +156,7 @@ const PredictionCard = ({ prediction }) => {
                     // onClick={handleClaimRewards}
                     className="flex items-center bg-secondary text-white py-2 px-4 rounded"
                   >
-                    Claim Rewards
+                    Claim
                     {isClaiming && (
                       <FaSpinner className="ml-2 animate-spin text-white w-5 h-5" />
                     )}
