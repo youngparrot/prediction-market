@@ -1,15 +1,21 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
-import { formatEther } from "viem";
+import { formatEther, formatUnits } from "viem";
 import WatchlistIcon from "./WatchlistIcon";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
-import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
+import {
+  DEFAULT_CHAIN_ID,
+  NATIVE_TOKEN_ADDRESS,
+  environments,
+} from "@/utils/environment";
 import Share from "./Share";
+import ERC20ABI from "@/lib/abi/ERC20.json";
 
 const PredictionCard = ({ prediction }) => {
+  const publicClient = usePublicClient();
   const { address, isConnected } = useAccount();
   const [isClaiming, setIsClaiming] = useState(false);
   const [selectedPrediction, setSelectedPrediction] = useState(null);
@@ -23,6 +29,8 @@ const PredictionCard = ({ prediction }) => {
 
   const { data: walletClient } = useWalletClient();
 
+  const [decimals, setDecimals] = useState(null);
+
   const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
   useEffect(() => {
     const fetchChainId = async () => {
@@ -34,6 +42,32 @@ const PredictionCard = ({ prediction }) => {
 
     fetchChainId();
   }, [walletClient]);
+
+  useEffect(() => {
+    if (!prediction?.paymentToken || !environments || !chainId) {
+      return;
+    }
+
+    const loadDecimals = async () => {
+      if (
+        prediction.paymentToken === environments[chainId]["NATIVE_TOKEN_SYMBOL"]
+      ) {
+        setDecimals(18);
+      } else {
+        const decimals = await publicClient.readContract({
+          address:
+            environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+              prediction.paymentToken
+            ].tokenAddress,
+          abi: ERC20ABI,
+          functionName: "decimals",
+        });
+        setDecimals(decimals);
+      }
+    };
+
+    loadDecimals();
+  }, [publicClient, environments, chainId, prediction]);
 
   useEffect(() => {
     if (!prediction?.predictionCutoffDate) {
@@ -133,7 +167,8 @@ const PredictionCard = ({ prediction }) => {
         <div className="mt-2 flex items-center justify-between">
           <div className="flex gap-2">
             <p className="flex gap-1 font-bold text-secondary-light mb-2">
-              Total: {formatEther(prediction.total)} {prediction.paymentToken}{" "}
+              Total: {formatUnits(prediction.total, decimals)}{" "}
+              {prediction.paymentToken}{" "}
               <Image
                 src={
                   environments[chainId]["PREDICTION_MARKET_ADDRESS"][

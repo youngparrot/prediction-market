@@ -33,7 +33,6 @@ import dayjs from "dayjs";
 import PredictionTabs from "@/components/PredictionTabs";
 import { motion } from "framer-motion";
 import WatchlistIcon from "@/components/WatchlistIcon";
-import Head from "next/head";
 import Share from "@/components/Share";
 import ERC20ABI from "@/lib/abi/ERC20.json";
 
@@ -60,6 +59,8 @@ const PredictionTemplate = () => {
   const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
   const [watchlists, setWatchlists] = useState(null);
 
+  const [decimals, setDecimals] = useState(null);
+
   const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
   useEffect(() => {
     const fetchChainId = async () => {
@@ -71,6 +72,34 @@ const PredictionTemplate = () => {
 
     fetchChainId();
   }, [walletClient]);
+
+  useEffect(() => {
+    if (!prediction?.prediction.paymentToken || !environments || !chainId) {
+      return;
+    }
+
+    const loadDecimals = async () => {
+      if (
+        prediction.prediction.paymentToken ===
+        environments[chainId]["NATIVE_TOKEN_SYMBOL"]
+      ) {
+        setDecimals(18);
+      } else {
+        const decimals = await publicClient.readContract({
+          address:
+            environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+              prediction.prediction.paymentToken
+            ].tokenAddress,
+          abi: ERC20ABI,
+          functionName: "decimals",
+        });
+
+        setDecimals(decimals);
+      }
+    };
+
+    loadDecimals();
+  }, [publicClient, environments, chainId, prediction]);
 
   useEffect(() => {
     if (!prediction?.prediction.predictionCutoffDate) {
@@ -278,7 +307,7 @@ const PredictionTemplate = () => {
         ]);
 
         // Format the allowance based on token decimals
-        const formattedAllowance = parseFloat(formatUnits(allowance, 18));
+        const formattedAllowance = parseFloat(formatUnits(allowance, decimals));
 
         if (formattedAllowance < amount) {
           const writeTokenContract = getContract({
@@ -292,7 +321,7 @@ const PredictionTemplate = () => {
           const approveHash = await writeTokenContract.write.approve([
             environments[chainId]["PREDICTION_MARKET_ADDRESS"][paymentToken]
               .contract,
-            parseUnits(amount.toString(), 18),
+            parseUnits(amount.toString(), decimals),
           ]);
           await publicClient.waitForTransactionReceipt({
             hash: approveHash,
@@ -323,7 +352,7 @@ const PredictionTemplate = () => {
           [
             prediction.prediction._id,
             answerIndex,
-            parseEther(amount.toString()),
+            parseUnits(amount.toString(), decimals),
           ],
           {
             value: 0,
@@ -333,7 +362,7 @@ const PredictionTemplate = () => {
         tx = await writeContract.write.predict(
           [prediction.prediction._id, answerIndex],
           {
-            value: parseEther(amount.toString()),
+            value: parseUnits(amount.toString(), decimals),
           }
         );
       }
@@ -591,7 +620,7 @@ const PredictionTemplate = () => {
                   <p className="flex gap-1 text-secondary font-bold">
                     Total:{" "}
                     {predictionContract
-                      ? formatEther(predictionContract[0].totalStaked)
+                      ? formatUnits(predictionContract[0].totalStaked, decimals)
                       : 0}{" "}
                     {prediction.prediction.paymentToken}
                     <Image
@@ -626,7 +655,10 @@ const PredictionTemplate = () => {
                             Total:{" "}
                             {predictionContract &&
                             predictionContract[0]?.stakes[index]
-                              ? formatEther(predictionContract[0].stakes[index])
+                              ? formatUnits(
+                                  predictionContract[0].stakes[index],
+                                  decimals
+                                )
                               : 0}{" "}
                             {prediction.prediction.paymentToken}
                             <Image
@@ -643,7 +675,7 @@ const PredictionTemplate = () => {
                           </span>
                           {userStaked && userStaked[index] ? (
                             <span className="flex gap-1 text-gray-500">
-                              Your: {formatEther(userStaked[index])}{" "}
+                              Your: {formatUnits(userStaked[index], decimals)}{" "}
                               {prediction.prediction.paymentToken}
                               <Image
                                 src={
