@@ -35,6 +35,7 @@ import { motion } from "framer-motion";
 import WatchlistIcon from "@/components/WatchlistIcon";
 import Share from "@/components/Share";
 import ERC20ABI from "@/lib/abi/ERC20.json";
+import TokenLink from "@/components/TokenLink";
 
 const PredictionTemplate = () => {
   const publicClient = usePublicClient(); // Fetches the public provider
@@ -623,17 +624,26 @@ const PredictionTemplate = () => {
                       ? formatUnits(predictionContract[0].totalStaked, decimals)
                       : 0}{" "}
                     {prediction.prediction.paymentToken}
-                    <Image
-                      src={
+                    <TokenLink
+                      scanUrl={environments[chainId]["SCAN_URL"]}
+                      tokenAddress={
                         environments[chainId]["PREDICTION_MARKET_ADDRESS"][
                           prediction.prediction.paymentToken
-                        ].image
+                        ].tokenAddress
                       }
-                      width={20}
-                      height={20}
-                      className="w-[24px] h-[24px]"
-                      alt="Symbol"
-                    />
+                    >
+                      <Image
+                        src={
+                          environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+                            prediction.prediction.paymentToken
+                          ].image
+                        }
+                        width={20}
+                        height={20}
+                        className="w-[24px] h-[24px]"
+                        alt="Symbol"
+                      />
+                    </TokenLink>
                   </p>
                 </div>
                 <div className="text-primary font-bold mb-2">Outcomes:</div>
@@ -661,22 +671,15 @@ const PredictionTemplate = () => {
                                 )
                               : 0}{" "}
                             {prediction.prediction.paymentToken}
-                            <Image
-                              src={
+                            <TokenLink
+                              scanUrl={environments[chainId]["SCAN_URL"]}
+                              tokenAddress={
                                 environments[chainId][
                                   "PREDICTION_MARKET_ADDRESS"
-                                ][prediction.prediction.paymentToken].image
+                                ][prediction.prediction.paymentToken]
+                                  .tokenAddress
                               }
-                              width={20}
-                              height={20}
-                              className="w-[24px] h-[24px]"
-                              alt="Symbol"
-                            />
-                          </span>
-                          {userStaked && userStaked[index] ? (
-                            <span className="flex gap-1 text-gray-500">
-                              Your: {formatUnits(userStaked[index], decimals)}{" "}
-                              {prediction.prediction.paymentToken}
+                            >
                               <Image
                                 src={
                                   environments[chainId][
@@ -688,6 +691,33 @@ const PredictionTemplate = () => {
                                 className="w-[24px] h-[24px]"
                                 alt="Symbol"
                               />
+                            </TokenLink>
+                          </span>
+                          {userStaked && userStaked[index] ? (
+                            <span className="flex gap-1 text-gray-500">
+                              Your: {formatUnits(userStaked[index], decimals)}{" "}
+                              {prediction.prediction.paymentToken}
+                              <TokenLink
+                                scanUrl={environments[chainId]["SCAN_URL"]}
+                                tokenAddress={
+                                  environments[chainId][
+                                    "PREDICTION_MARKET_ADDRESS"
+                                  ][prediction.prediction.paymentToken]
+                                    .tokenAddress
+                                }
+                              >
+                                <Image
+                                  src={
+                                    environments[chainId][
+                                      "PREDICTION_MARKET_ADDRESS"
+                                    ][prediction.prediction.paymentToken].image
+                                  }
+                                  width={20}
+                                  height={20}
+                                  className="w-[24px] h-[24px]"
+                                  alt="Symbol"
+                                />
+                              </TokenLink>
                             </span>
                           ) : null}
                         </div>
