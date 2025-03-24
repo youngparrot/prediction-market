@@ -10,13 +10,7 @@ import {
 } from "@/utils/environment";
 import PredictionMarketABI from "@/lib/abi/PredictionMarket.json";
 import PredictionMarketTokenPaymentABI from "@/lib/abi/PredictionMarketTokenPayment.json";
-import {
-  formatEther,
-  formatUnits,
-  getContract,
-  parseEther,
-  parseUnits,
-} from "viem";
+import { formatEther, formatUnits, getContract, parseUnits } from "viem";
 import { toast } from "react-toastify";
 import {
   createTransaction,
@@ -772,17 +766,27 @@ const PredictionTemplate = () => {
                           <p className="flex gap-1 text-primary">
                             Your rewards: {formatEther(claimAmount.toString())}{" "}
                             {prediction.prediction.paymentToken}
-                            <Image
-                              src={
+                            <TokenLink
+                              scanUrl={environments[chainId]["SCAN_URL"]}
+                              tokenAddress={
                                 environments[chainId][
                                   "PREDICTION_MARKET_ADDRESS"
-                                ][prediction.prediction.paymentToken].image
+                                ][prediction.prediction.paymentToken]
+                                  .tokenAddress
                               }
-                              width={20}
-                              height={20}
-                              className="w-[24px] h-[24px]"
-                              alt="Symbol"
-                            />
+                            >
+                              <Image
+                                src={
+                                  environments[chainId][
+                                    "PREDICTION_MARKET_ADDRESS"
+                                  ][prediction.prediction.paymentToken].image
+                                }
+                                width={20}
+                                height={20}
+                                className="w-[24px] h-[24px]"
+                                alt="Symbol"
+                              />
+                            </TokenLink>
                           </p>
                         </div>
                       ) : null}

@@ -1,16 +1,11 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
-import { formatEther, formatUnits } from "viem";
+import { formatUnits } from "viem";
 import WatchlistIcon from "./WatchlistIcon";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import { motion } from "framer-motion";
-import dayjs from "dayjs";
-import {
-  DEFAULT_CHAIN_ID,
-  NATIVE_TOKEN_ADDRESS,
-  environments,
-} from "@/utils/environment";
+import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
 import Share from "./Share";
 import ERC20ABI from "@/lib/abi/ERC20.json";
 
@@ -18,14 +13,10 @@ const PredictionCard = ({ prediction }) => {
   const publicClient = usePublicClient();
   const { address, isConnected } = useAccount();
   const [isClaiming, setIsClaiming] = useState(false);
-  const [selectedPrediction, setSelectedPrediction] = useState(null);
-  const [isPredicting, setIsPredicting] = useState(false);
 
   const isDone = prediction.endDate
     ? new Date(prediction.endDate).getTime() <= Date.now()
     : false;
-
-  const [isPredictionAllowed, setIsPredictionAllowed] = useState(true);
 
   const { data: walletClient } = useWalletClient();
 
@@ -68,16 +59,6 @@ const PredictionCard = ({ prediction }) => {
 
     loadDecimals();
   }, [publicClient, environments, chainId, prediction]);
-
-  useEffect(() => {
-    if (!prediction?.predictionCutoffDate) {
-      return;
-    }
-
-    const now = dayjs();
-
-    setIsPredictionAllowed(now.isBefore(prediction?.predictionCutoffDate));
-  }, [prediction?.predictionCutoffDate]);
 
   return (
     <div className="card relative flex flex-col justify-between bg-white shadow-lg p-4 rounded-md cursor-pointer hover:shadow-xl h-full">
