@@ -24,7 +24,7 @@ const CategoryTemplate = () => {
   const { category } = useParams();
 
   return (
-    <div className="container mx-auto w-full p-2">
+    <div>
       <div className="mb-8">
         <Categories categoryPath={category} />
         <div className="flex justify-between mb-4">
@@ -162,7 +162,7 @@ const Predictions = ({ status, category }) => {
           <div className="flex justify-end mb-4 text-white">
             <span>Total: {predictions.total}</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
             {predictions.predictions.map((prediction) => (
               <motion.a
                 whileHover={{ scale: 1.02 }}
