@@ -34,6 +34,12 @@ export const environments = {
           "https://ypfile.myfilebase.com/ipfs/Qmchysx7eP2xMn9CvLeiVM4YCjNQGoSKcYq6rY2FUnkdj1",
         contract: process.env.NEXT_PUBLIC_USDT_PREDICTION_MARKET_ADDRESS,
       },
+      YPC: {
+        tokenAddress: process.env.NEXT_PUBLIC_YPC_TOKEN_ADDRESS,
+        image:
+          "https://ypfile.myfilebase.com/ipfs/Qmbw7YTAkRdSQGbGWBP8dApMAiET85opzW7zZa268EjEex",
+        contract: process.env.NEXT_PUBLIC_YPC_PREDICTION_MARKET_ADDRESS,
+      },
     },
     CREATION_FEE: process.env.NEXT_PUBLIC_CORE_CREATION_FEE,
     CREATION_SHARE_FEE_PERCENT:
