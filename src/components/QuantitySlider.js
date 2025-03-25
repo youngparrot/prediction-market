@@ -6,6 +6,7 @@ import { useWalletClient } from "wagmi";
 export default function QuantitySlider({
   min = 1,
   max = 10,
+  step = 1,
   onChange,
   prediction,
 }) {
@@ -42,6 +43,7 @@ export default function QuantitySlider({
         type="range"
         min={min}
         max={max}
+        step={step}
         value={value}
         onChange={handleChange}
         className="w-full h-1 rounded-lg appearance-none cursor-pointer"

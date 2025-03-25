@@ -4,6 +4,7 @@ import { FaSpinner } from "react-icons/fa";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import QuantitySlider from "./QuantitySlider";
+import { environments } from "@/utils/environment";
 
 const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -66,7 +67,22 @@ const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
               ))}
             </select> */}
             <QuantitySlider
-              max={100}
+              min={
+                environments[prediction.chainId]["PREDICTION_MARKET_ADDRESS"][
+                  prediction.paymentToken
+                ].step
+              }
+              max={
+                100 *
+                environments[prediction.chainId]["PREDICTION_MARKET_ADDRESS"][
+                  prediction.paymentToken
+                ].step
+              }
+              step={
+                environments[prediction.chainId]["PREDICTION_MARKET_ADDRESS"][
+                  prediction.paymentToken
+                ].step
+              }
               onChange={setAmount}
               prediction={prediction}
             />

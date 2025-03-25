@@ -27,18 +27,21 @@ export const environments = {
         image:
           "https://ypfile.myfilebase.com/ipfs/QmV9XWPiFf8HG4xwn6WbWxdjRRTcqCy1Gqhb3Wrqk9c62R",
         contract: process.env.NEXT_PUBLIC_CORE_PREDICTION_MARKET_ADDRESS,
+        step: process.env.NEXT_PUBLIC_CORE_STEP,
       },
       USDT: {
         tokenAddress: process.env.NEXT_PUBLIC_USDT_TOKEN_ADDRESS,
         image:
           "https://ypfile.myfilebase.com/ipfs/Qmchysx7eP2xMn9CvLeiVM4YCjNQGoSKcYq6rY2FUnkdj1",
         contract: process.env.NEXT_PUBLIC_USDT_PREDICTION_MARKET_ADDRESS,
+        step: process.env.NEXT_PUBLIC_USDT_STEP,
       },
       YPC: {
         tokenAddress: process.env.NEXT_PUBLIC_YPC_TOKEN_ADDRESS,
         image:
           "https://ypfile.myfilebase.com/ipfs/Qmbw7YTAkRdSQGbGWBP8dApMAiET85opzW7zZa268EjEex",
         contract: process.env.NEXT_PUBLIC_YPC_PREDICTION_MARKET_ADDRESS,
+        step: process.env.NEXT_PUBLIC_YPC_STEP,
       },
     },
     CREATION_FEE: process.env.NEXT_PUBLIC_CORE_CREATION_FEE,
