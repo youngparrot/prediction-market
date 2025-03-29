@@ -1,15 +1,12 @@
 import React, { useState } from "react";
 import Modal from "./Modal";
 import { FaSpinner } from "react-icons/fa";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi";
 import QuantitySlider from "./QuantitySlider";
 import { environments } from "@/utils/environment";
 
 const PredictionModal = ({ prediction, onClose, onSubmit, isLoading }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [amount, setAmount] = useState(1);
-  const { address, isConnected } = useAccount();
   const [answerError, setAnswerError] = useState();
 
   const handleSubmit = () => {
