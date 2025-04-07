@@ -9,7 +9,9 @@ export const PREDICTION_MARKET_API =
 
 export const GTM = process.env.NEXT_PUBLIC_GTM;
 
-export const DEFAULT_CHAIN_ID = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID;
+export const DEFAULT_CHAIN_ID = parseInt(
+  process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID
+);
 
 export const NATIVE_TOKEN_ADDRESS =
   "0x0000000000000000000000000000000000000000";
