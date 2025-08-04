@@ -125,12 +125,12 @@ export default function Footer() {
               <motion.a
                 whileHover={{ scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                href="https://app.youngparrotnft.com"
+                href="https://nft.youngparrotnft.com"
                 target="_blank"
-                title="NFT Marketplace"
+                title="NFT Launchpad"
                 className="inline-block"
               >
-                NFT Marketplace
+                NFT Launchpad
               </motion.a>
             </li>
             <li>
