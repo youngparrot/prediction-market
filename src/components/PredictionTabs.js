@@ -245,11 +245,11 @@ const PredictionTabs = ({ id, prediction }) => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Comments":
-        return <ChatRoom id={id} prediction={prediction} />;
+        return <ChatRoom id={id} prediction={prediction?.prediction} />;
       case "Activity":
-        return <Activity id={id} prediction={prediction} />;
+        return <Activity id={id} prediction={prediction?.prediction} />;
       case "Top Holders":
-        return <TopHolders id={id} prediction={prediction} />;
+        return <TopHolders id={id} prediction={prediction?.prediction} />;
       default:
         return null;
     }
