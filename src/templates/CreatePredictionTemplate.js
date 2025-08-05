@@ -393,12 +393,14 @@ const CreatePredictionTemplate = () => {
                 errors.paymentToken ? "border-red-500" : ""
               }`}
             >
-              <option value="">-- Choose a payment token --</option>
+              <option key={"none"} value="">
+                -- Choose a payment token --
+              </option>
               {Object.keys(
                 environments[chainId]["PREDICTION_MARKET_ADDRESS"]
               ).map((paymentToken) => (
                 <option
-                  key={paymentToken.tokenAddress}
+                  key={paymentToken}
                   value={paymentToken}
                   className="flex gap-1"
                 >
