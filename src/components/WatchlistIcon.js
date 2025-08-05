@@ -3,13 +3,27 @@
 import { useEffect, useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { addToWatchlist, unWatchlist } from "@/utils/api";
-import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
 import { toast } from "react-toastify";
+import { DEFAULT_CHAIN_ID } from "@/utils/environment";
 
 export default function WatchlistIcon({ prediction }) {
   const [isInWatchlist, setIsInWatchlist] = useState(false);
   const [loading, setLoading] = useState(false);
   const { address, isConnected } = useAccount();
+
+  const { data: walletClient } = useWalletClient();
+  const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (walletClient) {
+        const id = await walletClient.getChainId(); // Fetch the connected chain ID
+        setChainId(id);
+      }
+    };
+
+    fetchChainId();
+  }, [walletClient]);
 
   const handleWatchlistClick = async (e) => {
     e.stopPropagation();
@@ -25,11 +39,11 @@ export default function WatchlistIcon({ prediction }) {
     try {
       setLoading(true);
       if (isInWatchlist) {
-        await unWatchlist(address, predictionId);
+        await unWatchlist(address, predictionId, chainId);
         setIsInWatchlist(false); // Update the icon state
         toast.success("Watchlist is removed");
       } else {
-        await addToWatchlist(address, predictionId);
+        await addToWatchlist(address, predictionId, chainId);
         setIsInWatchlist(true); // Update the icon state
         toast.success("Watchlist is added");
       }
