@@ -6,10 +6,12 @@ import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useAccount } from "wagmi";
+import { usePathname } from "next/navigation";
 
 export default function Nav({ setShowHowToPredict }) {
   const [isOpen, setIsOpen] = useState(false);
   const { address, isConnected } = useAccount();
+  const pathName = usePathname();
 
   // Function to toggle the menu
   const toggleMenu = () => {
@@ -61,6 +63,9 @@ export default function Nav({ setShowHowToPredict }) {
             className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
             href="/create-prediction"
             title="Create Prediction"
+            style={{
+              color: pathName === `/create-prediction` ? "#F5CC46" : "",
+            }}
           >
             Create Prediction
           </motion.a>
@@ -70,6 +75,9 @@ export default function Nav({ setShowHowToPredict }) {
             className="font-bold hidden md:flex text-white flex items-center gap-1 flex-row cursor-pointer"
             title="Leaderboard"
             href="/leaderboard"
+            style={{
+              color: pathName === `/leaderboard` ? "#F5CC46" : "",
+            }}
           >
             Leaderboard
           </motion.a>
@@ -91,6 +99,9 @@ export default function Nav({ setShowHowToPredict }) {
               className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
               title="Profile"
               href={`/profile/${address}`}
+              style={{
+                color: pathName === `/profile/${address}` ? "#F5CC46" : "",
+              }}
             >
               Profile
             </motion.a>
@@ -129,6 +140,9 @@ export default function Nav({ setShowHowToPredict }) {
                 className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
                 title="Leaderboard"
                 href="/leaderboard"
+                style={{
+                  color: pathName === `/leaderboard` ? "#F5CC46" : "",
+                }}
               >
                 Leaderboard
               </motion.a>
@@ -148,6 +162,9 @@ export default function Nav({ setShowHowToPredict }) {
                   className="font-bold text-white flex items-center gap-1 flex-row cursor-pointer"
                   title="Profile"
                   href={`/profile/${address}`}
+                  style={{
+                    color: pathName === `/profile/${address}` ? "#F5CC46" : "",
+                  }}
                 >
                   Profile
                 </motion.a>
