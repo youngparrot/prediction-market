@@ -18,6 +18,7 @@ import { FaMoneyBillAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useAccount, useWalletClient } from "wagmi";
 import { toast } from "react-toastify";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -314,8 +315,31 @@ const Watchlisted = ({ userAddress }) => {
   );
 };
 
+const TABS = ["Predicted", "Created", "Watchlisted"];
+
 const ProfileTabs = ({ userAddress }) => {
-  const [activeTab, setActiveTab] = useState("Predicted");
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Parse ?tab from URL and normalize it
+  const initialTab = (() => {
+    const tab = searchParams?.get("tab")?.toLowerCase();
+    if (tab === "created") return "Created";
+    if (tab === "watchlisted") return "Watchlisted";
+    return "Predicted";
+  })();
+
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    const tabQuery = tab.toLowerCase().replace(/\s+/g, "");
+    router.push(`?tab=${tabQuery}`, { scroll: false });
+  };
 
   // Function to render the component based on the active tab
   const renderTabContent = () => {
@@ -338,12 +362,12 @@ const ProfileTabs = ({ userAddress }) => {
         style={{ display: "flex", borderBottom: "1px solid #00539C" }}
         className="gap-1 md:gap-4"
       >
-        {["Predicted", "Created", "Watchlisted"].map((tab) => (
+        {TABS.map((tab) => (
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
             style={{
               cursor: "pointer",
               borderBottom: activeTab === tab ? "2px solid #00539C" : "none",
