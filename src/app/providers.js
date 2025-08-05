@@ -13,6 +13,8 @@ import {
   coinbaseWallet,
   trustWallet,
   coin98Wallet,
+  rabbyWallet,
+  injectedWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 // import { mainnet, base } from "wagmi/chains";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -60,17 +62,18 @@ const config = getDefaultConfig({
   wallets: [
     {
       groupName: "Recommended",
-      wallets: [metaMaskWallet, walletConnectWallet, rainbowWallet],
-    },
-    {
-      groupName: "Others",
       wallets: [
+        metaMaskWallet,
         coinbaseWallet,
         okxWallet,
         tokenPocketWallet,
         bitgetWallet,
         trustWallet,
+        rabbyWallet,
         coin98Wallet,
+        walletConnectWallet,
+        rainbowWallet,
+        injectedWallet,
       ],
     },
   ],
