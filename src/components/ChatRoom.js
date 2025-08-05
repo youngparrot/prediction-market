@@ -17,6 +17,7 @@ import {
 import "stream-chat-react/dist/css/v2/index.css";
 import { STREAM_API_KEY } from "@/utils/environment";
 import CustomMessageInput from "./CustomMessageInput";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export default function ChatRoom({ id, prediction, className = "" }) {
   const { address: userAddress, isConnected } = useAccount();
@@ -117,8 +118,9 @@ export default function ChatRoom({ id, prediction, className = "" }) {
 
   if (!isConnected) {
     return (
-      <div className={`p-4 text-center ${className}`}>
-        Connect your wallet to join the chat
+      <div className={`p-4 ${className}`}>
+        <div className="py-2">Connect your wallet to join the chat</div>
+        <ConnectButton />
       </div>
     );
   }
