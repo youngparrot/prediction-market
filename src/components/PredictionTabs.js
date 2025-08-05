@@ -9,6 +9,7 @@ import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
 import { useWalletClient } from "wagmi";
 import Image from "next/image";
 import ChatRoom from "./ChatRoom";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -238,10 +239,32 @@ const TopHolders = ({ id, prediction }) => {
   );
 };
 
-const PredictionTabs = ({ id, prediction }) => {
-  const [activeTab, setActiveTab] = useState("Comments");
+const TABS = ["Comments", "Activity", "Top Holders"];
 
-  // Function to render the component based on the active tab
+const PredictionTabs = ({ id, prediction }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Parse ?tab from URL and normalize it
+  const initialTab = (() => {
+    const tab = searchParams?.get("tab")?.toLowerCase();
+    if (tab === "activity") return "Activity";
+    if (tab === "topholders") return "Top Holders";
+    return "Comments";
+  })();
+
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    const tabQuery = tab.toLowerCase().replace(/\s+/g, "");
+    router.push(`?tab=${tabQuery}`, { scroll: false });
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "Comments":
@@ -257,17 +280,17 @@ const PredictionTabs = ({ id, prediction }) => {
 
   return (
     <div>
-      {/* Tab headers */}
+      {/* Tab Headers */}
       <div
         style={{ display: "flex", borderBottom: "1px solid #F7C942" }}
         className="gap-1 md:gap-4"
       >
-        {["Comments", "Activity", "Top Holders"].map((tab) => (
+        {TABS.map((tab) => (
           <motion.div
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
             style={{
               cursor: "pointer",
               borderBottom: activeTab === tab ? "2px solid #F7C942" : "none",
@@ -280,7 +303,7 @@ const PredictionTabs = ({ id, prediction }) => {
         ))}
       </div>
 
-      {/* Tab content */}
+      {/* Tab Content */}
       <div className="py-2">{renderTabContent()}</div>
     </div>
   );
