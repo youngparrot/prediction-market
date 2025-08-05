@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { DEFAULT_CHAIN_ID, environments } from "@/utils/environment";
 import { useWalletClient } from "wagmi";
 import Image from "next/image";
+import ChatRoom from "./ChatRoom";
 
 // Extend dayjs with the relativeTime plugin
 dayjs.extend(relativeTime);
@@ -29,10 +30,11 @@ const Comments = ({ id }) => (
     />
   </div>
 );
-const Activity = ({ id, answers }) => {
+const Activity = ({ id, prediction }) => {
   const [transactions, setTransactions] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   const { data: walletClient } = useWalletClient();
+  const answers = prediction.answers;
 
   const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
   useEffect(() => {
@@ -137,10 +139,11 @@ const Activity = ({ id, answers }) => {
   );
 };
 
-const TopHolders = ({ id, answers }) => {
+const TopHolders = ({ id, prediction }) => {
   const [holdersList, setHoldersList] = useState(null);
   const [isFetching, setIsFetching] = useState(false);
   const { data: walletClient } = useWalletClient();
+  const answers = prediction.answers;
 
   const [chainId, setChainId] = useState(DEFAULT_CHAIN_ID);
   useEffect(() => {
@@ -235,18 +238,18 @@ const TopHolders = ({ id, answers }) => {
   );
 };
 
-const PredictionTabs = ({ id, answers }) => {
+const PredictionTabs = ({ id, prediction }) => {
   const [activeTab, setActiveTab] = useState("Comments");
 
   // Function to render the component based on the active tab
   const renderTabContent = () => {
     switch (activeTab) {
       case "Comments":
-        return <Comments id={id} />;
+        return <ChatRoom id={id} prediction={prediction} />;
       case "Activity":
-        return <Activity id={id} answers={answers} />;
+        return <Activity id={id} prediction={prediction} />;
       case "Top Holders":
-        return <TopHolders id={id} answers={answers} />;
+        return <TopHolders id={id} prediction={prediction} />;
       default:
         return null;
     }

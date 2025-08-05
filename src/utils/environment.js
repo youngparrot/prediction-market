@@ -52,3 +52,5 @@ export const environments = {
     PLATFORM_FEE_PERCENT: process.env.NEXT_PUBLIC_CORE_PLATFORM_FEE_PERCENT,
   },
 };
+
+export const STREAM_API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY;
