@@ -326,7 +326,7 @@ const CreatePredictionTemplate = () => {
             </button>
           </div>
 
-          <div>
+          <div className="mb-4">
             <label className="text-gray-700 font-bold block mb-1">
               Upload Image:
               <RequiredField />
