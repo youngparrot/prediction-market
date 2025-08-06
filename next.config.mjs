@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "ypfile.myfilebase.com",
       },
+      {
+        protocol: "https",
+        hostname: "yp-prediction-market.s3.filebase.com",
+      },
     ],
   },
 };

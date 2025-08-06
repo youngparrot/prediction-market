@@ -4,6 +4,7 @@ import { DEFAULT_CHAIN_ID, PREDICTION_MARKET_API } from "./environment";
 export async function createPrediction(
   question,
   answers,
+  image,
   predictionCutoffDate,
   endDate,
   createdBy,
@@ -17,6 +18,7 @@ export async function createPrediction(
   const response = await axios.post(url, {
     question,
     answers: answers,
+    image,
     predictionCutoffDate,
     endDate,
     createdBy,
@@ -174,4 +176,17 @@ export async function unWatchlist(userAddress, predictionId, chainId) {
     },
   });
   return response.data;
+}
+
+export async function uploadIpfs(file) {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const url = `${PREDICTION_MARKET_API}/api/upload-ipfs`;
+
+  const response = await axios.post(url, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return response.data.url;
 }

@@ -15,7 +15,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import dayjs from "dayjs";
 import { FaSpinner } from "react-icons/fa";
-import { createPrediction, updatePrediction } from "@/utils/api";
+import { createPrediction, updatePrediction, uploadIpfs } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { RequiredField, RequiredLabel } from "@/components/RequiredLabel";
 import { generateUUID } from "@/utils/uuid";
@@ -46,6 +46,7 @@ const CreatePredictionTemplate = () => {
     defaultValues: {
       question: "",
       answers: ["", ""],
+      image: "",
       predictionCutoffDate: "",
       endTime: "",
       rules: "",
@@ -115,6 +116,7 @@ const CreatePredictionTemplate = () => {
       twitter,
       category,
       paymentToken,
+      image,
     } = data;
 
     if (predictionCutoffDate && dayjs(predictionCutoffDate) > dayjs(endTime)) {
@@ -123,9 +125,16 @@ const CreatePredictionTemplate = () => {
     }
 
     try {
+      let imageUrl;
+      if (image) {
+        imageUrl = await uploadIpfs(image[0]);
+      }
+      console.log({ imageUrl });
+
       const predictionRes = await createPrediction(
         question,
         answers.map((answer) => answer.text),
+        imageUrl,
         predictionCutoffDate,
         endTime,
         address,
@@ -316,6 +325,22 @@ const CreatePredictionTemplate = () => {
               Add Outcome
             </button>
           </div>
+
+          <div>
+            <label className="text-gray-700 font-bold block mb-1">
+              Upload Image:
+              <RequiredField />
+            </label>
+            <input
+              {...register("image", {})}
+              type="file"
+              accept="image/*"
+              className={`w-full mt-1 p-2 border border-gray-600 bg-black rounded ${
+                errors.image ? "border-red-500" : ""
+              }`}
+            />
+          </div>
+
           <div className="mb-4">
             <label className="text-gray-700 font-bold block mb-1">
               Cutoff Time (UTC):
