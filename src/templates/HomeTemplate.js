@@ -16,6 +16,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
 import StatusFilter from "@/components/StatusFilter";
 import Categories from "@/components/Categories";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const HomeTemplate = () => {
   const [status, setStatus] = useState("");
@@ -37,13 +38,21 @@ const HomeTemplate = () => {
 
 export default HomeTemplate;
 
+const PAGE_SIZE = 20;
+
 const Predictions = ({ status }) => {
   const publicClient = usePublicClient(); // Fetches the public provider
   const { data: walletClient } = useWalletClient(); // Fetches the connected wallet signer
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1");
+
   const { address, isConnected } = useAccount();
   const [isFetching, setIsFetching] = useState(false);
   const [isFetchingWatchlists, setIsFetchingWatchlists] = useState(false);
+
+  const [total, setTotal] = useState(0);
   const [predictions, setPredictions] = useState([]);
   const [watchlists, setWatchlists] = useState(null);
 
@@ -62,7 +71,12 @@ const Predictions = ({ status }) => {
   const getPredictions = async () => {
     try {
       setIsFetching(true);
-      const predictionsData = await fetchPredictions({ status, chainId });
+      const predictionsData = await fetchPredictions({
+        status,
+        chainId,
+        page: currentPage,
+        limit: PAGE_SIZE,
+      });
       const metadataIds = predictionsData.predictions.map(
         (prediction) => prediction._id
       );
@@ -98,6 +112,7 @@ const Predictions = ({ status }) => {
       }
 
       setPredictions(predictionsData);
+      setTotal(predictionsData.total);
     } catch (error) {
       console.log("Fetching active predictions failed", error);
     } finally {
@@ -135,7 +150,15 @@ const Predictions = ({ status }) => {
     }
 
     getPredictions();
-  }, [status, watchlists, chainId]);
+  }, [status, watchlists, chainId, currentPage]);
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  const handlePageChange = (page) => {
+    const query = new URLSearchParams(searchParams);
+    query.set("page", page);
+    router.push(`?${query.toString()}`);
+  };
 
   if (isFetching || isFetchingWatchlists) {
     return (
@@ -169,6 +192,26 @@ const Predictions = ({ status }) => {
       ) : (
         <p className="text-white">No predictions</p>
       )}
+
+      {/* Pagination */}
+      <div className="flex flex-wrap justify-center mt-6 gap-2">
+        {Array.from({ length: totalPages }).map((_, i) => {
+          const page = i + 1;
+          return (
+            <button
+              key={i}
+              onClick={() => handlePageChange(page)}
+              className={`px-3 py-1 border rounded ${
+                page === currentPage
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+            >
+              {page}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
