@@ -104,11 +104,11 @@ const Predictions = ({ status }) => {
           predictionContractData[i].winningAnswerIndex;
         predictionsData.predictions[i].ended = predictionContractData[i].ended;
 
-        // if (watchlists && watchlists[predictionsData.predictions[i]._id]) {
-        //   predictionsData.predictions[i].isInWatchlist = true;
-        // } else {
-        //   predictionsData.predictions[i].isInWatchlist = false;
-        // }
+        if (watchlists && watchlists[predictionsData.predictions[i]._id]) {
+          predictionsData.predictions[i].isInWatchlist = true;
+        } else {
+          predictionsData.predictions[i].isInWatchlist = false;
+        }
       }
 
       setPredictions(predictionsData);
@@ -120,37 +120,37 @@ const Predictions = ({ status }) => {
     }
   };
 
-  // const getWatchlists = async () => {
-  //   try {
-  //     setIsFetchingWatchlists(true);
-  //     const response = await fetchWatchlist(address, chainId);
-  //     const watchlistMap = {};
-  //     for (let i = 0; i < response.watchlist.length; i++) {
-  //       watchlistMap[response.watchlist[i]._id] = true;
-  //     }
-  //     setWatchlists(watchlistMap);
-  //   } catch (error) {
-  //     console.log("Fetch watchlists failed", error);
-  //   } finally {
-  //     setIsFetchingWatchlists(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (!address || !chainId) {
-  //     return;
-  //   }
-
-  //   getWatchlists();
-  // }, [address, chainId]);
+  const getWatchlists = async () => {
+    try {
+      setIsFetchingWatchlists(true);
+      const response = await fetchWatchlist(address, chainId);
+      const watchlistMap = {};
+      for (let i = 0; i < response.watchlist.length; i++) {
+        watchlistMap[response.watchlist[i]._id] = true;
+      }
+      setWatchlists(watchlistMap);
+    } catch (error) {
+      console.log("Fetch watchlists failed", error);
+    } finally {
+      setIsFetchingWatchlists(false);
+    }
+  };
 
   useEffect(() => {
-    if (!chainId) {
+    if (!address || !chainId) {
+      return;
+    }
+
+    getWatchlists();
+  }, [address, chainId]);
+
+  useEffect(() => {
+    if (!chainId || !watchlists) {
       return;
     }
 
     getPredictions();
-  }, [status, chainId, currentPage]);
+  }, [status, watchlists, chainId, currentPage]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
