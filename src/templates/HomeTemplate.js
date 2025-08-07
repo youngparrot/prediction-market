@@ -148,6 +148,9 @@ const Predictions = ({ status }) => {
     if (!chainId) {
       return;
     }
+    if (!watchlists) {
+      return;
+    }
 
     getPredictions();
   }, [status, watchlists, chainId, currentPage]);
