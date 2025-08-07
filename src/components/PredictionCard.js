@@ -65,14 +65,14 @@ const PredictionCard = ({ prediction }) => {
       <div className="flex justify-between">
         <div></div>
         <div className="flex gap-2 items-center">
-          {isConnected ? (
+          {/* {isConnected ? (
             <p>
               <WatchlistIcon prediction={prediction} />
             </p>
           ) : (
             <span></span>
-          )}
-          <Share prediction={prediction} />
+          )} */}
+          {/* <Share prediction={prediction} /> */}
         </div>
       </div>
       <div className="flex gap-4 items-start justify-start mb-2">
