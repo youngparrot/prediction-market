@@ -145,7 +145,7 @@ const Predictions = ({ status }) => {
   }, [address, chainId]);
 
   useEffect(() => {
-    if (!chainId || !watchlists) {
+    if (!chainId) {
       return;
     }
 
