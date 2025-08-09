@@ -87,9 +87,9 @@ const Activity = ({ id, prediction }) => {
         ? transactions.map((transaction) => (
             <div
               key={transaction._id}
-              className="flex justify-between even:bg-gray-100 py-1"
+              className="flex justify-between md:flex-row flex-col even:bg-gray-100 py-1"
             >
-              <div className="flex gap-1">
+              <div className="flex flex-wrap gap-1">
                 <a
                   href={`/profile/${transaction.userAddress}`}
                   title={transaction.userAddress}
@@ -107,18 +107,18 @@ const Activity = ({ id, prediction }) => {
                 {" with "}
                 <span className="flex gap-1 text-secondary">
                   {transaction.amount} {transaction.paymentToken}
-                  <Image
-                    src={
-                      environments[chainId]["PREDICTION_MARKET_ADDRESS"][
-                        transaction.paymentToken
-                      ].image
-                    }
-                    width={20}
-                    height={20}
-                    className="w-[24px] h-[24px]"
-                    alt="Symbol"
-                  />
                 </span>
+                <Image
+                  src={
+                    environments[chainId]["PREDICTION_MARKET_ADDRESS"][
+                      transaction.paymentToken
+                    ].image
+                  }
+                  width={20}
+                  height={20}
+                  className="w-[24px] h-[24px]"
+                  alt="Symbol"
+                />
               </div>
               <div>
                 {transaction.transactionId ? (
